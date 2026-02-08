@@ -1,0 +1,10 @@
+{
+  "offerItems": [
+    { "name": "Beef", "img": "https://i.ibb.co/gb6xpKzF/Beef-category.jpg", "to": "/beef" },
+    { "name": "Chicken", "img": "https://i.ibb.co/vnQ6b6G/Chicken-Category.jpg", "to": "/chicken" },
+    { "name": "Soup", "img": "https://i.ibb.co/x8mf82Q3/Soup-CAtegory.jpg", "to": "/soup" },
+    { "name": "Dessert", "img": "https://i.ibb.co/VWfpD5cX/Dessert-Category.jpg", "to": "/hotmeal" },
+    { "name": "Fish", "img": "https://i.ibb.co/fzDWMzTG/Fish-Category.jpg", "to": "/fish" },
+    { "name": "Drink", "img": "https://i.ibb.co/qMJCghcR/Drink-Category.jpg", "to": "/drink" }
+  ]
+}

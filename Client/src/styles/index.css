@@ -1,0 +1,10 @@
+.card-data {
+  bottom: -9rem;
+  opacity: 0;
+  transition: all 0.4s ease-in-out;
+}
+
+.group:hover .card-data {
+  bottom: 1.5rem;
+  opacity: 1;
+}

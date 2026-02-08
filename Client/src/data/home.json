@@ -1,0 +1,13 @@
+{
+  "reviews": [
+    ["Aisha", "The food is always fresh and delicious. Love it!", "1", "bg-orange-100"],
+    ["Karim", "Best delivery service ever! Highly recommended.", "2", "bg-orange-200"],
+    ["Rina", "Amazing recipes. My family loves cooking from here.", "3", "bg-orange-100"],
+    ["Tanvir", "Affordable and always on time. Love the variety.", "4", "bg-orange-300"],
+    ["Lamiya", "Great support team. Quick and helpful.", "5", "bg-orange-100"],
+    ["Shuvo", "Highly recommended for foodies. 10/10!", "6", "bg-orange-300"],
+    ["Maria", "Their pasta is to die for. Will order again!", "7", "bg-orange-200"],
+    ["Rakib", "Fast delivery and fresh meals. Perfect combo!", "8", "bg-orange-100"],
+    ["Joya", "Simple, clean, and super tasty.", "9", "bg-orange-200"]
+  ]
+}

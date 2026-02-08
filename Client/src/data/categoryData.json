@@ -1,0 +1,222 @@
+{
+  "beef": {
+    "bannerImage": "https://i.ibb.co/zCBdhby/beef.jpg",
+    "description": "A protein-rich powerhouse for muscle health and essential nutrients",
+    "recipes": [
+      {
+        "name": "Bahraini Tikka",
+        "image": "https://i.ibb.co/GfLdsvP4/Bahraini-Tikka.jpg",
+        "link": "/recipe/bahraini-tikka"
+      },
+      {
+        "name": "Beef Curry",
+        "image": "https://i.ibb.co/Y4mhz3qB/Beef-curry.jpg",
+        "link": "/recipe/bahraini-tikka"
+      },
+      {
+        "name": "Beef Chilli Fry",
+        "image": "https://i.ibb.co/6cXvP5t0/beef-chilli-fry.jpg",
+        "link": "/recipe/bahraini-tikka"
+      },
+            {
+        "name": "Beef Empanadas",
+        "image": "https://i.ibb.co/gMY9njNQ/beef-empanadas.jpg",
+        "link": "/recipe/bahraini-tikka"
+      },
+            {
+        "name": "Beef Wellington",
+        "image": "https://i.ibb.co/S7MDt6D3/beef-wellington.jpg",
+        "link": "/recipe/bahraini-tikka"
+      },
+          {
+        "name": "Braised Beef and Mushroom Pie",
+        "image": "https://i.ibb.co/Kxw1Rjtf/Braised-beef-and-mushroom-pie.jpg",
+        "link": "/recipe/bahraini-tikka"
+      }
+      
+    ]
+  },
+  "chicken": {
+    "bannerImage": "https://i.ibb.co/7xV4zn0w/chicken.jpg",
+    "description": "Delicious chicken recipes full of flavor",
+    "recipes": [
+      {
+        "name": "Chicken and Bacon Pasta Bake",
+        "image": "https://i.ibb.co/cSGz6p40/Chicken-and-bacon-pasta-bake.png",
+        "link": "/recipe/chicken-milanese"
+      },
+            {
+        "name": "Chicken Chasseur",
+        "image": "https://i.ibb.co/gLx0k9tT/Chicken-chasseur.png",
+        "link": "/recipe/bahraini-tikka"
+      },
+      {
+        "name": "Chicken Milanese",
+        "image": "https://i.ibb.co/wF4d3VjW/Chickenmilanese.png",
+        "link": "/recipe/bahraini-tikka"
+      },
+            {
+        "name": "Chilli Chicken",
+        "image": "https://i.ibb.co/Kj6tSSrq/Chilli-Chicken.png",
+        "link": "/recipe/bahraini-tikka"
+      },
+            {
+        "name": "Hunters Chicken",
+        "image": "https://i.ibb.co/Ng2nyyjz/Hunters-chicken.png",
+        "link": "/recipe/bahraini-tikka"
+      },
+          {
+        "name": "Salt and Pepper Chicken",
+        "image": "https://i.ibb.co/7dTbp8F4/Salt-and-pepper-chicken.png",
+        "link": "/recipe/bahraini-tikka"
+      }
+    ]
+  },
+  "soup": {
+    "bannerImage": "https://i.ibb.co/H8Cv2w0/soup-sec-bg.jpg",
+    "description": "A comforting blend of flavors and nutrients, perfect for any season and every mood.",
+    "recipes": [
+      {
+        "name": "Cabbage Soup",
+        "image": "https://i.ibb.co/SCD9gYq/Cabbage-soup.png",
+        "link": "/recipe/chicken-milanese"
+      },
+            {
+        "name": "Chicken Soup",
+        "image": "https://i.ibb.co/XfZktDpN/chicken-soup.png",
+        "link": "/recipe/bahraini-tikka"
+      },
+      {
+        "name": "Chinese Pan Fried Soup Dumpling Bao",
+        "image": "https://i.ibb.co/9mZv431D/Chinese-pan-fried-soup-dumpling-bao.png",
+        "link": "/recipe/bahraini-tikka"
+      },
+            {
+        "name": "Courgette and Mint Soup",
+        "image": "https://i.ibb.co/N23VSrcX/Courgette-and-mint-soup.png",
+        "link": "/recipe/bahraini-tikka"
+      },
+            {
+        "name": "Healthy Miso Chicken Soup",
+        "image": "https://i.ibb.co/KzSHjg9F/Healthy-miso-chicken-soup.png",
+        "link": "/recipe/bahraini-tikka"
+      },
+          {
+        "name": "Sweet Potato Soup",
+        "image": "https://i.ibb.co/DgQjrsV0/Sweet-potato-soup.png",
+        "link": "/recipe/bahraini-tikka"
+      }
+    ]
+  },
+  "drink": {
+    "bannerImage": "https://i.ibb.co/cKMVSwVH/sec-bg.webp",
+    "description": "Refreshing beverages to energize, hydrate, and uplift your day.",
+    "recipes": [
+      {
+        "name": "Christmas Mocktail Orange and Rosemary Fizz",
+        "image": "https://i.ibb.co/G4xpCKY5/Christmas-mocktail-orange-and-rosemary-fizz.png",
+        "link": "/recipe/chicken-milanese"
+      },
+            {
+        "name": "Grasshopper Cocktail",
+        "image": "https://i.ibb.co/67Hhxksb/Grasshopper-cocktail.png",
+        "link": "/recipe/bahraini-tikka"
+      },
+      {
+        "name": "Turmeric Latte",
+        "image": "https://i.ibb.co/k6Kh2DVY/Turmeric-latte.png",
+        "link": "/recipe/bahraini-tikka"
+      },
+            {
+        "name": "Masala Chai",
+        "image": "https://i.ibb.co/v4yVTZgD/Masala-chai.png",
+        "link": "/recipe/bahraini-tikka"
+      },
+            {
+        "name": "Matcha Green Tea",
+        "image": "https://i.ibb.co/1YN4Sk2M/Matcha-Green-Tea.png",
+        "link": "/recipe/bahraini-tikka"
+      },
+          {
+        "name": "Mocha",
+        "image": "https://i.ibb.co/gZXH7D5Z/Mocha.png",
+        "link": "/recipe/bahraini-tikka"
+      }
+    ]
+  },
+  "dessert": {
+    "bannerImage": "https://i.ibb.co/ymrKMyyF/dessert-sec-bg.jpg",
+    "description": "Sweet indulgence to end your meal with delight and a smile.",
+    "recipes": [
+      {
+        "name": "Avo Lollies",
+        "image": "https://i.ibb.co/vvwx2X6z/Avo-Lollies.png",
+        "link": "/recipe/chicken-milanese"
+      },
+            {
+        "name": "Christmas Cheesecake",
+        "image": "https://i.ibb.co/CKV6TS3c/Christmas-cheesecake.png",
+        "link": "/recipe/bahraini-tikka"
+      },
+      {
+        "name": "Christmas Crumble",
+        "image": "https://i.ibb.co/fGvmff8y/Christmas-crumble.png",
+        "link": "/recipe/bahraini-tikka"
+      },
+            {
+        "name": "Dairy Free Coconut Mango and Turmeric Fool",
+        "image": "https://i.ibb.co/KpwGXh8h/Dairy-free-coconut-mango-and-turmeric-fool.png",
+        "link": "/recipe/bahraini-tikka"
+      },
+            {
+        "name": "Christmas Tart",
+        "image": "https://i.ibb.co/rKwVL02X/Christmas-tart.png",
+        "link": "/recipe/bahraini-tikka"
+      },
+          {
+        "name": "Vegan Christmas Cake",
+        "image": "https://i.ibb.co/GfzC2gyG/Vegan-Christmas-cake.png",
+        "link": "/recipe/bahraini-tikka"
+      }
+    ]
+  }
+  ,
+"fish": {
+  "bannerImage": "https://i.ibb.co/7b9QGxD/fish-banner.jpg",
+  "description": "Fresh fish recipes packed with omega-3 and rich flavors.",
+  "recipes": [
+    {
+      "name": "Fish Curry",
+      "image": "https://i.ibb.co/7b9QGxD/fish-curry.jpg",
+      "link": "/recipe/fish-curry"
+    },
+    {
+      "name": "Fried Fish",
+      "image": "https://i.ibb.co/7b9QGxD/fried-fish.jpg",
+      "link": "/recipe/fried-fish"
+    },
+    {
+      "name": "Fish Fry Masala",
+      "image": "https://i.ibb.co/7b9QGxD/fish-fry-masala.jpg",
+      "link": "/recipe/fish-fry-masala"
+    },
+    {
+      "name": "Fish Tikka",
+      "image": "https://i.ibb.co/7b9QGxD/fish-tikka.jpg",
+      "link": "/recipe/fish-tikka"
+    },
+    {
+      "name": "Fish Soup",
+      "image": "https://i.ibb.co/7b9QGxD/fish-soup.jpg",
+      "link": "/recipe/fish-soup"
+    },
+    {
+      "name": "Grilled Fish",
+      "image": "https://i.ibb.co/7b9QGxD/grilled-fish.jpg",
+      "link": "/recipe/grilled-fish"
+    }
+  ]
+}
+
+  
+}

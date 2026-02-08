@@ -1,0 +1,61 @@
+
+{
+  "summaryData": [
+    { "title": "Total Orders", "value": 1342, "icon": "📦" },
+    { "title": "Pending Orders", "value": 56, "icon": "⏳" },
+    { "title": "Today's Revenue", "value": "৳ 24,500", "icon": "💰" },
+    { "title": "Last Week Revenue", "value": "৳ 1,56,000", "icon": "📅" },
+    { "title": "Monthly Revenue", "value": "৳ 5,90,000", "icon": "🗓️" },
+    { "title": "Total Users", "value": 1240, "icon": "👥" }
+  ],
+  "summaryData2": [
+    { "title": "Total Users Today", "value": 50, "icon": "👥" }
+  ],
+  "visitorsData": {
+    "labels": ["New Visitors", "Old Visitors"],
+    "datasets": [
+      {
+        "data": [22, 28],
+        "backgroundColor": ["#fb923c", "#000000"],
+        "hoverBackgroundColor": ["#f97316", "#222222"]
+      }
+    ]
+  },
+  "visitorBehaviorData": {
+    "labels": ["Ordered", "Just Browsed Recipes"],
+    "datasets": [
+      {
+        "data": [13, 37],
+        "backgroundColor": ["#fb923c", "#000000"],
+        "hoverBackgroundColor": ["#f97316", "#222222"]
+      }
+    ]
+  },
+  "revenueLineData": {
+    "labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    "datasets": [
+      {
+        "label": "Target Revenue",
+        "data": [5000, 8000, 8000, 10000, 14000, 13000, 15000, 16000, 20000, 21000, 22000, 25000],
+        "borderColor": "#f97316",
+        "backgroundColor": "rgba(249, 115, 22, 0.3)",
+        "tension": 0.3,
+        "fill": true
+      },
+      {
+        "label": "Actual Revenue",
+        "data": [6000, 8000, 5000, 12000, 13000, 10000, 16000, 17000, 19000, 21000, 20000, 26000],
+        "borderColor": "#000000",
+        "backgroundColor": "rgba(0, 0, 0, 0.3)",
+        "tension": 0.3,
+        "fill": true
+      }
+    ]
+  },
+  "topMenuOrders": [
+    { "name": "Chicken Biryani","price":"450tk", "orders": 340  },
+    { "name": "Beef Steak","price":"1600tk", "orders": 290 },
+    { "name": "Chicken Soup","price":"300tk", "orders": 270 },
+    { "name": "Ice Cream","price":"300tk", "orders": 220 },
+    { "name": "Mango Juice","price":"250tk", "orders": 200 }
+  ]}

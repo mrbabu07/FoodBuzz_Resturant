@@ -1,0 +1,508 @@
+
+{
+  "beef": {
+    "banner": "https://i.ibb.co/39nHQZYt/Beef-banner.jpg",
+    "title": "Beef Specials",
+    "description1":"Juicy and tender beef dishes packed with bold spices and rich flavors.",
+    "items": [
+      {
+        "name": "Beef Stroganoff",
+        "price": 530,
+        "weight": "250g",
+        "img": "https://i.ibb.co/3m2LKCcK/beef-stroganoff.jpg",
+        "description": "Creamy beef stroganoff with mushrooms and herbs.",
+        "calories": 560,
+        "reviews": [
+          {"user": "Jill Fern", "text": "Delicious and creamy, perfect for dinner!"},
+          {"user": "Mark Allen", "text": "A bit salty but overall tasty."},
+          {"user": "Sara Kim", "text": "Would order again for sure."}
+        ]
+      },
+      {
+        "name": "Spicy Beef Curry",
+        "price": 350,
+        "weight": "300g",
+        "img": "https://i.ibb.co/C5yW9Jtj/spicy-beef-curry.png",
+        "description": "Hot and spicy beef curry with authentic spices.",
+        "calories": 630,
+        "reviews": [
+          {"user": "Sara Kim", "text": "Loved the heat, great flavors!"},
+          {"user": "John Doe", "text": "Could be spicier, but nice dish."},
+          {"user": "Linda", "text": "Perfect amount of spice."}
+        ]
+      },
+      {
+        "name": "Beef Steak",
+        "price": 1600,
+        "weight": "350g",
+        "img": "https://i.ibb.co/GQzYGtvx/Beef-Steak.jpg",
+        "description": "Juicy grilled beef steak cooked to perfection.",
+        "calories": 700,
+        "reviews": [
+          {"user": "Tom", "text": "Cooked perfectly, very juicy!"},
+          {"user": "Anna", "text": "Loved the tenderness and flavor."},
+          {"user": "David", "text": "A bit pricey but worth it."}
+        ]
+      },
+      {
+        "name": "Beef Wellington",
+        "price": 899,
+        "weight": "300g",
+        "img": "https://i.ibb.co/pBmv8gtc/Beef-Wellington.jpg",
+        "description": "Classic beef wellington wrapped in puff pastry.",
+        "calories": 680,
+        "reviews": [
+          {"user": "Rachel", "text": "Elegant and delicious."},
+          {"user": "Michael", "text": "Beautiful presentation and taste."},
+          {"user": "Emma", "text": "Loved the flaky pastry."}
+        ]
+      },
+      {
+        "name": "Korean Beef Bulgogi",
+        "price": 1000,
+        "weight": "270g",
+        "img": "https://i.ibb.co/5PJ1cqy/Korean-Beef-Bulgogi.jpg",
+        "description": "Sweet and savory Korean style marinated beef.",
+        "calories": 590,
+        "reviews": [
+          {"user": "Soojin", "text": "Authentic Korean flavors, amazing!"},
+          {"user": "James", "text": "Really enjoyed the marinade."},
+          {"user": "Linda", "text": "Perfect balance of sweet and savory."}
+        ]
+      },
+      {
+        "name": "Beef Chili Fry",
+        "price": 750,
+        "weight": "250g",
+        "img": "https://i.ibb.co/hJV38Nvt/Beef-Chili-Fry.jpg",
+        "description": "Spicy beef chili fry with peppers and onions.",
+        "calories": 610,
+        "reviews": [
+          {"user": "Nina", "text": "Nice kick of spice, very tasty."},
+          {"user": "Omar", "text": "Loved the chili flavor."},
+          {"user": "Fiona", "text": "Good portion size and taste."}
+        ]
+      }
+    ]
+  },
+  "chicken": {
+    "banner": "https://i.ibb.co/RGSVXCQ4/Chicken-Banner.jpg",
+    "title": "Chicken Specials",
+    "items": [
+      {
+        "name": "Grilled Chicken",
+        "price": 120,
+        "weight": "300g",
+        "img": "https://i.ibb.co/SwV2RTMv/Grilled-Chicken.jpg",
+        "description": "Tender grilled chicken with herbs and spices.",
+        "calories": 450,
+        "reviews": [
+          {"user": "Anna", "text": "Perfectly grilled and juicy."},
+          {"user": "Leo", "text": "Herbs really enhanced the flavor."},
+          {"user": "Maya", "text": "Would recommend to everyone."}
+        ]
+      },
+      {
+        "name": "Chicken Curry",
+        "price": 110,
+        "weight": "350g",
+        "img": "https://i.ibb.co/SXHND9qW/Chicken-Curry.jpg",
+        "description": "Rich and creamy chicken curry with coconut milk.",
+        "calories": 550,
+        "reviews": [
+          {"user": "Sami", "text": "Rich and flavorful, very creamy."},
+          {"user": "Nina", "text": "Loved the coconut taste."},
+          {"user": "Tom", "text": "A family favorite."}
+        ]
+      },
+      {
+        "name": "Fried Chicken",
+        "price": 350,
+        "weight": "280g",
+        "img": "https://i.ibb.co/xtRsQYBB/Fried-Chicken.webp",
+        "description": "Crispy fried chicken with a spicy coating.",
+        "calories": 670,
+        "reviews": [
+          {"user": "David", "text": "Super crispy and spicy."},
+          {"user": "Emma", "text": "Could eat this every day."},
+          {"user": "Linda", "text": "Perfect coating, loved it."}
+        ]
+      },
+      {
+        "name": "Chicken Biryani",
+        "price": 450,
+        "weight": "400g",
+        "img": "https://i.ibb.co/s9XYqvSN/Chicken-Biryani.jpg",
+        "description": "Fragrant chicken biryani with basmati rice.",
+        "calories": 720,
+        "reviews": [
+          {"user": "Ali", "text": "The aroma is unbeatable."},
+          {"user": "Sara", "text": "Flavors perfectly balanced."},
+          {"user": "John", "text": "Best biryani in town."}
+        ]
+      },
+      {
+        "name": "Chicken Wings",
+        "price": 250,
+        "weight": "250g",
+        "img": "https://i.ibb.co/SXYyRWhf/Chicken-Wings.jpg",
+        "description": "Spicy chicken wings with tangy sauce.",
+        "calories": 480,
+        "reviews": [
+          {"user": "Fiona", "text": "Spicy and tangy, perfect combo."},
+          {"user": "Omar", "text": "Great appetizer."},
+          {"user": "Maya", "text": "Loved the sauce."}
+        ]
+      },
+      {
+        "name": "Chicken Salad",
+        "price": 220,
+        "weight": "200g",
+        "img": "https://i.ibb.co/Y4C1wW1B/Chicken-Salad.jpg",
+        "description": "Fresh chicken salad with veggies and dressing.",
+        "calories": 320,
+        "reviews": [
+          {"user": "Sami", "text": "Light and refreshing."},
+          {"user": "Leo", "text": "Great for a healthy meal."},
+          {"user": "Anna", "text": "Loved the dressing."}
+        ]
+      }
+    ]
+  },
+  "soup": {
+    "banner": "https://i.ibb.co/whw2Y85c/Soup-Banner.jpg",
+    "title": "Soup Specials",
+    "items": [
+      {
+        "name": "Tomato Soup",
+        "price": 230,
+        "weight": "250ml",
+        "img": "https://i.ibb.co/mrWJ2JBH/Tomato-Soup.jpg",
+        "description": "Classic creamy tomato soup with basil.",
+        "calories": 150,
+        "reviews": [
+          {"user": "Linda", "text": "Simple and tasty."},
+          {"user": "Mark", "text": "Perfect comfort food."},
+          {"user": "Sara", "text": "Loved the fresh basil."}
+        ]
+      },
+      {
+        "name": "Chicken Soup",
+        "price": 300,
+        "weight": "300ml",
+        "img": "https://i.ibb.co/4RcPWmZ5/Chicken-Soup.jpg",
+        "description": "Comforting chicken soup with veggies.",
+        "calories": 180,
+        "reviews": [
+          {"user": "Tom", "text": "Very soothing and tasty."},
+          {"user": "Nina", "text": "Perfect for cold days."},
+          {"user": "Omar", "text": "Loved the veggies."}
+        ]
+      },
+      {
+        "name": "Mushroom Soup",
+        "price": 450,
+        "weight": "280ml",
+        "img": "https://i.ibb.co/fVKdh60X/Mushroom-Soup.jpg",
+        "description": "Creamy mushroom soup with herbs.",
+        "calories": 200,
+        "reviews": [
+          {"user": "Emma", "text": "Rich and flavorful."},
+          {"user": "David", "text": "Loved the creamy texture."},
+          {"user": "Anna", "text": "Perfect balance of herbs."}
+        ]
+      },
+      {
+        "name": "Minestrone",
+        "price": 350,
+        "weight": "300ml",
+        "img": "https://i.ibb.co/gBqPNRd/Minestrone.jpg",
+        "description": "Italian vegetable soup with beans and pasta.",
+        "calories": 190,
+        "reviews": [
+          {"user": "John", "text": "Hearty and filling."},
+          {"user": "Sara", "text": "Loved the beans and veggies."},
+          {"user": "Mark", "text": "Nice Italian flavors."}
+        ]
+      },
+      {
+        "name": "Lentil Soup",
+        "price": 300,
+        "weight": "250ml",
+        "img": "https://i.ibb.co/3m52N1Jg/Lentil-Soup.jpg",
+        "description": "Hearty lentil soup rich in protein.",
+        "calories": 210,
+        "reviews": [
+          {"user": "Fiona", "text": "Nutritious and tasty."},
+          {"user": "Leo", "text": "Perfect protein boost."},
+          {"user": "Sami", "text": "Loved the flavor."}
+        ]
+      },
+      {
+        "name": "Clam Chowder",
+        "price": 350,
+        "weight": "350ml",
+        "img": "https://i.ibb.co/CsmvJpjG/Clam-Chowder.jpg",
+        "description": "Creamy clam chowder with potatoes.",
+        "calories": 320,
+        "reviews": [
+          {"user": "Omar", "text": "Rich and creamy."},
+          {"user": "Maya", "text": "Loved the chunks of potatoes."},
+          {"user": "David", "text": "Perfect chowder texture."}
+        ]
+      }
+    ]
+  },
+  "dessert": {
+    "banner": "https://i.ibb.co/F4nYFPbS/Dessert-Banner.jpg",
+    "title": "Dessert Specials",
+    "items": [
+      {
+        "name": "Chocolate Cake",
+        "price": 600,
+        "weight": "150g",
+        "img": "https://i.ibb.co/39Z1y5SN/Chocolate-Cake.jpg",
+        "description": "Rich chocolate cake with fudge frosting.",
+        "calories": 430,
+        "reviews": [
+          {"user": "Emma", "text": "Decadent and rich."},
+          {"user": "Sara", "text": "Perfect chocolate flavor."},
+          {"user": "John", "text": "Would eat again!"}
+        ]
+      },
+      {
+        "name": "Ice Cream",
+        "price": 300,
+        "weight": "120g",
+        "img": "https://i.ibb.co/CkK5P1C/Ice-Cream.jpg",
+        "description": "Vanilla ice cream with chocolate chips.",
+        "calories": 250,
+        "reviews": [
+          {"user": "Mark", "text": "Creamy and delicious."},
+          {"user": "Linda", "text": "Loved the chocolate chips."},
+          {"user": "Maya", "text": "Perfect summer treat."}
+        ]
+      },
+      {
+        "name": "Fruit Tart",
+        "price": 760,
+        "weight": "130g",
+        "img": "https://i.ibb.co/WvtR2L4Z/Fruit-Tart.jpg",
+        "description": "Fresh fruit tart with custard filling.",
+        "calories": 320,
+        "reviews": [
+          {"user": "Leo", "text": "Light and fresh."},
+          {"user": "Fiona", "text": "Loved the custard."},
+          {"user": "Sami", "text": "Perfect balance of sweetness."}
+        ]
+      },
+      {
+        "name": "Pudding",
+        "price": 500,
+        "weight": "110g",
+        "img": "https://i.ibb.co/tMmgsshd/Pudding.jpg",
+        "description": "Creamy vanilla pudding dessert.",
+        "calories": 290,
+        "reviews": [
+          {"user": "Anna", "text": "Smooth and creamy."},
+          {"user": "David", "text": "Loved the vanilla flavor."},
+          {"user": "Omar", "text": "Perfect texture."}
+        ]
+      },
+      {
+        "name": "Cheesecake",
+        "price": 1500,
+        "weight": "140g",
+        "img": "https://i.ibb.co/pCChgFR/Cheesecake.jpg",
+        "description": "Classic cheesecake with a graham cracker crust.",
+        "calories": 410,
+        "reviews": [
+          {"user": "Sara", "text": "Rich and creamy."},
+          {"user": "John", "text": "Perfect crust."},
+          {"user": "Emma", "text": "Would order again."}
+        ]
+      },
+      {
+        "name": "Macarons",
+        "price": 690,
+        "weight": "100g",
+        "img": "https://i.ibb.co/Sw5scX7T/Macarons.jpg",
+        "description": "Colorful French macarons with assorted flavors.",
+        "calories": 330,
+        "reviews": [
+          {"user": "Maya", "text": "Beautiful and tasty."},
+          {"user": "Nina", "text": "Loved the variety of flavors."},
+          {"user": "Leo", "text": "Perfect bite-sized treats."}
+        ]
+      }
+    ]
+  },
+  "drink": {
+    "banner": "https://i.ibb.co/KjxsdKxh/Drink-Banner.jpg",
+    "title": "Drink Specials",
+    "items": [
+      {
+        "name": "Mango Juice",
+        "price": 250,
+        "weight": "300ml",
+        "img": "https://i.ibb.co/Kc2rRWyv/Mango-Juice.jpg",
+        "description": "Refreshing mango juice with natural sweetness.",
+        "calories": 180,
+        "reviews": [
+          {"user": "Sara", "text": "Sweet and refreshing."},
+          {"user": "Tom", "text": "Perfect summer drink."},
+          {"user": "Anna", "text": "Loved the natural taste."}
+        ]
+      },
+      {
+        "name": "Lemonade",
+        "price": 150,
+        "weight": "250ml",
+        "img": "https://i.ibb.co/fV5H97Fk/Lemonade.webp",
+        "description": "Fresh lemonade with a tangy twist.",
+        "calories": 140,
+        "reviews": [
+          {"user": "Linda", "text": "Tangy and refreshing."},
+          {"user": "Mark", "text": "Great thirst quencher."},
+          {"user": "Nina", "text": "Perfect balance of sour and sweet."}
+        ]
+      },
+      {
+        "name": "Iced Tea",
+        "price": 200,
+        "weight": "300ml",
+        "img": "https://i.ibb.co/fzRs2HxV/Iced-Tea.jpg",
+        "description": "Cold brewed iced tea with lemon.",
+        "calories": 100,
+        "reviews": [
+          {"user": "Omar", "text": "Refreshing and light."},
+          {"user": "Maya", "text": "Loved the lemon twist."},
+          {"user": "David", "text": "Perfect iced tea."}
+        ]
+      },
+      {
+        "name": "Cappuccino",
+        "price": 400,
+        "weight": "200ml",
+        "img": "https://i.ibb.co/zWkc9Wms/Cappuccino.webp",
+        "description": "Espresso-based coffee drink with frothy milk.",
+        "calories": 160,
+        "reviews": [
+          {"user": "Emma", "text": "Rich and frothy."},
+          {"user": "John", "text": "Perfect morning pick-me-up."},
+          {"user": "Sara", "text": "Loved the coffee flavor."}
+        ]
+      },
+      {
+        "name": "Espresso",
+        "price": 300,
+        "weight": "60ml",
+        "img": "https://i.ibb.co/FdKWBJ8/Espresso.jpg",
+        "description": "Strong and bold espresso shot.",
+        "calories": 5,
+        "reviews": [
+          {"user": "Tom", "text": "Strong and energizing."},
+          {"user": "Anna", "text": "Perfect shot of espresso."},
+          {"user": "Leo", "text": "Loved the bold flavor."}
+        ]
+      },
+      {
+        "name": "Milkshake",
+        "price": 350,
+        "weight": "350ml",
+        "img": "https://i.ibb.co/sJNdX3tQ/Milkshake.jpg",
+        "description": "Creamy milkshake with vanilla flavor.",
+        "calories": 420,
+        "reviews": [
+          {"user": "Maya", "text": "Creamy and delicious."},
+          {"user": "Nina", "text": "Perfect vanilla taste."},
+          {"user": "Sami", "text": "Would order again."}
+        ]
+      }
+    ]
+  },
+  "fish": {
+    "banner": "https://i.ibb.co/r2QG6QWG/Fish-Banner.jpg",
+    "title": "Fish Specials",
+    "items": [
+      {
+        "name": "Grilled Salmon",
+        "price": 1000,
+        "weight": "350g",
+        "img": "https://i.ibb.co/Qv7zw2Kp/Grilled-Salmon.jpg",
+        "description": "Fresh grilled salmon with herbs.",
+        "calories": 560,
+        "reviews": [
+          {"user": "John", "text": "Perfectly grilled and fresh."},
+          {"user": "Sara", "text": "Loved the herbs."},
+          {"user": "Tom", "text": "Juicy and flavorful."}
+        ]
+      },
+      {
+        "name": "Fried Fish",
+        "price": 590,
+        "weight": "300g",
+        "img": "https://i.ibb.co/PvnKjLLp/Fried-Fish.jpg",
+        "description": "Crispy fried fish with tartar sauce.",
+        "calories": 600,
+        "reviews": [
+          {"user": "Emma", "text": "Crispy and tasty."},
+          {"user": "David", "text": "Loved the tartar sauce."},
+          {"user": "Linda", "text": "Would eat again."}
+        ]
+      },
+      {
+        "name": "Fish Curry",
+        "price": 340,
+        "weight": "320g",
+        "img": "https://i.ibb.co/RTWCBh4k/Fish-Curry.jpg",
+        "description": "Spicy fish curry with coconut milk.",
+        "calories": 650,
+        "reviews": [
+          {"user": "Omar", "text": "Spicy and flavorful."},
+          {"user": "Maya", "text": "Loved the coconut flavor."},
+          {"user": "Leo", "text": "Perfect curry dish."}
+        ]
+      },
+      {
+        "name": "Fish Soup",
+        "price":400,
+        "weight": "280g",
+        "img": "https://i.ibb.co/wh6vkxzV/Fish-Soup.jpg",
+        "description": "Light fish soup with herbs and vegetables.",
+        "calories": 300,
+        "reviews": [
+          {"user": "Nina", "text": "Light and tasty."},
+          {"user": "Sami", "text": "Loved the herbs."},
+          {"user": "Fiona", "text": "Perfect soup for winter."}
+        ]
+      },
+      {
+        "name": "Fish Tacos",
+        "price": 500,
+        "weight": "300g",
+        "img": "https://i.ibb.co/Y72bhgXT/Fish-Tacos.webp",
+        "description": "Fresh fish tacos with spicy salsa.",
+        "calories": 520,
+        "reviews": [
+          {"user": "Maya", "text": "Tasty and fresh."},
+          {"user": "John", "text": "Loved the spicy salsa."},
+          {"user": "Emma", "text": "Would order again."}
+        ]
+      },
+      {
+        "name": "Smoked Fish",
+        "price": 740,
+        "weight": "350g",
+        "img": "https://i.ibb.co/C3krZNkW/Smoked-Fish.jpg",
+        "description": "Rich smoked fish with smoky flavor.",
+        "calories": 700,
+        "reviews": [
+          {"user": "Sara", "text": "Perfect smoky flavor."},
+          {"user": "Tom", "text": "Loved the richness."},
+          {"user": "David", "text": "Would recommend to friends."}
+        ]
+      }
+    ]
+  }
+}

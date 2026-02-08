@@ -1,0 +1,57 @@
+
+{
+  "positions": [
+    { "x": 0, "y": -30, "scale": 1.1, "rotateY": 0, "z": 30 },
+    { "x": -150, "y": 10, "scale": 0.9, "rotateY": 20, "z": 20 },
+    { "x": -300, "y": 30, "scale": 0.8, "rotateY": 35, "z": 10 },
+    { "x": 150, "y": 10, "scale": 0.9, "rotateY": -20, "z": 20 },
+    { "x": 300, "y": 30, "scale": 0.8, "rotateY": -35, "z": 10 }
+  ],
+  "categories": [
+    {
+      "name": "Beef",
+      "image": "https://i.ibb.co/n8454Nkc/beef.jpg",
+      "link": "/beef"
+    },
+    {
+      "name": "Chicken",
+      "image": "https://i.ibb.co/nsvbM22b/chicken.jpg",
+      "link": "/chicken"
+    },
+    {
+      "name": "Drinks",
+      "image": "https://i.ibb.co/QvjjySLY/drinks.jpg",
+      "link": "/drink"
+    },
+    {
+      "name": "Soup",
+      "image": "https://i.ibb.co/5gsKdjJc/soup.jpg",
+      "link": "/soup"
+    },
+    {
+      "name": "Desserts",
+      "image": "https://i.ibb.co/wZnqVZNB/dessert.jpg",
+      "link": "/dessert"
+    }
+  ],
+  "featuredRecipes": [
+    {
+      "name": "Beef Curry",
+      "category": "Beef",
+      "image": "https://i.ibb.co/Y4mhz3qB/Beef-curry.jpg",
+      "link": "/beef_curry"
+    },
+    {
+      "name": "Chicken Milanese",
+      "category": "Chicken",
+      "image": "https://i.ibb.co/QjzghXTY/Chickenmilanese.png",
+      "link": "/chicken_milanese"
+    },
+    {
+      "name": "Mocha",
+      "category": "Drinks",
+      "image": "https://i.ibb.co/nMDmD4nc/Mocha.png",
+      "link": "/mocha"
+    }
+  ]
+}
