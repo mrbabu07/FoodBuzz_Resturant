@@ -1,6 +1,7 @@
 // src/pages/ManageProfile.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { showSuccess, showError } from "../utils/toast";
 
 export default function ManageProfile() {
   const navigate = useNavigate();
@@ -22,8 +23,6 @@ export default function ManageProfile() {
     next: false,
     confirm: false,
   });
-
-  const [msg, setMsg] = useState({ type: "", text: "" });
 
   // ------- Helpers (localStorage demo) -------
   const getUsers = () => {
@@ -56,7 +55,6 @@ export default function ManageProfile() {
 
   const onChange = (e) => {
     const { name, value } = e.target;
-    setMsg({ type: "", text: "" });
     setForm((p) => ({ ...p, [name]: value }));
   };
 
@@ -69,7 +67,10 @@ export default function ManageProfile() {
   const handleUpdate = (e) => {
     e.preventDefault();
 
-    if (!me) return setMsg({ type: "err", text: "Please login first." });
+    if (!me) {
+      showError("Please login first");
+      return;
+    }
 
     const username = form.username.trim();
     const fullName = form.fullName.trim();
@@ -77,10 +78,12 @@ export default function ManageProfile() {
     const address = form.address.trim();
 
     if (!username || !fullName || !email) {
-      return setMsg({ type: "err", text: "Username, Full Name, Email required." });
+      showError("Username, Full Name, Email required");
+      return;
     }
     if (!emailOk) {
-      return setMsg({ type: "err", text: "Please enter a valid email." });
+      showError("Please enter a valid email");
+      return;
     }
 
     // password change (optional)
@@ -88,13 +91,16 @@ export default function ManageProfile() {
     if (form.oldPassword || form.newPassword || form.confirmPassword) {
       willChangePass = true;
       if (!form.oldPassword || !form.newPassword || !form.confirmPassword) {
-        return setMsg({ type: "err", text: "Password change fields are incomplete." });
+        showError("Password change fields are incomplete");
+        return;
       }
       if (form.newPassword.length < 6) {
-        return setMsg({ type: "err", text: "New password must be at least 6 characters." });
+        showError("New password must be at least 6 characters");
+        return;
       }
       if (form.newPassword !== form.confirmPassword) {
-        return setMsg({ type: "err", text: "New password and confirm password do not match." });
+        showError("New password and confirm password do not match");
+        return;
       }
     }
 
@@ -104,7 +110,8 @@ export default function ManageProfile() {
     if (idx !== -1) {
       // old password verify only if changing pass
       if (willChangePass && users[idx].password !== form.oldPassword) {
-        return setMsg({ type: "err", text: "Old password is incorrect." });
+        showError("Old password is incorrect");
+        return;
       }
 
       users[idx] = {
@@ -136,11 +143,19 @@ export default function ManageProfile() {
       confirmPassword: "",
     }));
 
-    setMsg({ type: "ok", text: "✅ Profile updated successfully!" });
+    showSuccess("✅ Profile updated successfully!");
   };
 
   const handleDelete = () => {
     if (!me) return;
+
+    if (
+      !window.confirm(
+        "Are you sure you want to delete your account? This action cannot be undone.",
+      )
+    ) {
+      return;
+    }
 
     // remove from users (demo)
     const users = getUsers().filter((u) => u.id !== me.id);
@@ -148,105 +163,106 @@ export default function ManageProfile() {
 
     // remove session
     localStorage.removeItem("roms_current_user");
-    setMsg({ type: "ok", text: "Account deleted. Redirecting..." });
+    showSuccess("Account deleted. Redirecting...");
 
     setTimeout(() => navigate("/"), 700);
   };
 
   return (
-    <main
-      className="min-h-screen bg-black text-white px-4 py-10"
-      style={{
-        backgroundImage: "radial-gradient(circle at 20% 10%, rgba(249,115,22,0.35), transparent 45%), radial-gradient(circle at 80% 30%, rgba(255,255,255,0.12), transparent 40%), radial-gradient(circle at 50% 90%, rgba(249,115,22,0.25), transparent 45%)",
-      }}
-    >
-      <div className="max-w-6xl mx-auto">
-        {/* Top mini header */}
-        <div className="flex items-center justify-between gap-3">
-          <Link to="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-full bg-orange-500 flex items-center justify-center font-extrabold">
-              F
-            </div>
-            <div className="leading-tight">
-              <p className="font-extrabold text-white">FoodBaZZ</p>
-              <p className="text-xs text-white/60 -mt-0.5">Manage Profile</p>
-            </div>
-          </Link>
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50">
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-purple-500 text-white py-12 px-8 rounded-3xl shadow-2xl mb-8 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full -ml-24 -mb-24"></div>
 
-          <Link
-            to="/profile"
-            className="px-4 py-2 rounded-full border border-orange-500 text-orange-200 hover:bg-orange-500 hover:text-white transition font-semibold"
-          >
-            Back to Profile
-          </Link>
-        </div>
-
-        {/* Card */}
-        <section className="mt-8 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-[0_0_80px_rgba(249,115,22,0.25)] overflow-hidden">
-          {/* Header strip */}
-          <div className="relative px-6 py-6 bg-gradient-to-r from-black via-black to-orange-600/30">
-            <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-orange-500/20 blur-3xl" />
-              <div className="absolute -bottom-16 -left-16 w-72 h-72 rounded-full bg-white/10 blur-3xl" />
-            </div>
-
-            <div className="relative z-10">
-              <p className="text-orange-300 text-sm font-semibold">Account Settings</p>
-              <h1 className="text-3xl md:text-4xl font-extrabold">Manage Profile 🍜</h1>
-              <p className="text-white/70 mt-2 text-sm">
-                Update your basic info and password.
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-xl rounded-2xl flex items-center justify-center text-4xl">
+                  👤
+                </div>
+                <div>
+                  <p className="text-purple-100 text-sm font-semibold">
+                    Account Settings
+                  </p>
+                  <h1 className="text-4xl font-black">Manage Profile</h1>
+                </div>
+              </div>
+              <p className="text-purple-100 text-lg">
+                Update your basic info and password
               </p>
             </div>
 
-            <div className="absolute left-0 right-0 bottom-0 h-2 bg-gradient-to-r from-orange-500 via-white/10 to-orange-500 opacity-90" />
-          </div>
-
-          <div className="p-6 md:p-8">
-            {msg.text && (
-              <div
-                className={`mb-6 px-4 py-3 rounded-2xl border text-sm font-semibold ${
-                  msg.type === "ok"
-                    ? "bg-orange-500/10 text-orange-200 border-orange-500/30"
-                    : "bg-red-500/10 text-red-200 border-red-500/30"
-                }`}
+            <div className="flex flex-col gap-3">
+              <Link
+                to="/"
+                className="px-6 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-xl rounded-2xl font-bold transition-all text-center"
               >
-                {msg.text}
-              </div>
-            )}
+                🏠 Home
+              </Link>
+              <Link
+                to="/profile"
+                className="px-6 py-3 bg-white text-purple-600 hover:bg-purple-50 rounded-2xl font-bold transition-all text-center"
+              >
+                📊 Dashboard
+              </Link>
+            </div>
+          </div>
+        </div>
 
-            <form onSubmit={handleUpdate} className="space-y-8">
-              {/* Basic info */}
-              <div className="grid md:grid-cols-2 gap-5">
-                <Field label="Username" hint="Public name (can be unique)">
+        {/* Profile Form */}
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border-2 border-purple-100 p-8">
+          <form onSubmit={handleUpdate} className="space-y-8">
+            {/* Basic Info Section */}
+            <div>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-2xl">
+                  📝
+                </div>
+                <div>
+                  <h2 className="text-2xl font-black text-slate-800">
+                    Basic Information
+                  </h2>
+                  <p className="text-sm text-slate-600">
+                    Update your personal details
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <Field label="Username" hint="Public name">
                   <input
                     name="username"
                     value={form.username}
                     onChange={onChange}
                     placeholder="your_username"
-                    className="w-full px-4 py-3 rounded-2xl bg-black/40 border border-white/10 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500/40 transition"
+                    className="w-full px-4 py-4 rounded-2xl border-2 border-slate-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all text-lg"
                   />
                 </Field>
 
-                <Field label="Full Name" hint="Real name for delivery & receipts">
+                <Field label="Full Name" hint="Real name for delivery">
                   <input
                     name="fullName"
                     value={form.fullName}
                     onChange={onChange}
                     placeholder="Your Full Name"
-                    className="w-full px-4 py-3 rounded-2xl bg-black/40 border border-white/10 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500/40 transition"
+                    className="w-full px-4 py-4 rounded-2xl border-2 border-slate-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all text-lg"
                   />
                 </Field>
 
-                <Field label="Email" hint="Used for login & receipt email">
+                <Field label="Email" hint="Used for login & receipts">
                   <input
                     name="email"
                     value={form.email}
                     onChange={onChange}
                     placeholder="example@email.com"
-                    className="w-full px-4 py-3 rounded-2xl bg-black/40 border border-white/10 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500/40 transition"
+                    className="w-full px-4 py-4 rounded-2xl border-2 border-slate-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all text-lg"
                   />
                   {!!form.email && !emailOk && (
-                    <p className="text-xs text-red-300 mt-2">Invalid email format.</p>
+                    <p className="text-xs text-red-500 mt-2 font-semibold">
+                      ⚠️ Invalid email format
+                    </p>
                   )}
                 </Field>
 
@@ -256,83 +272,87 @@ export default function ManageProfile() {
                     value={form.address}
                     onChange={onChange}
                     placeholder="Chittagong, Bangladesh"
-                    className="w-full px-4 py-3 rounded-2xl bg-black/40 border border-white/10 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500/40 transition"
+                    className="w-full px-4 py-4 rounded-2xl border-2 border-slate-200 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all text-lg"
                   />
                 </Field>
               </div>
+            </div>
 
-              {/* Password change */}
-              <div className="rounded-3xl border border-white/10 bg-black/30 p-5 md:p-6">
-                <div className="flex items-start justify-between gap-3">
+            {/* Password Change Section */}
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-3xl border-2 border-purple-200 p-6">
+              <div className="flex items-start justify-between gap-3 mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center text-2xl">
+                    🔒
+                  </div>
                   <div>
-                    <h2 className="text-xl font-extrabold text-orange-200">
+                    <h2 className="text-2xl font-black text-slate-800">
                       Change Password
                     </h2>
-                    <p className="text-sm text-white/60 mt-1">
-                      Leave empty if you don’t want to change.
+                    <p className="text-sm text-slate-600">
+                      Leave empty if you don't want to change
                     </p>
                   </div>
-                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-orange-500/10 border border-orange-500/30 text-orange-200">
-                    Optional
-                  </span>
                 </div>
-
-                <div className="grid md:grid-cols-3 gap-4 mt-5">
-                  <PasswordField
-                    label="Old Password"
-                    name="oldPassword"
-                    value={form.oldPassword}
-                    onChange={onChange}
-                    show={show.old}
-                    setShow={(v) => setShow((p) => ({ ...p, old: v }))}
-                  />
-                  <PasswordField
-                    label="New Password"
-                    name="newPassword"
-                    value={form.newPassword}
-                    onChange={onChange}
-                    show={show.next}
-                    setShow={(v) => setShow((p) => ({ ...p, next: v }))}
-                  />
-                  <PasswordField
-                    label="Confirm"
-                    name="confirmPassword"
-                    value={form.confirmPassword}
-                    onChange={onChange}
-                    show={show.confirm}
-                    setShow={(v) => setShow((p) => ({ ...p, confirm: v }))}
-                  />
-                </div>
+                <span className="px-4 py-2 rounded-full text-xs font-bold bg-purple-500/20 border-2 border-purple-500/30 text-purple-700">
+                  Optional
+                </span>
               </div>
 
-              {/* Actions */}
-              <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-                <button
-                  type="submit"
-                  className="px-6 py-3 rounded-2xl bg-orange-500 hover:bg-orange-600 transition font-extrabold shadow-lg shadow-orange-500/20"
-                >
-                  Update Profile
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleDelete}
-                  className="px-6 py-3 rounded-2xl bg-red-600 hover:bg-red-500 transition font-extrabold shadow-lg shadow-red-600/20"
-                >
-                  Delete Account
-                </button>
+              <div className="grid md:grid-cols-3 gap-4">
+                <PasswordField
+                  label="Old Password"
+                  name="oldPassword"
+                  value={form.oldPassword}
+                  onChange={onChange}
+                  show={show.old}
+                  setShow={(v) => setShow((p) => ({ ...p, old: v }))}
+                />
+                <PasswordField
+                  label="New Password"
+                  name="newPassword"
+                  value={form.newPassword}
+                  onChange={onChange}
+                  show={show.next}
+                  setShow={(v) => setShow((p) => ({ ...p, next: v }))}
+                />
+                <PasswordField
+                  label="Confirm Password"
+                  name="confirmPassword"
+                  value={form.confirmPassword}
+                  onChange={onChange}
+                  show={show.confirm}
+                  setShow={(v) => setShow((p) => ({ ...p, confirm: v }))}
+                />
               </div>
+            </div>
 
-              {/* Bottom boundary */}
-              <div className="pt-2">
-                <div className="h-2 rounded-full bg-gradient-to-r from-orange-500 via-white/10 to-orange-500 opacity-90" />
-                <p className="text-xs text-white/50 text-center mt-4">
-                  FoodBaZZ • Profile settings • Demo localStorage
-                </p>
-              </div>
-            </form>
-          </div>
-        </section>
+            {/* Actions */}
+            <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between pt-6 border-t-2 border-slate-200">
+              <button
+                type="submit"
+                className="px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+              >
+                💾 Update Profile
+              </button>
+
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="px-8 py-4 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+              >
+                🗑️ Delete Account
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-8 text-center">
+          <p className="text-xs text-slate-500">
+            FoodBaZZ • Profile settings • Secure & Private
+          </p>
+        </div>
       </div>
     </main>
   );
@@ -343,8 +363,8 @@ function Field({ label, hint, children }) {
   return (
     <div className="space-y-2">
       <div className="flex items-end justify-between gap-3">
-        <label className="text-sm font-bold text-white">{label}</label>
-        {hint ? <span className="text-xs text-white/50">{hint}</span> : null}
+        <label className="text-sm font-bold text-slate-800">{label}</label>
+        {hint ? <span className="text-xs text-slate-500">{hint}</span> : null}
       </div>
       {children}
     </div>
@@ -354,22 +374,22 @@ function Field({ label, hint, children }) {
 function PasswordField({ label, name, value, onChange, show, setShow }) {
   return (
     <div className="space-y-2">
-      <label className="text-sm font-bold text-white">{label}</label>
-      <div className="flex items-center rounded-2xl overflow-hidden bg-black/40 border border-white/10 focus-within:ring-2 focus-within:ring-orange-500 focus-within:border-orange-500/40 transition">
+      <label className="text-sm font-bold text-slate-800">{label}</label>
+      <div className="flex items-center rounded-2xl overflow-hidden border-2 border-slate-200 focus-within:border-purple-500 focus-within:ring-4 focus-within:ring-purple-100 transition-all bg-white">
         <input
           name={name}
           type={show ? "text" : "password"}
           value={value}
           onChange={onChange}
           placeholder="••••••••"
-          className="w-full px-4 py-3 bg-transparent outline-none"
+          className="w-full px-4 py-4 bg-transparent outline-none text-lg"
         />
         <button
           type="button"
           onClick={() => setShow(!show)}
-          className="px-4 py-3 text-sm font-extrabold text-orange-200 hover:bg-white/5 transition"
+          className="px-4 py-4 text-sm font-bold text-purple-600 hover:bg-purple-50 transition-all"
         >
-          {show ? "Hide" : "Show"}
+          {show ? "👁️" : "👁️‍🗨️"}
         </button>
       </div>
     </div>

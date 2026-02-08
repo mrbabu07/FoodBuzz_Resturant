@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import { apiFetch } from "../utils/api";
+import { showSuccess, showError } from "../utils/toast";
 
 const STATUS = [
   "Placed",
@@ -11,6 +11,15 @@ const STATUS = [
   "Completed",
   "Cancelled",
 ];
+
+const STATUS_COLORS = {
+  Placed: "from-blue-500 to-cyan-500",
+  Processing: "from-yellow-500 to-orange-500",
+  Ready: "from-green-500 to-emerald-500",
+  Delivered: "from-purple-500 to-pink-500",
+  Completed: "from-slate-500 to-slate-600",
+  Cancelled: "from-red-500 to-rose-500",
+};
 
 function calcTotal(order) {
   return order.items.reduce((sum, it) => sum + it.qty * it.price, 0);
@@ -28,15 +37,11 @@ function formatDate(d) {
 
 export default function StaffDashboard() {
   const navigate = useNavigate();
-
-  // Auth
   const [staff, setStaff] = useState(null);
-
-  // Orders
   const [orders, setOrders] = useState([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [selected, setSelected] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -109,362 +114,457 @@ export default function StaffDashboard() {
         prev.map((o) => (o.id === orderId ? { ...o, status: nextStatus } : o)),
       );
 
-      if (selected && selected.id === orderId) {
-        setSelected((p) => ({ ...p, status: nextStatus }));
+      if (selectedOrder && selectedOrder.id === orderId) {
+        setSelectedOrder((p) => ({ ...p, status: nextStatus }));
       }
+
+      showSuccess(`Order status updated to ${nextStatus}`);
     } catch (err) {
-      alert("Failed to update status: " + err.message);
+      showError("Failed to update status");
     }
-  };
-
-  const openDetails = (order) => {
-    setSelected(order);
-    document.body.style.overflow = "hidden";
-  };
-
-  const closeDetails = () => {
-    setSelected(null);
-    document.body.style.overflow = "auto";
   };
 
   const logoutStaff = () => {
     localStorage.removeItem("roms_current_user");
+    localStorage.removeItem("roms_token");
     navigate("/login");
   };
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50 to-amber-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-orange-500 text-xl font-bold">
-            Loading orders...
+          <div className="relative w-20 h-20 mx-auto mb-6">
+            <div className="absolute inset-0 rounded-full border-4 border-orange-200 border-t-orange-600 animate-spin"></div>
           </div>
+          <p className="text-slate-600 text-xl font-bold">Loading orders...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
-      {error && (
-        <div className="mb-4 p-4 rounded-2xl bg-red-50 border border-red-200 text-red-700">
-          <p className="font-bold">Error: {error}</p>
-          <button
-            onClick={fetchOrders}
-            className="mt-2 px-4 py-2 rounded-lg bg-red-600 text-white font-bold hover:bg-red-700"
-          >
-            Retry
-          </button>
-        </div>
-      )}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50 to-amber-50">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-orange-600 via-amber-600 to-orange-500 text-white py-12 px-8 rounded-3xl shadow-2xl mb-8 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full -ml-24 -mb-24"></div>
 
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45 }}
-        className="rounded-3xl bg-black text-white p-6 border border-orange-500/30 shadow-xl relative overflow-hidden"
-      >
-        <div className="pointer-events-none absolute -top-20 -right-20 w-72 h-72 bg-orange-500/20 blur-3xl rounded-full" />
-        <div className="pointer-events-none absolute -bottom-24 -left-24 w-80 h-80 bg-white/10 blur-3xl rounded-full" />
-
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <p className="text-orange-300 text-sm font-semibold">Staff Panel</p>
-            <h1 className="text-3xl md:text-4xl font-extrabold">
-              Order Queue & Status Control 🍔
-            </h1>
-            <p className="text-white/80 mt-2">
-              Track incoming orders, update statuses, and keep delivery smooth.
-            </p>
-            <p className="text-xs text-white/60 mt-3">
-              Logged as:{" "}
-              <span className="text-orange-300 font-bold">
-                {staff?.fullName || "Staff"}
-              </span>
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Link
-              to="/order_tracking"
-              className="px-4 py-2 rounded-full border border-orange-500 text-orange-200 hover:bg-orange-500 hover:text-white transition font-semibold"
-            >
-              Go Tracking
-            </Link>
-            <button
-              onClick={logoutStaff}
-              className="px-4 py-2 rounded-full bg-orange-500 hover:bg-orange-600 transition font-extrabold"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-
-        <div className="absolute left-0 right-0 bottom-0 h-2 bg-gradient-to-r from-orange-500 via-white/10 to-orange-500 opacity-90" />
-      </motion.div>
-
-      {/* Stats */}
-      <motion.div
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45, delay: 0.08 }}
-        className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6"
-      >
-        {[
-          { label: "Placed", value: stats.placed },
-          { label: "Processing", value: stats.processing },
-          { label: "Ready", value: stats.ready },
-          { label: "Completed", value: stats.completed },
-        ].map((s) => (
-          <div
-            key={s.label}
-            className="rounded-2xl border border-orange-200 bg-white shadow p-4"
-          >
-            <p className="text-sm text-gray-600">{s.label}</p>
-            <p className="text-3xl font-extrabold text-orange-600 mt-1">
-              {s.value}
-            </p>
-            <div className="h-1 mt-3 rounded-full bg-gradient-to-r from-orange-500 via-black to-orange-500 opacity-80" />
-          </div>
-        ))}
-      </motion.div>
-
-      {/* Filters */}
-      <motion.div
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45, delay: 0.12 }}
-        className="mt-6 rounded-2xl border border-orange-200 bg-white shadow p-4"
-      >
-        <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setStatusFilter("All")}
-              className={`px-4 py-2 rounded-full border text-sm font-semibold transition ${
-                statusFilter === "All"
-                  ? "bg-orange-500 text-white border-orange-500"
-                  : "bg-white text-black border-orange-200 hover:bg-orange-50"
-              }`}
-            >
-              All
-            </button>
-
-            {STATUS.map((st) => (
-              <button
-                key={st}
-                onClick={() => setStatusFilter(st)}
-                className={`px-4 py-2 rounded-full border text-sm font-semibold transition ${
-                  statusFilter === st
-                    ? "bg-orange-500 text-white border-orange-500"
-                    : "bg-white text-black border-orange-200 hover:bg-orange-50"
-                }`}
-              >
-                {st}
-              </button>
-            ))}
-          </div>
-
-          <div className="w-full md:max-w-md">
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by order id / customer / item..."
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
-            />
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Table */}
-      <motion.div
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45, delay: 0.16 }}
-        className="mt-6 rounded-2xl border border-orange-200 bg-white shadow overflow-hidden"
-      >
-        <div className="px-5 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-extrabold text-orange-600">
-            Active Orders
-          </h2>
-          <p className="text-sm text-gray-600">
-            Showing <span className="font-bold">{filtered.length}</span> orders
-          </p>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-sm">
-            <thead className="bg-orange-50">
-              <tr className="text-left">
-                <th className="px-5 py-3 text-orange-700 font-bold">Order</th>
-                <th className="px-5 py-3 text-orange-700 font-bold">
-                  Customer
-                </th>
-                <th className="px-5 py-3 text-orange-700 font-bold">Total</th>
-                <th className="px-5 py-3 text-orange-700 font-bold">Status</th>
-                <th className="px-5 py-3 text-orange-700 font-bold text-right">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-
-            <tbody className="divide-y divide-orange-100">
-              {filtered.map((o) => (
-                <tr key={o.id} className="hover:bg-orange-50/60 transition">
-                  <td className="px-5 py-4">
-                    <p className="font-extrabold text-black">{o.id}</p>
-                    <p className="text-xs text-gray-500">
-                      {formatDate(o.createdAt)}
-                    </p>
-                  </td>
-                  <td className="px-5 py-4">
-                    <p className="font-bold">{o.customer}</p>
-                    <p className="text-xs text-gray-600">{o.phone}</p>
-                  </td>
-                  <td className="px-5 py-4 font-extrabold text-black">
-                    TK {calcTotal(o)}
-                  </td>
-                  <td className="px-5 py-4">
-                    <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-200 bg-white">
-                      <span className="w-2 h-2 rounded-full bg-orange-500" />
-                      <span className="font-bold text-gray-800">
-                        {o.status}
-                      </span>
-                    </span>
-                  </td>
-                  <td className="px-5 py-4 text-right">
-                    <div className="flex justify-end gap-2">
-                      <button
-                        onClick={() => openDetails(o)}
-                        className="px-3 py-2 rounded-lg bg-black text-white font-bold hover:bg-orange-500 transition"
-                      >
-                        Details
-                      </button>
-
-                      <select
-                        value={o.status}
-                        onChange={(e) => updateStatus(o.id, e.target.value)}
-                        className="px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white"
-                      >
-                        {STATUS.map((s) => (
-                          <option key={s} value={s}>
-                            {s}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-
-              {!filtered.length && (
-                <tr>
-                  <td
-                    colSpan={5}
-                    className="px-5 py-10 text-center text-gray-500"
-                  >
-                    No orders found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="h-2 bg-gradient-to-r from-orange-500 via-black to-orange-500 opacity-90" />
-      </motion.div>
-
-      {/* Details Modal */}
-      {selected && (
-        <div
-          className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center px-4"
-          onClick={closeDetails}
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 12 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ type: "spring", stiffness: 260, damping: 18 }}
-            className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-orange-200 overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="p-6 bg-black text-white relative">
-              <div className="absolute left-0 right-0 bottom-0 h-2 bg-gradient-to-r from-orange-500 via-white/10 to-orange-500 opacity-90" />
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-orange-300 text-sm font-semibold">
-                    Order Details
-                  </p>
-                  <h3 className="text-2xl font-extrabold">{selected.id}</h3>
-
-                  <p className="text-white/80 text-sm mt-1">
-                    {selected.customer} • {selected.phone}
-                  </p>
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-xl rounded-2xl flex items-center justify-center text-4xl">
+                  🧑‍🍳
                 </div>
-                <button
-                  onClick={closeDetails}
-                  className="text-white/90 hover:text-white text-3xl leading-none font-bold"
-                  aria-label="Close"
-                >
-                  ×
-                </button>
+                <div>
+                  <p className="text-orange-100 text-sm font-semibold">
+                    Staff Panel
+                  </p>
+                  <h1 className="text-4xl font-black">Order Management</h1>
+                </div>
               </div>
+              <p className="text-orange-100 text-lg">
+                Track orders, update statuses, and keep delivery smooth
+              </p>
+              <p className="text-sm text-orange-200 mt-3">
+                Logged in as:{" "}
+                <span className="font-bold">
+                  {staff?.name || staff?.fullName || "Staff"}
+                </span>
+              </p>
             </div>
 
-            <div className="p-6 space-y-4">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4">
-                  <p className="text-xs text-gray-600">Status</p>
-                  <p className="text-lg font-extrabold text-orange-700">
-                    {selected.status}
-                  </p>
-                </div>
-                <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4">
-                  <p className="text-xs text-gray-600">Total</p>
-                  <p className="text-lg font-extrabold text-black">
-                    TK {calcTotal(selected)}
-                  </p>
-                </div>
-              </div>
+            <div className="flex flex-col gap-3">
+              <Link
+                to="/order_tracking"
+                className="px-6 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-xl rounded-2xl font-bold transition-all text-center"
+              >
+                📍 Order Tracking
+              </Link>
+              <button
+                onClick={logoutStaff}
+                className="px-6 py-3 bg-white text-orange-600 hover:bg-orange-50 rounded-2xl font-bold transition-all"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
 
-              <div className="rounded-2xl border border-gray-200 p-4">
-                <p className="text-sm font-bold text-black">Delivery Address</p>
-                <p className="text-sm text-gray-700 mt-1">{selected.address}</p>
-                {selected.note ? (
-                  <p className="text-sm text-orange-700 mt-2">
-                    <span className="font-bold">Note:</span> {selected.note}
-                  </p>
-                ) : null}
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-50 border-2 border-red-200 rounded-3xl p-6 mb-8">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-red-800 font-bold text-lg">Error: {error}</p>
               </div>
+              <button
+                onClick={fetchOrders}
+                className="px-6 py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all"
+              >
+                Retry
+              </button>
+            </div>
+          </div>
+        )}
 
-              <div className="rounded-2xl border border-gray-200 p-4">
-                <p className="text-sm font-bold text-black">Items</p>
-                <div className="mt-2 space-y-2">
-                  {selected.items.map((it, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center justify-between text-sm"
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-gradient-to-br from-blue-500 to-cyan-500 rounded-3xl p-6 text-white shadow-xl">
+            <div className="text-4xl mb-2">📋</div>
+            <div className="text-3xl font-black">{stats.placed}</div>
+            <div className="text-sm font-semibold opacity-90">New Orders</div>
+          </div>
+          <div className="bg-gradient-to-br from-yellow-500 to-orange-500 rounded-3xl p-6 text-white shadow-xl">
+            <div className="text-4xl mb-2">👨‍🍳</div>
+            <div className="text-3xl font-black">{stats.processing}</div>
+            <div className="text-sm font-semibold opacity-90">Processing</div>
+          </div>
+          <div className="bg-gradient-to-br from-green-500 to-emerald-500 rounded-3xl p-6 text-white shadow-xl">
+            <div className="text-4xl mb-2">✅</div>
+            <div className="text-3xl font-black">{stats.ready}</div>
+            <div className="text-sm font-semibold opacity-90">Ready</div>
+          </div>
+          <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-3xl p-6 text-white shadow-xl">
+            <div className="text-4xl mb-2">🎉</div>
+            <div className="text-3xl font-black">{stats.completed}</div>
+            <div className="text-sm font-semibold opacity-90">Completed</div>
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border-2 border-orange-100 p-6 mb-8">
+          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+            {/* Search */}
+            <div className="relative flex-1 w-full lg:max-w-md">
+              <input
+                type="text"
+                placeholder="Search orders..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-slate-200 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition-all text-lg"
+              />
+              <svg
+                className="w-6 h-6 absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+
+            {/* Status Filter */}
+            <div className="flex gap-2 flex-wrap">
+              <button
+                onClick={() => setStatusFilter("All")}
+                className={`px-6 py-3 rounded-2xl font-bold transition-all duration-300 ${
+                  statusFilter === "All"
+                    ? "bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg scale-105"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                All
+              </button>
+              {STATUS.map((st) => (
+                <button
+                  key={st}
+                  onClick={() => setStatusFilter(st)}
+                  className={`px-6 py-3 rounded-2xl font-bold transition-all duration-300 ${
+                    statusFilter === st
+                      ? "bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg scale-105"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  {st}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Orders Grid */}
+        {filtered.length === 0 ? (
+          <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border-2 border-orange-100 p-20 text-center">
+            <div className="text-8xl mb-6">📦</div>
+            <h3 className="text-3xl font-black text-slate-800 mb-4">
+              No Orders Found
+            </h3>
+            <p className="text-slate-600 text-lg">
+              {search
+                ? "Try a different search term"
+                : "No orders match the selected filter"}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {filtered.map((order) => (
+              <div
+                key={order.id}
+                className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border-2 border-orange-100 p-6 hover:shadow-2xl hover:scale-105 transition-all duration-300"
+              >
+                {/* Order Header */}
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 className="text-xl font-black text-slate-800 mb-1">
+                      Order #{order.id.slice(-8)}
+                    </h3>
+                    <p className="text-sm text-slate-500">
+                      {formatDate(order.createdAt)}
+                    </p>
+                  </div>
+                  <span
+                    className={`px-4 py-2 rounded-full text-xs font-bold text-white bg-gradient-to-r ${STATUS_COLORS[order.status]}`}
+                  >
+                    {order.status}
+                  </span>
+                </div>
+
+                {/* Customer Info */}
+                <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl p-4 mb-4">
+                  <div className="flex items-center gap-3 mb-2">
+                    <svg
+                      className="w-5 h-5 text-orange-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      <span className="font-semibold">
-                        {it.name} × {it.qty}
-                      </span>
-                      <span className="font-extrabold text-black">
-                        TK {it.qty * it.price}
-                      </span>
-                    </div>
-                  ))}
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
+                    <span className="font-bold text-slate-800">
+                      {order.customer}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <svg
+                      className="w-5 h-5 text-orange-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                      />
+                    </svg>
+                    <span className="text-sm font-semibold text-slate-700">
+                      {order.phone}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Items Summary */}
+                <div className="mb-4">
+                  <p className="text-sm font-bold text-slate-700 mb-2">
+                    Items ({order.items.length})
+                  </p>
+                  <div className="space-y-1">
+                    {order.items.slice(0, 2).map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between text-sm"
+                      >
+                        <span className="text-slate-600">
+                          {item.name} × {item.qty}
+                        </span>
+                        <span className="font-bold text-slate-800">
+                          ৳{item.qty * item.price}
+                        </span>
+                      </div>
+                    ))}
+                    {order.items.length > 2 && (
+                      <p className="text-xs text-slate-500">
+                        +{order.items.length - 2} more items
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Total */}
+                <div className="flex items-center justify-between mb-4 p-4 bg-gradient-to-r from-slate-100 to-slate-200 rounded-2xl">
+                  <span className="font-bold text-slate-700">Total</span>
+                  <span className="text-2xl font-black text-orange-600">
+                    ৳{calcTotal(order)}
+                  </span>
+                </div>
+
+                {/* Actions */}
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => setSelectedOrder(order)}
+                    className="px-4 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-300"
+                  >
+                    View Details
+                  </button>
+                  <select
+                    value={order.status}
+                    onChange={(e) => updateStatus(order.id, e.target.value)}
+                    className="px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition-all font-bold text-slate-700"
+                  >
+                    {STATUS.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Details Modal */}
+        {selectedOrder && (
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setSelectedOrder(null)}
+          >
+            <div
+              className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="sticky top-0 bg-gradient-to-r from-orange-600 to-amber-600 text-white p-6 rounded-t-3xl">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-orange-100 text-sm font-semibold">
+                      Order Details
+                    </p>
+                    <h2 className="text-3xl font-black">
+                      #{selectedOrder.id.slice(-8)}
+                    </h2>
+                  </div>
+                  <button
+                    onClick={() => setSelectedOrder(null)}
+                    className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center transition-all"
+                  >
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
                 </div>
               </div>
 
-              <div className="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold">Update Status:</span>
+              <div className="p-6 space-y-6">
+                {/* Customer Info */}
+                <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl p-6 border-2 border-orange-200">
+                  <h3 className="text-lg font-black text-slate-800 mb-4">
+                    Customer Information
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">👤</span>
+                      <div>
+                        <p className="text-sm text-slate-600">Name</p>
+                        <p className="font-bold text-slate-800">
+                          {selectedOrder.customer}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">📞</span>
+                      <div>
+                        <p className="text-sm text-slate-600">Phone</p>
+                        <p className="font-bold text-slate-800">
+                          {selectedOrder.phone}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">📍</span>
+                      <div>
+                        <p className="text-sm text-slate-600">Address</p>
+                        <p className="font-bold text-slate-800">
+                          {selectedOrder.address}
+                        </p>
+                      </div>
+                    </div>
+                    {selectedOrder.note && (
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">📝</span>
+                        <div>
+                          <p className="text-sm text-slate-600">Note</p>
+                          <p className="font-bold text-orange-600">
+                            {selectedOrder.note}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Items */}
+                <div className="bg-white rounded-2xl border-2 border-slate-200 p-6">
+                  <h3 className="text-lg font-black text-slate-800 mb-4">
+                    Order Items
+                  </h3>
+                  <div className="space-y-3">
+                    {selectedOrder.items.map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center justify-between p-3 bg-slate-50 rounded-xl"
+                      >
+                        <div>
+                          <p className="font-bold text-slate-800">
+                            {item.name}
+                          </p>
+                          <p className="text-sm text-slate-600">
+                            Qty: {item.qty} × ৳{item.price}
+                          </p>
+                        </div>
+                        <p className="text-xl font-black text-orange-600">
+                          ৳{item.qty * item.price}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-4 pt-4 border-t-2 border-slate-200 flex items-center justify-between">
+                    <span className="text-lg font-bold text-slate-700">
+                      Total Amount
+                    </span>
+                    <span className="text-3xl font-black text-orange-600">
+                      ৳{calcTotal(selectedOrder)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Update Status */}
+                <div className="bg-gradient-to-r from-slate-100 to-slate-200 rounded-2xl p-6">
+                  <h3 className="text-lg font-black text-slate-800 mb-4">
+                    Update Order Status
+                  </h3>
                   <select
-                    value={selected.status}
+                    value={selectedOrder.status}
                     onChange={(e) => {
-                      updateStatus(selected.id, e.target.value);
-                      setSelected((p) => ({ ...p, status: e.target.value }));
+                      updateStatus(selectedOrder.id, e.target.value);
+                      setSelectedOrder((p) => ({
+                        ...p,
+                        status: e.target.value,
+                      }));
                     }}
-                    className="px-3 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full px-4 py-4 rounded-xl border-2 border-slate-300 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition-all font-bold text-lg"
                   >
                     {STATUS.map((s) => (
                       <option key={s} value={s}>
@@ -474,17 +574,18 @@ export default function StaffDashboard() {
                   </select>
                 </div>
 
+                {/* Close Button */}
                 <button
-                  onClick={() => closeDetails()}
-                  className="px-5 py-2 rounded-xl bg-orange-500 text-white font-extrabold hover:bg-orange-600 transition"
+                  onClick={() => setSelectedOrder(null)}
+                  className="w-full px-6 py-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-xl hover:shadow-xl hover:scale-105 transition-all duration-300"
                 >
-                  Done
+                  Close
                 </button>
               </div>
             </div>
-          </motion.div>
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

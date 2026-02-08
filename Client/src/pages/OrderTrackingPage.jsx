@@ -196,13 +196,15 @@ export default function OrderTrackingPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-white dark:bg-gray-900">
-        <div className="text-center animate-scale-in">
-          <div className="spinner mx-auto mb-4"></div>
-          <div className="text-gray-900 dark:text-white text-xl font-bold">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
+        <div className="text-center">
+          <div className="relative w-20 h-20 mx-auto mb-6">
+            <div className="absolute inset-0 rounded-full border-4 border-blue-200 border-t-blue-600 animate-spin"></div>
+          </div>
+          <div className="text-slate-800 text-2xl font-black mb-2">
             Loading your orders...
           </div>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">Please wait</p>
+          <p className="text-slate-600">Please wait</p>
         </div>
       </div>
     );
@@ -210,14 +212,17 @@ export default function OrderTrackingPage() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-white dark:bg-gray-900">
-        <div className="text-center card max-w-md animate-scale-in">
-          <div className="text-6xl mb-4">⚠️</div>
-          <h3 className="text-xl font-bold text-red-600 dark:text-red-400 mb-2">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
+        <div className="text-center bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border-2 border-red-200 p-12 max-w-md">
+          <div className="text-8xl mb-6">⚠️</div>
+          <h3 className="text-2xl font-black text-red-600 mb-4">
             Error Loading Orders
           </h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">{error}</p>
-          <button onClick={fetchOrders} className="btn-primary">
+          <p className="text-slate-600 mb-6">{error}</p>
+          <button
+            onClick={fetchOrders}
+            className="px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-300"
+          >
             🔄 Try Again
           </button>
         </div>
@@ -228,54 +233,57 @@ export default function OrderTrackingPage() {
   if (!me) return null;
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-cyan-50">
       {/* Top Hero */}
-      <div className="container-custom pt-8">
+      <div className="max-w-7xl mx-auto px-4 pt-8">
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45 }}
-          className="card bg-gradient-primary text-white relative overflow-hidden"
+          className="bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-500 text-white py-12 px-8 rounded-3xl shadow-2xl relative overflow-hidden"
         >
-          {/* glow */}
+          {/* glow effects */}
           <div className="pointer-events-none absolute -top-24 -right-24 w-80 h-80 bg-white/20 blur-3xl rounded-full" />
-          <div className="pointer-events-none absolute -bottom-28 -left-28 w-96 h-96 bg-black/10 blur-3xl rounded-full" />
+          <div className="pointer-events-none absolute -bottom-28 -left-28 w-96 h-96 bg-white/10 blur-3xl rounded-full" />
 
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div>
-              <p className="text-yellow-300 text-sm font-semibold mb-2">
-                🚀 FoodBaZZ Tracking
-              </p>
-              <h1 className="text-3xl md:text-4xl font-extrabold leading-tight mb-3">
-                Track Your Order Like a Pro
-              </h1>
-              <p className="text-white/90 text-lg">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-xl rounded-2xl flex items-center justify-center text-4xl">
+                  📦
+                </div>
+                <div>
+                  <p className="text-cyan-100 text-sm font-semibold">
+                    FoodBaZZ Tracking
+                  </p>
+                  <h1 className="text-4xl font-black">Track Your Order</h1>
+                </div>
+              </div>
+              <p className="text-blue-100 text-lg">
                 Real-time status updates, timeline tracking, and complete order
                 details
               </p>
             </div>
 
-            <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex flex-col gap-3">
               <Link
                 to="/order_1st"
-                className="btn-outline border-white text-white hover:bg-white hover:text-orange-500"
+                className="px-6 py-3 bg-white/20 hover:bg-white/30 backdrop-blur-xl rounded-2xl font-bold transition-all text-center"
               >
                 🍕 Order More
               </Link>
               <Link
                 to="/profile"
-                className="bg-white text-orange-500 hover:bg-yellow-300 font-bold px-6 py-3 rounded-lg transition-all"
+                className="px-6 py-3 bg-white text-blue-600 hover:bg-blue-50 rounded-2xl font-bold transition-all text-center"
               >
                 📊 Dashboard
               </Link>
             </div>
           </div>
-
-          <div className="absolute left-0 right-0 bottom-0 h-2 bg-gradient-to-r from-yellow-400 via-white/30 to-yellow-400 opacity-90" />
         </motion.div>
       </div>
 
-      <div className="container-custom py-8">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Active orders + Details */}
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Active Orders list */}
@@ -283,76 +291,79 @@ export default function OrderTrackingPage() {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.08 }}
-            className="lg:col-span-1 rounded-3xl border border-orange-200 bg-white shadow p-6"
+            className="lg:col-span-1 bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border-2 border-blue-100 p-6"
           >
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-extrabold text-orange-600">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-black text-blue-600">
                 Active Orders
               </h2>
-              <span className="text-sm font-extrabold text-black">
+              <span className="px-4 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-full text-sm font-bold">
                 {activeOrders.length}
               </span>
             </div>
 
             {activeOrders.length === 0 ? (
-              <div className="mt-5 card bg-orange-50 dark:bg-gray-800 text-center py-12">
+              <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl border-2 border-blue-200 text-center py-12 px-6">
                 <div className="text-6xl mb-4">📦</div>
-                <p className="font-bold text-gray-900 dark:text-white text-lg mb-2">
+                <p className="font-black text-slate-800 text-xl mb-2">
                   No Active Orders
                 </p>
-                <p className="text-gray-600 dark:text-gray-400 mb-6">
+                <p className="text-slate-600 mb-6">
                   Place a new order to see live tracking
                 </p>
-                <Link to="/order_1st" className="btn-primary inline-block">
+                <Link
+                  to="/order_1st"
+                  className="inline-block px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-300"
+                >
                   🍕 Start Ordering
                 </Link>
               </div>
             ) : (
-              <div className="mt-5 space-y-3">
+              <div className="space-y-3">
                 {activeOrders.map((o) => (
                   <button
                     key={o.id}
                     onClick={() => setSelectedId(o.id)}
-                    className={`w-full text-left card transition-all hover-lift ${
+                    className={`w-full text-left rounded-2xl border-2 p-4 transition-all duration-300 ${
                       selectedId === o.id
-                        ? "border-2 border-orange-500 bg-orange-50 dark:bg-gray-800"
-                        : "hover:border-orange-300"
+                        ? "border-blue-500 bg-gradient-to-r from-blue-50 to-cyan-50 shadow-lg scale-105"
+                        : "border-slate-200 bg-white hover:border-blue-300 hover:shadow-md"
                     }`}
                   >
                     <div className="flex items-start justify-between gap-3 mb-3">
                       <div className="flex-1">
-                        <p className="font-bold text-gray-900 dark:text-white text-sm">
+                        <p className="font-black text-slate-800 text-sm">
                           Order #{o.id.slice(-8)}
                         </p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                        <p className="text-xs text-slate-500 mt-1">
                           📅 {formatDate(o.createdAt)}
                         </p>
                       </div>
                       <span
-                        className={`badge text-white ${
+                        className={`px-3 py-1 rounded-full text-xs font-bold text-white bg-gradient-to-r ${
                           o.status === "Cancelled"
-                            ? "bg-red-600"
+                            ? "from-red-500 to-rose-500"
                             : o.status === "Delivered"
-                              ? "bg-green-600"
+                              ? "from-green-500 to-emerald-500"
                               : o.status === "Ready"
-                                ? "bg-blue-600"
-                                : "bg-orange-500"
+                                ? "from-blue-500 to-cyan-500"
+                                : "from-yellow-500 to-orange-500"
                         }`}
                       >
                         {o.status}
                       </span>
                     </div>
 
-                    <div className="divider my-2"></div>
+                    <div className="h-px bg-slate-200 my-2"></div>
 
                     <div className="flex items-center justify-between">
-                      <p className="text-sm text-gray-700 dark:text-gray-300">
+                      <p className="text-sm text-slate-600">
                         {o.items?.[0]?.name}
                         {o.items?.length > 1
                           ? ` +${o.items.length - 1} more`
                           : ""}
                       </p>
-                      <p className="text-sm font-bold text-gradient">
+                      <p className="text-sm font-black text-blue-600">
                         {money(o.total)}
                       </p>
                     </div>
@@ -360,8 +371,6 @@ export default function OrderTrackingPage() {
                 ))}
               </div>
             )}
-
-            <div className="h-1 mt-6 rounded-full bg-gradient-to-r from-orange-500 via-black to-orange-500 opacity-80" />
           </motion.div>
 
           {/* Details panel */}
@@ -369,22 +378,28 @@ export default function OrderTrackingPage() {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, delay: 0.12 }}
-            className="lg:col-span-2 rounded-3xl border border-orange-200 bg-white shadow p-6"
+            className="lg:col-span-2 bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border-2 border-blue-100 p-6"
           >
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start justify-between gap-4 mb-6">
               <div>
-                <h2 className="text-xl font-extrabold text-orange-600">
+                <h2 className="text-2xl font-black text-blue-600">
                   Order Details
                 </h2>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-slate-600 mt-1">
                   Status timeline + customer info + items
                 </p>
               </div>
               {selectedOrder ? (
                 <span
-                  className={`px-4 py-2 rounded-full text-sm font-extrabold text-white ${statusColor(
-                    selectedOrder.status,
-                  )}`}
+                  className={`px-4 py-2 rounded-full text-sm font-bold text-white bg-gradient-to-r ${
+                    selectedOrder.status === "Cancelled"
+                      ? "from-red-500 to-rose-500"
+                      : selectedOrder.status === "Completed"
+                        ? "from-green-500 to-emerald-500"
+                        : selectedOrder.status === "Delivered"
+                          ? "from-purple-500 to-pink-500"
+                          : "from-yellow-500 to-orange-500"
+                  }`}
                 >
                   {selectedOrder.status}
                 </span>
@@ -392,26 +407,29 @@ export default function OrderTrackingPage() {
             </div>
 
             {!selectedOrder ? (
-              <div className="mt-6 rounded-2xl bg-orange-50 border border-orange-200 p-6">
-                <p className="font-bold text-black">No order selected.</p>
-                <p className="text-sm text-gray-700 mt-1">
-                  Pick an order from the left panel.
+              <div className="rounded-2xl bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-blue-200 p-8 text-center">
+                <div className="text-6xl mb-4">👈</div>
+                <p className="font-black text-slate-800 text-xl mb-2">
+                  No order selected
+                </p>
+                <p className="text-slate-600">
+                  Pick an order from the left panel to view details
                 </p>
               </div>
             ) : (
               <>
                 {/* Timeline */}
-                <div className="mt-6 rounded-3xl bg-black text-white border border-orange-500/20 p-5 relative overflow-hidden">
-                  <div className="pointer-events-none absolute -top-14 -right-14 w-60 h-60 bg-orange-500/20 blur-3xl rounded-full" />
+                <div className="rounded-3xl bg-gradient-to-r from-slate-800 to-slate-900 text-white border-2 border-blue-500/20 p-6 relative overflow-hidden">
+                  <div className="pointer-events-none absolute -top-14 -right-14 w-60 h-60 bg-blue-500/20 blur-3xl rounded-full" />
 
                   <div className="relative z-10">
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                       <div>
-                        <p className="text-orange-300 text-xs font-semibold">
+                        <p className="text-cyan-300 text-xs font-semibold">
                           Order ID
                         </p>
-                        <p className="text-2xl font-extrabold">
-                          {selectedOrder.id}
+                        <p className="text-2xl font-black">
+                          #{selectedOrder.id.slice(-8)}
                         </p>
                         <p className="text-white/70 text-sm mt-1">
                           Placed: {formatDate(selectedOrder.createdAt)}
@@ -420,23 +438,26 @@ export default function OrderTrackingPage() {
 
                       <div className="text-right">
                         <p className="text-white/70 text-xs font-semibold">
-                          Total
+                          Total Amount
                         </p>
-                        <p className="text-2xl font-extrabold text-orange-300">
+                        <p className="text-3xl font-black text-cyan-300">
                           {money(totalPrice)}
                         </p>
                       </div>
                     </div>
 
                     {selectedOrder.status === "Cancelled" ? (
-                      <div className="mt-5 rounded-2xl bg-red-600/15 border border-red-500/30 p-4">
-                        <p className="font-extrabold text-red-200">
-                          This order was cancelled.
-                        </p>
+                      <div className="mt-5 rounded-2xl bg-red-500/20 border-2 border-red-500/40 p-5">
+                        <div className="flex items-center gap-3">
+                          <span className="text-3xl">❌</span>
+                          <p className="font-black text-red-200 text-lg">
+                            This order was cancelled
+                          </p>
+                        </div>
                       </div>
                     ) : (
                       <>
-                        <div className="mt-5 grid grid-cols-4 gap-2">
+                        <div className="mt-6 grid grid-cols-4 gap-3">
                           {STEPS.map((st) => {
                             const currentIndex = STEPS.indexOf(
                               selectedOrder.status,
@@ -449,12 +470,12 @@ export default function OrderTrackingPage() {
                             return (
                               <div
                                 key={st}
-                                className={`rounded-xl px-2 py-2 text-center text-xs font-extrabold border transition ${
+                                className={`rounded-xl px-3 py-3 text-center text-sm font-bold border-2 transition-all duration-300 ${
                                   done
-                                    ? "bg-orange-500 text-white border-orange-500"
+                                    ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-blue-400 shadow-lg"
                                     : active
-                                      ? "bg-white/10 text-white border-white/20"
-                                      : "bg-white/5 text-white/60 border-white/10"
+                                      ? "bg-white/10 text-white border-white/30 animate-pulse"
+                                      : "bg-white/5 text-white/50 border-white/10"
                                 }`}
                               >
                                 {st}
@@ -464,9 +485,9 @@ export default function OrderTrackingPage() {
                         </div>
 
                         {/* progress bar */}
-                        <div className="mt-4 h-2 rounded-full bg-white/10 overflow-hidden">
+                        <div className="mt-5 h-3 rounded-full bg-white/10 overflow-hidden">
                           <div
-                            className="h-2 bg-orange-500 transition-all duration-700"
+                            className="h-3 bg-gradient-to-r from-blue-500 to-cyan-500 transition-all duration-700 shadow-lg"
                             style={{
                               width: `${Math.max(0, (stepIndex / (STEPS.length - 1)) * 100)}%`,
                             }}
@@ -474,62 +495,70 @@ export default function OrderTrackingPage() {
                         </div>
                       </>
                     )}
-
-                    <div className="absolute left-0 right-0 bottom-0 h-2 bg-gradient-to-r from-orange-500 via-white/10 to-orange-500 opacity-90" />
                   </div>
                 </div>
 
                 {/* Customer + Items */}
                 <div className="mt-6 grid md:grid-cols-3 gap-6">
                   {/* Customer info */}
-                  <div className="md:col-span-1 rounded-3xl border border-gray-200 p-5">
-                    <h3 className="text-lg font-extrabold text-orange-600">
+                  <div className="md:col-span-1 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-3xl border-2 border-blue-200 p-6">
+                    <h3 className="text-lg font-black text-blue-600 mb-4">
                       Customer Info
                     </h3>
 
-                    <div className="mt-4 space-y-3">
-                      <div className="rounded-2xl bg-orange-50 border border-orange-200 p-4">
-                        <p className="text-xs text-gray-600">Name</p>
-                        <p className="text-sm font-extrabold text-black mt-1">
-                          {selectedOrder.customerName}
-                        </p>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">👤</span>
+                        <div>
+                          <p className="text-xs text-slate-600">Name</p>
+                          <p className="text-sm font-black text-slate-800 mt-1">
+                            {selectedOrder.customerName}
+                          </p>
+                        </div>
                       </div>
 
-                      <div className="rounded-2xl border border-gray-200 p-4">
-                        <p className="text-xs text-gray-600">Phone</p>
-                        <p className="text-sm font-extrabold text-black mt-1">
-                          {selectedOrder.phone}
-                        </p>
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">📞</span>
+                        <div>
+                          <p className="text-xs text-slate-600">Phone</p>
+                          <p className="text-sm font-black text-slate-800 mt-1">
+                            {selectedOrder.phone}
+                          </p>
+                        </div>
                       </div>
 
-                      <div className="rounded-2xl border border-gray-200 p-4">
-                        <p className="text-xs text-gray-600">Address</p>
-                        <p className="text-sm font-bold text-black mt-1">
-                          {selectedOrder.address}
-                        </p>
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">📍</span>
+                        <div>
+                          <p className="text-xs text-slate-600">Address</p>
+                          <p className="text-sm font-bold text-slate-800 mt-1">
+                            {selectedOrder.address}
+                          </p>
+                        </div>
                       </div>
 
-                      <div className="pt-2">
+                      <div className="pt-3 mt-3 border-t-2 border-blue-200">
                         {selectedOrder.status === "Cancelled" ? (
-                          <span className="inline-flex px-4 py-2 rounded-full bg-red-600 text-white font-extrabold text-sm">
-                            Cancelled
-                          </span>
+                          <div className="px-4 py-3 rounded-xl bg-red-500/20 border-2 border-red-500/40 text-center">
+                            <span className="font-black text-red-600 text-sm">
+                              ❌ Cancelled
+                            </span>
+                          </div>
                         ) : canCancel(selectedOrder) ? (
                           <>
                             <button
                               onClick={cancelOrder}
-                              className="w-full px-4 py-3 rounded-2xl bg-red-600 hover:bg-red-700 text-white font-extrabold transition"
+                              className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white font-bold transition-all shadow-lg hover:shadow-xl hover:scale-105"
                             >
                               Cancel Order
                             </button>
-                            <p className="mt-2 text-center text-xs text-gray-500">
-                              Cancel available within 5 minutes of placing the
-                              order.
+                            <p className="mt-2 text-center text-xs text-slate-500">
+                              Cancel available within 5 minutes
                             </p>
                           </>
                         ) : (
-                          <p className="text-center text-sm text-gray-600 font-semibold">
-                            You can no longer cancel this order.
+                          <p className="text-center text-sm text-slate-600 font-semibold">
+                            Cannot cancel this order
                           </p>
                         )}
                       </div>
@@ -537,62 +566,60 @@ export default function OrderTrackingPage() {
                   </div>
 
                   {/* Items */}
-                  <div className="md:col-span-2 rounded-3xl border border-gray-200 p-5 overflow-hidden">
-                    <div className="flex items-center justify-between gap-4">
-                      <h3 className="text-lg font-extrabold text-orange-600">
+                  <div className="md:col-span-2 bg-white rounded-3xl border-2 border-slate-200 p-6 overflow-hidden">
+                    <div className="flex items-center justify-between gap-4 mb-4">
+                      <h3 className="text-lg font-black text-slate-800">
                         Ordered Items
                       </h3>
                       <Link
                         to={`/receipt?orderId=${selectedOrder.id || selectedOrder._id || "NO_ID"}`}
-                        className="px-4 py-2 rounded-full bg-black text-white font-extrabold hover:bg-orange-500 transition"
+                        className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold hover:shadow-lg hover:scale-105 transition-all duration-300"
                         onClick={() =>
                           console.log("Receipt clicked, order:", selectedOrder)
                         }
                       >
-                        Receipt
+                        📄 Receipt
                       </Link>
                     </div>
 
-                    <div className="mt-4 space-y-3">
+                    <div className="space-y-3">
                       {selectedOrder.items.map((it) => (
                         <div
                           key={it.id}
-                          className="flex items-center gap-4 rounded-2xl border border-orange-200 bg-orange-50 p-3"
+                          className="flex items-center gap-4 rounded-2xl border-2 border-slate-200 bg-slate-50 p-3 hover:shadow-md transition-all"
                         >
                           <img
                             src={it.img}
                             alt={it.name}
-                            className="w-16 h-16 rounded-2xl object-cover border border-orange-200"
+                            className="w-16 h-16 rounded-xl object-cover border-2 border-slate-200"
                           />
                           <div className="flex-1">
-                            <p className="font-extrabold text-black">
+                            <p className="font-black text-slate-800">
                               {it.name}
                             </p>
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-slate-600">
                               Qty: <span className="font-bold">{it.qty}</span>
                             </p>
                           </div>
 
-                          <p className="font-extrabold text-black">
+                          <p className="font-black text-blue-600 text-lg">
                             {money(it.price * it.qty)}
                           </p>
                         </div>
                       ))}
                     </div>
 
-                    <div className="mt-5 flex items-center justify-between">
-                      <p className="text-sm text-gray-600 font-semibold">
-                        Items:{" "}
-                        <span className="text-black">
+                    <div className="mt-5 pt-5 border-t-2 border-slate-200 flex items-center justify-between">
+                      <p className="text-sm text-slate-600 font-semibold">
+                        Total Items:{" "}
+                        <span className="text-slate-800 font-black">
                           {selectedOrder.items.length}
                         </span>
                       </p>
-                      <p className="text-lg font-extrabold text-orange-700">
+                      <p className="text-2xl font-black text-blue-600">
                         Total: {money(totalPrice)}
                       </p>
                     </div>
-
-                    <div className="h-1 mt-5 rounded-full bg-gradient-to-r from-orange-500 via-black to-orange-500 opacity-80" />
                   </div>
                 </div>
               </>
@@ -600,8 +627,10 @@ export default function OrderTrackingPage() {
           </motion.div>
         </div>
 
-        <div className="mt-6 text-center text-xs text-gray-500">
-          Real-time order tracking • Status updates from backend
+        <div className="mt-8 text-center">
+          <p className="text-xs text-slate-500">
+            Real-time order tracking • Status updates from backend • FoodBaZZ
+          </p>
         </div>
       </div>
     </div>

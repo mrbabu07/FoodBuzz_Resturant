@@ -95,7 +95,13 @@ const navSections = [
   },
 ];
 
-const AdminNavbar = ({ navOpen, setNavOpen }) => {
+const AdminNavbar = ({ navOpen: navOpenProp, setNavOpen: setNavOpenProp }) => {
+  const [internalNavOpen, setInternalNavOpen] = useState(false);
+
+  // Use props if provided, otherwise use internal state
+  const navOpen = navOpenProp !== undefined ? navOpenProp : internalNavOpen;
+  const setNavOpen = setNavOpenProp || setInternalNavOpen;
+
   const sidebarWidth = navOpen ? "18rem" : "4rem";
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const navigate = useNavigate();

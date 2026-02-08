@@ -13,6 +13,7 @@ const ALLOWED_STATUSES = [
   "Processing",
   "Ready",
   "Delivered",
+  "Completed",
   "Cancelled",
 ];
 
