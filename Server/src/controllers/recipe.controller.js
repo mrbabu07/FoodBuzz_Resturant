@@ -1,8 +1,17 @@
 // src/controllers/recipe.controller.js
 const mongoose = require("mongoose");
 const Recipe = require("../models/Recipe");
+const User = require("../models/User");
+const notificationService = require("../utils/notificationService");
 
-const ALLOWED_CATEGORIES = ["Chicken", "Beef", "Fish", "Soup", "Dessert", "Drink"];
+const ALLOWED_CATEGORIES = [
+  "Chicken",
+  "Beef",
+  "Fish",
+  "Soup",
+  "Dessert",
+  "Drink",
+];
 
 // GET /api/recipes?q=&category=
 exports.getAllRecipes = async (req, res) => {
@@ -24,7 +33,7 @@ exports.getAllRecipes = async (req, res) => {
         { name: regex },
         { category: regex },
         { description: regex },
-        { ingredients: { $elemMatch: { $regex: regex } } }
+        { ingredients: { $elemMatch: { $regex: regex } } },
       ];
     }
 
@@ -70,11 +79,13 @@ exports.createRecipe = async (req, res) => {
       tools,
       instructions,
       steps,
-      nutrition
+      nutrition,
     } = req.body;
 
     if (!name || !category) {
-      return res.status(400).json({ message: "name and category are required" });
+      return res
+        .status(400)
+        .json({ message: "name and category are required" });
     }
 
     const cat = String(category).trim();
@@ -86,7 +97,7 @@ exports.createRecipe = async (req, res) => {
       name: String(name).trim(),
       category: cat,
       description: description ? String(description).trim() : "",
-      imageUrl: (imageUrl || pic) ? String(imageUrl || pic).trim() : "",
+      imageUrl: imageUrl || pic ? String(imageUrl || pic).trim() : "",
 
       prepTime: Number(prepTime || 0),
       cookingTime: Number(cookingTime || 0),
@@ -102,8 +113,42 @@ exports.createRecipe = async (req, res) => {
           ? steps
           : [],
 
-      nutrition: nutrition ? String(nutrition).trim() : ""
+      nutrition: nutrition ? String(nutrition).trim() : "",
     });
+
+    // 🔔 Send notification to users who opted in for recipe notifications
+    try {
+      // Get users who want recipe/promo notifications
+      const users = await User.find({
+        "notificationPrefs.promoEmails": true,
+      }).select("_id");
+
+      if (users.length > 0) {
+        const userIds = users.map((u) => u._id);
+
+        // Send bulk notification (async, don't wait)
+        notificationService
+          .sendBulkNotification(userIds, {
+            type: "recipe",
+            title: "🍽️ New Recipe Added!",
+            message: `Check out our new recipe: ${recipe.name}`,
+            data: {
+              recipeId: recipe._id,
+              recipeName: recipe.name,
+              category: recipe.category,
+            },
+            priority: "low",
+          })
+          .catch((err) => {
+            console.error("Failed to send bulk recipe notifications:", err);
+          });
+
+        console.log(`📢 Sending recipe notification to ${users.length} users`);
+      }
+    } catch (notifError) {
+      console.error("Failed to send recipe notifications:", notifError);
+      // Don't fail recipe creation if notification fails
+    }
 
     return res.status(201).json({ message: "Recipe created", recipe });
   } catch (err) {
@@ -133,28 +178,44 @@ exports.updateRecipe = async (req, res) => {
       }
     }
 
-    if (payload.description !== undefined) payload.description = String(payload.description).trim();
+    if (payload.description !== undefined)
+      payload.description = String(payload.description).trim();
 
     if (payload.pic && !payload.imageUrl) payload.imageUrl = payload.pic;
-    if (payload.imageUrl !== undefined) payload.imageUrl = String(payload.imageUrl).trim();
+    if (payload.imageUrl !== undefined)
+      payload.imageUrl = String(payload.imageUrl).trim();
 
     if (Array.isArray(payload.steps) && !Array.isArray(payload.instructions)) {
       payload.instructions = payload.steps;
       delete payload.steps;
     }
 
-    if (payload.ingredients !== undefined) payload.ingredients = Array.isArray(payload.ingredients) ? payload.ingredients : [];
-    if (payload.tools !== undefined) payload.tools = Array.isArray(payload.tools) ? payload.tools : [];
-    if (payload.instructions !== undefined) payload.instructions = Array.isArray(payload.instructions) ? payload.instructions : [];
+    if (payload.ingredients !== undefined)
+      payload.ingredients = Array.isArray(payload.ingredients)
+        ? payload.ingredients
+        : [];
+    if (payload.tools !== undefined)
+      payload.tools = Array.isArray(payload.tools) ? payload.tools : [];
+    if (payload.instructions !== undefined)
+      payload.instructions = Array.isArray(payload.instructions)
+        ? payload.instructions
+        : [];
 
-    if (payload.prepTime !== undefined) payload.prepTime = Number(payload.prepTime || 0);
-    if (payload.cookingTime !== undefined) payload.cookingTime = Number(payload.cookingTime || 0);
-    if (payload.servings !== undefined) payload.servings = Number(payload.servings || 1);
-    if (payload.calories !== undefined) payload.calories = Number(payload.calories || 0);
+    if (payload.prepTime !== undefined)
+      payload.prepTime = Number(payload.prepTime || 0);
+    if (payload.cookingTime !== undefined)
+      payload.cookingTime = Number(payload.cookingTime || 0);
+    if (payload.servings !== undefined)
+      payload.servings = Number(payload.servings || 1);
+    if (payload.calories !== undefined)
+      payload.calories = Number(payload.calories || 0);
 
-    if (payload.nutrition !== undefined) payload.nutrition = String(payload.nutrition || "").trim();
+    if (payload.nutrition !== undefined)
+      payload.nutrition = String(payload.nutrition || "").trim();
 
-    const recipe = await Recipe.findByIdAndUpdate(req.params.id, payload, { new: true });
+    const recipe = await Recipe.findByIdAndUpdate(req.params.id, payload, {
+      new: true,
+    });
     if (!recipe) return res.status(404).json({ message: "Recipe not found" });
 
     return res.json({ message: "Recipe updated", recipe });

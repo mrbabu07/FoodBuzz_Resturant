@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 const { sendMail } = require("../utils/mailer");
 const { logActivity } = require("../utils/activityLogger");
+const notificationService = require("../utils/notificationService");
 
 const ALLOWED_STATUSES = [
   "Placed",
@@ -204,6 +205,23 @@ exports.placeOrder = async (req, res) => {
       req,
     });
 
+    // 🔔 Send notification
+    try {
+      await notificationService.sendOrderNotification(
+        userId,
+        {
+          _id: order._id,
+          orderNumber: order._id,
+          total: order.total,
+          items: order.items,
+        },
+        "placed",
+      );
+    } catch (notifError) {
+      console.error("Failed to send order notification:", notifError);
+      // Don't fail the order if notification fails
+    }
+
     // email: placed
     try {
       const user = await User.findById(userId).lean();
@@ -317,6 +335,31 @@ exports.updateOrderStatus = async (req, res) => {
       req,
     });
 
+    // 🔔 Send notification for status change
+    try {
+      const statusMap = {
+        Processing: "preparing",
+        Ready: "ready",
+        Delivered: "delivered",
+        Cancelled: "cancelled",
+      };
+
+      const notifStatus = statusMap[status] || status.toLowerCase();
+
+      await notificationService.sendOrderNotification(
+        order.userId,
+        {
+          _id: order._id,
+          orderNumber: order._id,
+          total: order.total,
+          items: order.items,
+        },
+        notifStatus,
+      );
+    } catch (notifError) {
+      console.error("Failed to send status notification:", notifError);
+    }
+
     // email: status update (delivered -> invoice+receipt)
     try {
       const user = await User.findById(order.userId).lean();
@@ -393,12 +436,10 @@ exports.getReceipt = async (req, res) => {
     // Allow receipts for completed/delivered orders and orders in progress
     const allowedStatuses = ["Delivered", "Ready", "Processing"];
     if (!allowedStatuses.includes(order.status)) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "Receipt available only for orders that are Processing, Ready, or Delivered",
-        });
+      return res.status(400).json({
+        message:
+          "Receipt available only for orders that are Processing, Ready, or Delivered",
+      });
     }
 
     return res.json({
@@ -480,6 +521,22 @@ exports.cancelOrder = async (req, res) => {
       },
       req,
     });
+
+    // 🔔 Send cancellation notification
+    try {
+      await notificationService.sendOrderNotification(
+        order.userId,
+        {
+          _id: order._id,
+          orderNumber: order._id,
+          total: order.total,
+          items: order.items,
+        },
+        "cancelled",
+      );
+    } catch (notifError) {
+      console.error("Failed to send cancellation notification:", notifError);
+    }
 
     // Send cancellation email
     try {

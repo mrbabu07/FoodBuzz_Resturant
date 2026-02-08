@@ -1,4 +1,6 @@
 const Offer = require("../models/Offer");
+const User = require("../models/User");
+const notificationService = require("../utils/notificationService");
 
 // Get all offers (admin)
 const getAllOffers = async (req, res) => {
@@ -114,6 +116,41 @@ const createOffer = async (req, res) => {
       "createdBy",
       "name email",
     );
+
+    // 🔔 Send notification to users who opted in for promo emails
+    try {
+      // Get users who want promo notifications
+      const users = await User.find({
+        "notificationPrefs.promoEmails": true,
+      }).select("_id");
+
+      if (users.length > 0) {
+        const userIds = users.map((u) => u._id);
+
+        // Send bulk notification (async, don't wait)
+        notificationService
+          .sendBulkNotification(userIds, {
+            type: "promo",
+            title: `🎁 ${offer.title}`,
+            message: offer.description,
+            data: {
+              offerId: offer._id,
+              discountType: offer.discountType,
+              discountValue: offer.discountValue,
+              validUntil: offer.validUntil,
+            },
+            priority: "normal",
+          })
+          .catch((err) => {
+            console.error("Failed to send bulk promo notifications:", err);
+          });
+
+        console.log(`📢 Sending promo notification to ${users.length} users`);
+      }
+    } catch (notifError) {
+      console.error("Failed to send promo notifications:", notifError);
+      // Don't fail offer creation if notification fails
+    }
 
     res.status(201).json(populatedOffer);
   } catch (error) {
