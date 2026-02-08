@@ -182,9 +182,7 @@ export default function Navbar() {
         <div className="hidden md:flex items-center space-x-8">
           {[
             { to: "/", label: "Home", icon: "🏠" },
-            { to: "/recipe", label: "Recipes", icon: "📚" },
-            { to: "/order_1st", label: "Order Now", icon: "🛒" },
-            { to: "/about", label: "About", icon: "ℹ️" },
+            { to: "/order_1st", label: "Menu", icon: "🍽️" },
           ].map((item) => (
             <Link
               key={item.to}
@@ -200,18 +198,104 @@ export default function Navbar() {
             </Link>
           ))}
 
-          {me && (
+          {/* Recipes Dropdown */}
+          <div className="relative group">
             <Link
-              to="/favorites"
+              to="/recipe"
               className={`flex items-center gap-2 px-4 py-2 rounded-xl font-semibold transition-all duration-300 hover:scale-105 ${
-                location.pathname === "/favorites"
+                location.pathname.startsWith("/recipe")
                   ? "bg-orange-500 text-white shadow-lg"
                   : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
               }`}
             >
-              <span className="text-lg">❤️</span>
-              Favorites
+              <span className="text-lg">📚</span>
+              Recipes
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
             </Link>
+
+            {/* Dropdown Menu */}
+            <div className="absolute left-0 mt-2 w-48 bg-white border-2 border-orange-100 rounded-2xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 overflow-hidden">
+              <Link
+                to="/recipes"
+                className="flex items-center gap-3 px-4 py-3 hover:bg-orange-50 hover:text-orange-600 transition-all font-semibold"
+              >
+                <span className="text-lg">🍽️</span>
+                All Recipes
+              </Link>
+              <Link
+                to="/recipes/trending"
+                className="flex items-center gap-3 px-4 py-3 hover:bg-orange-50 hover:text-orange-600 transition-all font-semibold"
+              >
+                <span className="text-lg">🔥</span>
+                Trending
+              </Link>
+              <Link
+                to="/recipes/recent"
+                className="flex items-center gap-3 px-4 py-3 hover:bg-orange-50 hover:text-orange-600 transition-all font-semibold"
+              >
+                <span className="text-lg">🆕</span>
+                Recent
+              </Link>
+              <Link
+                to="/recipes/search"
+                className="flex items-center gap-3 px-4 py-3 hover:bg-orange-50 hover:text-orange-600 transition-all font-semibold"
+              >
+                <span className="text-lg">🔍</span>
+                Search
+              </Link>
+            </div>
+          </div>
+
+          {me && (
+            <>
+              <Link
+                to="/cart"
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-semibold transition-all duration-300 hover:scale-105 ${
+                  location.pathname === "/cart"
+                    ? "bg-orange-500 text-white shadow-lg"
+                    : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
+                }`}
+              >
+                <span className="text-lg">🛒</span>
+                Cart
+              </Link>
+
+              <Link
+                to="/favorites"
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-semibold transition-all duration-300 hover:scale-105 ${
+                  location.pathname === "/favorites"
+                    ? "bg-orange-500 text-white shadow-lg"
+                    : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
+                }`}
+              >
+                <span className="text-lg">❤️</span>
+                Favorites
+              </Link>
+
+              <Link
+                to="/reviews"
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-semibold transition-all duration-300 hover:scale-105 ${
+                  location.pathname === "/reviews"
+                    ? "bg-orange-500 text-white shadow-lg"
+                    : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
+                }`}
+              >
+                <span className="text-lg">⭐</span>
+                Reviews
+              </Link>
+            </>
           )}
         </div>
 
@@ -502,9 +586,8 @@ export default function Navbar() {
           <div className="p-6 space-y-4">
             {[
               { to: "/", label: "Home", icon: "🏠" },
+              { to: "/order_1st", label: "Menu", icon: "🍽️" },
               { to: "/recipe", label: "Recipes", icon: "📚" },
-              { to: "/order_1st", label: "Order Now", icon: "🛒" },
-              { to: "/about", label: "About", icon: "ℹ️" },
             ].map((item) => (
               <Link
                 key={item.to}
@@ -519,6 +602,46 @@ export default function Navbar() {
                 {item.label}
               </Link>
             ))}
+
+            {me && (
+              <>
+                <Link
+                  to="/cart"
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all ${
+                    location.pathname === "/cart"
+                      ? "bg-orange-500 text-white shadow-lg"
+                      : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
+                  }`}
+                >
+                  <span className="text-lg">🛒</span>
+                  Cart
+                </Link>
+
+                <Link
+                  to="/favorites"
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all ${
+                    location.pathname === "/favorites"
+                      ? "bg-orange-500 text-white shadow-lg"
+                      : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
+                  }`}
+                >
+                  <span className="text-lg">❤️</span>
+                  Favorites
+                </Link>
+
+                <Link
+                  to="/reviews"
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl font-semibold transition-all ${
+                    location.pathname === "/reviews"
+                      ? "bg-orange-500 text-white shadow-lg"
+                      : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
+                  }`}
+                >
+                  <span className="text-lg">⭐</span>
+                  Reviews
+                </Link>
+              </>
+            )}
 
             <button
               onClick={toggleDropdownMobile}

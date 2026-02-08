@@ -11,10 +11,14 @@ export default function FavoriteButton({ itemId, type = "recipe" }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    checkFavoriteStatus();
+    if (itemId) {
+      checkFavoriteStatus();
+    }
   }, [itemId]);
 
   const checkFavoriteStatus = async () => {
+    if (!itemId) return;
+
     try {
       const endpoint =
         type === "recipe"
@@ -32,6 +36,11 @@ export default function FavoriteButton({ itemId, type = "recipe" }) {
   const toggleFavorite = async (e) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (!itemId) {
+      showError("Invalid item");
+      return;
+    }
 
     try {
       setLoading(true);
@@ -56,6 +65,11 @@ export default function FavoriteButton({ itemId, type = "recipe" }) {
       setLoading(false);
     }
   };
+
+  // Don't render if no itemId
+  if (!itemId) {
+    return null;
+  }
 
   return (
     <button

@@ -434,27 +434,37 @@ exports.getReceipt = async (req, res) => {
     if (!isOwner && !isStaffOrAdmin)
       return res.status(403).json({ message: "Forbidden" });
 
-    // Allow receipts for completed/delivered orders and orders in progress
-    const allowedStatuses = ["Delivered", "Ready", "Processing"];
+    // Allow receipts for all orders except cancelled
+    const allowedStatuses = [
+      "Placed",
+      "Scheduled",
+      "Processing",
+      "Ready",
+      "Delivered",
+      "Completed",
+    ];
     if (!allowedStatuses.includes(order.status)) {
       return res.status(400).json({
-        message:
-          "Receipt available only for orders that are Processing, Ready, or Delivered",
+        message: "Receipt not available for cancelled orders",
       });
     }
 
     return res.json({
-      invoiceNo: makeInvoiceNo(order._id),
+      id: order._id,
       orderId: order._id,
+      invoiceNo: makeInvoiceNo(order._id),
+      createdAt: order.createdAt,
       issuedAt: new Date(),
       paymentMethod: order.paymentMethod,
       deliveryAddress: order.deliveryAddress,
+      address: order.deliveryAddress,
       phone: order.phone,
       items: order.items,
       subtotal: order.subtotal,
       deliveryFee: order.deliveryFee,
       total: order.total,
       status: order.status,
+      notes: order.notes || "",
     });
   } catch (err) {
     console.error("getReceipt error:", err);

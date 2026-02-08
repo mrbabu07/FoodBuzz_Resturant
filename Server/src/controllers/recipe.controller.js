@@ -241,3 +241,32 @@ exports.deleteRecipe = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
+// GET /api/recipes/trending - Get trending/popular recipes
+exports.getTrendingRecipes = async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+
+    // Get random recipes (you can enhance this with view counts, ratings, etc.)
+    const recipes = await Recipe.aggregate([{ $sample: { size: limit } }]);
+
+    return res.json(recipes);
+  } catch (err) {
+    console.error("getTrendingRecipes error:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+// GET /api/recipes/recent - Get recently added recipes
+exports.getRecentRecipes = async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+
+    const recipes = await Recipe.find().sort({ createdAt: -1 }).limit(limit);
+
+    return res.json(recipes);
+  } catch (err) {
+    console.error("getRecentRecipes error:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};

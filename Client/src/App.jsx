@@ -43,6 +43,7 @@ import RecipeSearchPage from "./pages/RecipeSearchPage";
 import OrderSearchPage from "./pages/OrderSearchPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import FavoritesPage from "./pages/FavoritesPage";
+import ReviewsPage from "./pages/ReviewsPage";
 
 // Admin pages
 import AdminDashboard from "./pages/AdminDashboard";
@@ -166,12 +167,14 @@ export default function App() {
           {/* ✅ BOTH routes open same Recipes listing page */}
           <Route path="/recipe" element={<Recipe_1st_page />} />
           <Route path="/recipes" element={<Recipe_1st_page />} />
+          <Route path="/recipes/search" element={<RecipeSearchPage />} />
+          <Route path="/recipes/trending" element={<Recipe_1st_page />} />
+          <Route path="/recipes/recent" element={<Recipe_1st_page />} />
 
           <Route path="/category/:categoryName" element={<CategoryPage />} />
 
-          {/* ✅ Recipe details */}
+          {/* ✅ Recipe details - Must be AFTER specific routes */}
           <Route path="/recipes/:id" element={<RecipeDetailsPage />} />
-          <Route path="/recipes/search" element={<RecipeSearchPage />} />
           <Route path="/about" element={<About />} />
 
           {/* ---------- Auth ---------- */}
@@ -267,6 +270,14 @@ export default function App() {
             element={
               <UserRoute>
                 <FavoritesPage />
+              </UserRoute>
+            }
+          />
+          <Route
+            path="/reviews"
+            element={
+              <UserRoute>
+                <ReviewsPage />
               </UserRoute>
             }
           />

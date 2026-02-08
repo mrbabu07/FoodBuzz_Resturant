@@ -9,10 +9,14 @@ const {
   getRecipeById,
   createRecipe,
   updateRecipe,
-  deleteRecipe
+  deleteRecipe,
+  getTrendingRecipes,
+  getRecentRecipes,
 } = require("../controllers/recipe.controller");
 
 router.get("/", getAllRecipes);
+router.get("/trending", getTrendingRecipes);
+router.get("/recent", getRecentRecipes);
 router.get("/:id", getRecipeById);
 
 router.post("/", auth, allowRoles("admin", "staff"), createRecipe);

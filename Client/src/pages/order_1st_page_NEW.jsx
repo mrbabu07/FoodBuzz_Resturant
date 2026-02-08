@@ -68,7 +68,7 @@ export default function Order_1st_Page() {
         !q ||
         item.name?.toLowerCase().includes(q) ||
         item.category?.toLowerCase().includes(q) ||
-        item.details?.toLowerCase().includes(q);
+        item.description?.toLowerCase().includes(q);
 
       const matchesCategory =
         selectedCategory === "All" ||
@@ -81,7 +81,7 @@ export default function Order_1st_Page() {
   const stats = useMemo(() => {
     const total = menuItems.length;
     const available = menuItems.filter(
-      (item) => item.isAvailable !== false,
+      (item) => item.available !== false,
     ).length;
     const categories = new Set(menuItems.map((item) => item.category)).size;
     return { total, available, categories };
@@ -330,9 +330,9 @@ export default function Order_1st_Page() {
                       {item.name}
                     </h3>
 
-                    {item.details && (
+                    {item.description && (
                       <p className="text-slate-600 text-sm mb-4 line-clamp-2">
-                        {item.details}
+                        {item.description}
                       </p>
                     )}
 
@@ -340,9 +340,9 @@ export default function Order_1st_Page() {
                       <div className="text-3xl font-black text-orange-600">
                         ৳{item.price}
                       </div>
-                      {item.calories > 0 && (
+                      {item.weight && (
                         <span className="text-sm text-slate-500 font-semibold">
-                          {item.calories} cal
+                          {item.weight}
                         </span>
                       )}
                     </div>

@@ -5,6 +5,7 @@ import { apiFetch } from "../utils/api";
 export default function Home() {
   const [featuredMenuItems, setFeaturedMenuItems] = useState([]);
   const [popularRecipes, setPopularRecipes] = useState([]);
+  const [todaysSpecial, setTodaysSpecial] = useState(null);
   const [stats, setStats] = useState({
     totalOrders: 0,
     totalUsers: 0,
@@ -24,18 +25,39 @@ export default function Home() {
     try {
       setLoading(true);
 
-      // Fetch featured menu items
+      // Fetch featured menu items (get random 6 items)
       const menuResponse = await fetch("/api/menu-items");
       if (menuResponse.ok) {
         const menuData = await menuResponse.json();
-        setFeaturedMenuItems(menuData.slice(0, 6));
+        // Shuffle and take 6 random items
+        const shuffled = [...menuData].sort(() => 0.5 - Math.random());
+        setFeaturedMenuItems(shuffled.slice(0, 6));
+
+        // Set today's special (first available item from shuffled)
+        const special = shuffled.find((item) => item.isAvailable !== false);
+        setTodaysSpecial(special);
+
+        // Update menu items count
+        setStats((prev) => ({ ...prev, totalMenuItems: menuData.length }));
       }
 
-      // Fetch popular recipes
-      const recipesResponse = await fetch("/api/recipes");
+      // Fetch popular recipes (get recent recipes)
+      const recipesResponse = await fetch("/api/recipes/recent");
       if (recipesResponse.ok) {
         const recipesData = await recipesResponse.json();
         setPopularRecipes(recipesData.slice(0, 4));
+      }
+
+      // Fetch real stats
+      try {
+        // Get total orders count (if admin endpoint available)
+        const ordersResponse = await fetch("/api/orders");
+        if (ordersResponse.ok) {
+          const ordersData = await ordersResponse.json();
+          setStats((prev) => ({ ...prev, totalOrders: ordersData.length }));
+        }
+      } catch (err) {
+        console.log("Stats fetch error (non-critical):", err);
       }
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -148,14 +170,15 @@ export default function Home() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 max-w-4xl mx-auto">
               {[
                 {
-                  label: "Happy Customers",
-                  value: "10K+",
-                  icon: "👥",
+                  label: "Total Orders",
+                  value:
+                    stats.totalOrders > 0 ? `${stats.totalOrders}+` : "500+",
+                  icon: "📦",
                   color: "from-blue-500 to-cyan-500",
                 },
                 {
                   label: "Menu Items",
-                  value: `${featuredMenuItems.length || 50}+`,
+                  value: `${stats.totalMenuItems || 50}+`,
                   icon: "🍕",
                   color: "from-green-500 to-emerald-500",
                 },
@@ -166,9 +189,9 @@ export default function Home() {
                   color: "from-yellow-500 to-orange-500",
                 },
                 {
-                  label: "Cities",
-                  value: "25+",
-                  icon: "🏙️",
+                  label: "Happy Customers",
+                  value: "10K+",
+                  icon: "👥",
                   color: "from-purple-500 to-pink-500",
                 },
               ].map((stat, index) => (
@@ -192,6 +215,144 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Today's Special */}
+      {todaysSpecial && (
+        <section className="py-20 bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
+          <div className="container-modern">
+            <div className="text-center mb-12 animate-fade-in">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full font-bold mb-4 shadow-lg">
+                <span className="text-2xl">⭐</span>
+                <span>Today's Special</span>
+              </div>
+              <h2 className="text-5xl font-black text-gray-900 mb-4">
+                Chef's <span className="text-gradient">Recommendation</span>
+              </h2>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                Handpicked by our chef for an extraordinary dining experience
+              </p>
+            </div>
+
+            <div className="max-w-5xl mx-auto">
+              <div className="bg-white rounded-3xl shadow-2xl border-2 border-orange-200 overflow-hidden hover:shadow-glow transition-all duration-500 animate-slide-up">
+                <div className="grid md:grid-cols-2 gap-0">
+                  {/* Image Side */}
+                  <div className="relative h-80 md:h-auto overflow-hidden">
+                    <img
+                      src={
+                        todaysSpecial.imageUrl ||
+                        "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80"
+                      }
+                      alt={todaysSpecial.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.src =
+                          "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80";
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                    <div className="absolute top-6 left-6">
+                      <span className="px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full text-sm font-bold shadow-lg">
+                        {todaysSpecial.category}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Content Side */}
+                  <div className="p-8 md:p-12 flex flex-col justify-center">
+                    <h3 className="text-4xl font-black text-gray-900 mb-4">
+                      {todaysSpecial.name}
+                    </h3>
+
+                    <p className="text-gray-600 text-lg mb-6 leading-relaxed">
+                      {todaysSpecial.details ||
+                        "A masterpiece crafted with premium ingredients and culinary expertise. This dish represents the pinnacle of our chef's creativity and passion."}
+                    </p>
+
+                    {/* Details Grid */}
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      <div className="flex items-center gap-2 text-gray-700">
+                        <span className="text-2xl">💰</span>
+                        <div>
+                          <div className="text-xs text-gray-500 font-semibold">
+                            Price
+                          </div>
+                          <div className="text-xl font-black text-orange-600">
+                            ৳{todaysSpecial.price}
+                          </div>
+                        </div>
+                      </div>
+                      {todaysSpecial.calories > 0 && (
+                        <div className="flex items-center gap-2 text-gray-700">
+                          <span className="text-2xl">🔥</span>
+                          <div>
+                            <div className="text-xs text-gray-500 font-semibold">
+                              Calories
+                            </div>
+                            <div className="text-xl font-black">
+                              {todaysSpecial.calories}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      {todaysSpecial.spiceLevel &&
+                        todaysSpecial.spiceLevel !== "None" && (
+                          <div className="flex items-center gap-2 text-gray-700">
+                            <span className="text-2xl">🌶️</span>
+                            <div>
+                              <div className="text-xs text-gray-500 font-semibold">
+                                Spice Level
+                              </div>
+                              <div className="text-lg font-bold">
+                                {todaysSpecial.spiceLevel}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                    </div>
+
+                    {/* Dietary Badges */}
+                    {(todaysSpecial.isVegetarian ||
+                      todaysSpecial.isVegan ||
+                      todaysSpecial.isGlutenFree ||
+                      todaysSpecial.isHalal) && (
+                      <div className="flex flex-wrap gap-2 mb-6">
+                        {todaysSpecial.isVegetarian && (
+                          <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-bold">
+                            🌱 Vegetarian
+                          </span>
+                        )}
+                        {todaysSpecial.isVegan && (
+                          <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-bold">
+                            🥬 Vegan
+                          </span>
+                        )}
+                        {todaysSpecial.isGlutenFree && (
+                          <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-bold">
+                            Gluten Free
+                          </span>
+                        )}
+                        {todaysSpecial.isHalal && (
+                          <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-bold">
+                            ☪️ Halal
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    <Link
+                      to="/order_1st"
+                      className="px-8 py-4 bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 text-center text-lg"
+                    >
+                      Order This Special Now 🚀
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Featured Menu Items */}
       <section className="py-20 bg-white">
@@ -229,13 +390,27 @@ export default function Home() {
                 >
                   <div className="relative overflow-hidden rounded-xl mb-6">
                     <img
-                      src={item.imageUrl}
+                      src={
+                        item.imageUrl ||
+                        "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80"
+                      }
                       alt={item.name}
                       className="w-full h-48 object-cover transition-transform duration-500 group-hover:scale-110"
+                      onError={(e) => {
+                        e.target.src =
+                          "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80";
+                      }}
                     />
                     <div className="absolute top-4 right-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
-                      ${item.price}
+                      ৳{item.price}
                     </div>
+                    {item.isAvailable === false && (
+                      <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                        <span className="bg-red-500 text-white px-4 py-2 rounded-full font-bold">
+                          Unavailable
+                        </span>
+                      </div>
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
 
@@ -244,17 +419,56 @@ export default function Home() {
                   </h3>
 
                   <p className="text-gray-600 mb-4 line-clamp-2">
-                    {item.description}
+                    {item.details ||
+                      "Delicious and freshly prepared with premium ingredients"}
                   </p>
 
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mb-3">
                     <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium">
                       {item.category}
                     </span>
-                    <Link to="/order_1st" className="btn-primary text-sm">
-                      Order Now
-                    </Link>
+                    {item.calories > 0 && (
+                      <span className="text-xs text-gray-500 font-semibold">
+                        {item.calories} cal
+                      </span>
+                    )}
                   </div>
+
+                  {/* Dietary badges */}
+                  {(item.isVegetarian ||
+                    item.isVegan ||
+                    item.isGlutenFree ||
+                    item.isHalal) && (
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {item.isVegetarian && (
+                        <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-semibold">
+                          🌱 Veg
+                        </span>
+                      )}
+                      {item.isVegan && (
+                        <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs font-semibold">
+                          🥬 Vegan
+                        </span>
+                      )}
+                      {item.isGlutenFree && (
+                        <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-semibold">
+                          GF
+                        </span>
+                      )}
+                      {item.isHalal && (
+                        <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs font-semibold">
+                          ☪️ Halal
+                        </span>
+                      )}
+                    </div>
+                  )}
+
+                  <Link
+                    to="/order_1st"
+                    className="btn-primary text-sm w-full text-center"
+                  >
+                    Order Now
+                  </Link>
                 </div>
               ))}
             </div>
@@ -316,10 +530,20 @@ export default function Home() {
                 >
                   <div className="relative overflow-hidden rounded-xl mb-4">
                     <img
-                      src={recipe.imageUrl}
+                      src={
+                        recipe.imageUrl ||
+                        "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80"
+                      }
                       alt={recipe.name}
                       className="w-full h-32 object-cover transition-transform duration-500 group-hover:scale-110"
+                      onError={(e) => {
+                        e.target.src =
+                          "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80";
+                      }}
                     />
+                    <div className="absolute top-3 left-3 bg-gradient-to-r from-orange-500 to-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                      {recipe.category}
+                    </div>
                     <div className="absolute top-3 right-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-2 py-1 rounded-full text-xs font-bold">
                       {recipe.difficulty || "Easy"}
                     </div>

@@ -1,6 +1,6 @@
 // pages/Recipe_1st_page.jsx - Enhanced Version
 import React, { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { apiFetch } from "../utils/api";
 import data from "../data/Recipe_1st_Page.json";
 
@@ -32,8 +32,16 @@ const CATEGORY_COLORS = {
 
 export default function Recipe_1st_page() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [currentCategoryIndex, setCurrentCategoryIndex] = useState(0);
   const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Detect if we're on trending or recent page
+  const pageType = location.pathname.includes("/trending")
+    ? "trending"
+    : location.pathname.includes("/recent")
+      ? "recent"
+      : "all";
 
   // ✅ Search states
   const [searchText, setSearchText] = useState("");
@@ -136,30 +144,52 @@ export default function Recipe_1st_page() {
 
   const categoryOptions = useMemo(() => ["All", ...CATEGORIES], []);
 
-  // ✅ load ALL recipes from backend once with enhanced data
+  // ✅ load recipes from backend based on page type
   useEffect(() => {
     const load = async () => {
       try {
         setLoadingRecipes(true);
         setError("");
 
-        // Fetch recipes
-        const recipesRes = await fetch("/api/recipes");
-        if (!recipesRes.ok) throw new Error("Failed to fetch recipes");
-        const recipesData = await recipesRes.json();
-        const allRecipes = Array.isArray(recipesData) ? recipesData : [];
+        let endpoint = "/api/recipes";
+        let allRecipes = [];
 
-        setRecipes(allRecipes);
+        // Fetch based on page type
+        if (pageType === "trending") {
+          endpoint = "/api/recipes/trending?limit=20";
+          const recipesRes = await fetch(endpoint);
+          if (!recipesRes.ok)
+            throw new Error("Failed to fetch trending recipes");
+          const recipesData = await recipesRes.json();
+          allRecipes = Array.isArray(recipesData) ? recipesData : [];
+          setRecipes(allRecipes);
+          setFeaturedRecipes(allRecipes);
+        } else if (pageType === "recent") {
+          endpoint = "/api/recipes/recent?limit=20";
+          const recipesRes = await fetch(endpoint);
+          if (!recipesRes.ok) throw new Error("Failed to fetch recent recipes");
+          const recipesData = await recipesRes.json();
+          allRecipes = Array.isArray(recipesData) ? recipesData : [];
+          setRecipes(allRecipes);
+          setFeaturedRecipes(allRecipes);
+        } else {
+          // Fetch all recipes
+          const recipesRes = await fetch("/api/recipes");
+          if (!recipesRes.ok) throw new Error("Failed to fetch recipes");
+          const recipesData = await recipesRes.json();
+          allRecipes = Array.isArray(recipesData) ? recipesData : [];
+          setRecipes(allRecipes);
 
-        // Set featured recipes (first 6)
-        setFeaturedRecipes(allRecipes.slice(0, 6));
+          // Set featured recipes (first 6)
+          setFeaturedRecipes(allRecipes.slice(0, 6));
 
-        // Set trending recipes (random selection)
-        const shuffled = [...allRecipes].sort(() => 0.5 - Math.random());
-        setTrendingRecipes(shuffled.slice(0, 4));
+          // Set trending recipes (random selection)
+          const shuffled = [...allRecipes].sort(() => 0.5 - Math.random());
+          setTrendingRecipes(shuffled.slice(0, 4));
 
-        // Set recent recipes (last 4)
-        setRecentRecipes(allRecipes.slice(-4).reverse());
+          // Set recent recipes (last 4)
+          setRecentRecipes(allRecipes.slice(-4).reverse());
+        }
 
         // Update stats
         setStats((prev) => ({
@@ -176,7 +206,7 @@ export default function Recipe_1st_page() {
       }
     };
     load();
-  }, []);
+  }, [pageType]);
 
   // ✅ Filtered and sorted recipes
   const filteredFeatured = useMemo(() => {
@@ -360,21 +390,53 @@ export default function Recipe_1st_page() {
                 <div className="w-full px-8 md:px-12">
                   <div className="max-w-3xl text-white">
                     <div className="inline-flex items-center gap-3 rounded-full bg-orange-500/90 backdrop-blur-sm px-6 py-3 text-sm mb-6 font-bold">
-                      <span className="text-2xl">🍽️</span>
-                      <span>FoodBuzz Recipe Collection</span>
+                      <span className="text-2xl">
+                        {pageType === "trending"
+                          ? "🔥"
+                          : pageType === "recent"
+                            ? "🆕"
+                            : "🍽️"}
+                      </span>
+                      <span>
+                        {pageType === "trending"
+                          ? "Trending Recipes"
+                          : pageType === "recent"
+                            ? "Recently Added Recipes"
+                            : "FoodBuzz Recipe Collection"}
+                      </span>
                     </div>
 
                     <h1 className="text-3xl sm:text-4xl md:text-6xl font-black leading-tight mb-6">
-                      Explore Delightful
-                      <span className="block text-orange-400">
-                        Culinary Creations
-                      </span>
+                      {pageType === "trending" ? (
+                        <>
+                          Trending & Popular
+                          <span className="block text-orange-400">
+                            Recipes Right Now 🔥
+                          </span>
+                        </>
+                      ) : pageType === "recent" ? (
+                        <>
+                          Fresh & New
+                          <span className="block text-orange-400">
+                            Recipe Additions 🆕
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          Explore Delightful
+                          <span className="block text-orange-400">
+                            Culinary Creations
+                          </span>
+                        </>
+                      )}
                     </h1>
 
                     <p className="text-lg sm:text-xl text-white/90 mb-8 leading-relaxed">
-                      Discover easy-to-follow recipes with fresh ingredients and
-                      authentic flavors. From quick meals to gourmet dishes -
-                      we've got you covered! 👨‍🍳
+                      {pageType === "trending"
+                        ? "Check out what everyone is cooking! These recipes are hot right now and loved by our community. 🌟"
+                        : pageType === "recent"
+                          ? "Discover our latest recipe additions! Fresh ideas and new flavors added just for you. ✨"
+                          : "Discover easy-to-follow recipes with fresh ingredients and authentic flavors. From quick meals to gourmet dishes - we've got you covered! 👨‍🍳"}
                     </p>
 
                     <div className="flex flex-wrap gap-4">
@@ -757,87 +819,115 @@ export default function Recipe_1st_page() {
                     const img =
                       recipe.imageUrl || recipe.pic || recipe.image || "";
 
-                    return (
-                      <article
+                    return rid ? (
+                      <Link
                         key={rid || recipe?.name}
-                        className="bg-orange-50 rounded-2xl p-6 hover:shadow-xl hover:scale-105 transition-all duration-300 group border-2 border-orange-100 hover:border-orange-300"
+                        to={`/recipes/${rid}`}
+                        className="block h-full"
                       >
-                        <div className="relative h-48 mb-4 overflow-hidden rounded-xl">
-                          <img
-                            src={img}
-                            alt={recipe.name}
-                            onError={(e) => {
-                              e.currentTarget.src = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23f97316;stop-opacity:1" /><stop offset="100%" style="stop-color:%23ea580c;stop-opacity:1" /></linearGradient></defs><rect width="600" height="400" fill="url(%23grad)"/><text x="300" y="200" text-anchor="middle" dy=".3em" fill="white" font-size="32" font-weight="bold">${recipe.name || "Recipe"}</text></svg>`;
-                            }}
-                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                          />
+                        <article className="bg-orange-50 rounded-2xl p-6 hover:shadow-2xl hover:scale-105 transition-all duration-300 group border-2 border-orange-100 hover:border-orange-400 cursor-pointer h-full flex flex-col">
+                          <div className="relative h-48 mb-4 overflow-hidden rounded-xl">
+                            <img
+                              src={img}
+                              alt={recipe.name}
+                              onError={(e) => {
+                                e.currentTarget.src = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23f97316;stop-opacity:1" /><stop offset="100%" style="stop-color:%23ea580c;stop-opacity:1" /></linearGradient></defs><rect width="600" height="400" fill="url(%23grad)"/><text x="300" y="200" text-anchor="middle" dy=".3em" fill="white" font-size="32" font-weight="bold">${recipe.name || "Recipe"}</text></svg>`;
+                              }}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                            />
 
-                          <div className="absolute top-3 left-3">
-                            <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                              🍴 {recipe.category || "Recipe"}
-                            </span>
-                          </div>
+                            <div className="absolute top-3 left-3">
+                              <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                                🍴 {recipe.category || "Recipe"}
+                              </span>
+                            </div>
 
-                          <div className="absolute top-3 right-3">
-                            <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-white/90 text-gray-900 text-sm font-bold">
-                              <span>⭐</span>
-                              <span>4.8</span>
+                            <div className="absolute top-3 right-3">
+                              <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-white/90 text-gray-900 text-sm font-bold">
+                                <span>⭐</span>
+                                <span>4.8</span>
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        <h3 className="text-xl font-black text-gray-900 mb-3 line-clamp-1">
+                          <h3 className="text-xl font-black text-gray-900 mb-3 line-clamp-1 group-hover:text-orange-600 transition-colors">
+                            {recipe.name}
+                          </h3>
+
+                          {recipe.description ? (
+                            <p className="text-gray-600 mb-4 line-clamp-2 text-sm">
+                              {recipe.description}
+                            </p>
+                          ) : Array.isArray(recipe.ingredients) &&
+                            recipe.ingredients.length ? (
+                            <p className="text-gray-600 mb-4 line-clamp-2 text-sm">
+                              <span className="font-bold text-orange-600">
+                                Ingredients:
+                              </span>{" "}
+                              {recipe.ingredients.slice(0, 3).join(", ")}
+                              {recipe.ingredients.length > 3 && "..."}
+                            </p>
+                          ) : (
+                            <p className="text-gray-500 mb-4 text-sm">
+                              Delicious recipe waiting for you to try! 🍽️
+                            </p>
+                          )}
+
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center gap-3 text-sm text-gray-600">
+                              <span className="flex items-center gap-1">
+                                <span>⏱️</span>
+                                <span>
+                                  {(recipe.prepTime || 15) +
+                                    (recipe.cookingTime ||
+                                      recipe.cookTime ||
+                                      15)}{" "}
+                                  min
+                                </span>
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <span>👥</span>
+                                <span>{recipe.servings || 4}</span>
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="mt-auto pt-4 border-t-2 border-orange-200 flex items-center justify-between">
+                            <span className="text-sm font-bold text-orange-600 group-hover:text-orange-700 transition-colors">
+                              View full recipe
+                            </span>
+                            <div className="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center group-hover:bg-orange-600 group-hover:scale-110 transition-all">
+                              <svg
+                                className="w-5 h-5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M9 5l7 7-7 7"
+                                />
+                              </svg>
+                            </div>
+                          </div>
+                        </article>
+                      </Link>
+                    ) : (
+                      <article
+                        key={rid || recipe?.name}
+                        className="bg-gray-100 rounded-2xl p-6 border-2 border-gray-200 opacity-60 h-full flex flex-col"
+                      >
+                        <div className="relative h-48 mb-4 overflow-hidden rounded-xl bg-gray-200 flex items-center justify-center">
+                          <span className="text-gray-400 text-4xl">🍽️</span>
+                        </div>
+                        <h3 className="text-xl font-black text-gray-600 mb-3">
                           {recipe.name}
                         </h3>
-
-                        {Array.isArray(recipe.ingredients) &&
-                        recipe.ingredients.length ? (
-                          <p className="text-gray-600 mb-4 line-clamp-2 text-sm">
-                            <span className="font-bold text-orange-600">
-                              Ingredients:
-                            </span>{" "}
-                            {recipe.ingredients.slice(0, 3).join(", ")}
-                            {recipe.ingredients.length > 3 && "..."}
-                          </p>
-                        ) : (
-                          <p className="text-gray-500 mb-4 text-sm">
-                            Delicious recipe waiting for you to try! 🍽️
-                          </p>
-                        )}
-
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center gap-4 text-sm text-gray-600">
-                            <span>
-                              ⏱️{" "}
-                              {(recipe.prepTime || 15) +
-                                (recipe.cookTime || 15)}{" "}
-                              min
-                            </span>
-                            <span>👥 {recipe.servings || 4}</span>
-                          </div>
-                          <span className="bg-green-100 text-green-600 px-2 py-1 rounded-full text-xs font-bold">
-                            {recipe.difficulty || "Easy"}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          {rid ? (
-                            <Link
-                              to={`/recipes/${rid}`}
-                              className="px-6 py-3 rounded-xl bg-orange-500 text-white font-bold hover:bg-orange-600 hover:scale-105 transition-all"
-                            >
-                              View Recipe →
-                            </Link>
-                          ) : (
-                            <button
-                              disabled
-                              className="px-6 py-3 rounded-xl bg-gray-300 text-gray-500 font-bold cursor-not-allowed"
-                              title="Recipe not available"
-                            >
-                              View Recipe
-                            </button>
-                          )}
-                        </div>
+                        <p className="text-gray-500 text-sm">
+                          Recipe details not available
+                        </p>
                       </article>
                     );
                   })

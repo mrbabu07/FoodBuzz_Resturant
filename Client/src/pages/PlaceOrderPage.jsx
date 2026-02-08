@@ -114,7 +114,7 @@ export default function PlaceOrderPage() {
       // Prepare order data
       const orderData = {
         items: cartItems.map((item) => ({
-          menuItemId: item.menuItemId,
+          menuItemId: item.menuItemId || item.id || item._id,
           qty: item.quantity,
         })),
         deliveryAddress: `${address}, ${country}`,
@@ -123,6 +123,17 @@ export default function PlaceOrderPage() {
         paymentMethod: paymentMethod,
         deliveryFee: shipping,
       };
+
+      // Validate that all items have menuItemId
+      const invalidItems = orderData.items.filter((item) => !item.menuItemId);
+      if (invalidItems.length > 0) {
+        dismissToast(loadingToast);
+        showError(
+          "Some items in your cart are invalid. Please remove and re-add them.",
+        );
+        console.error("Invalid cart items:", invalidItems);
+        return;
+      }
 
       // If Stripe payment selected, create checkout session
       if (paymentMethod === "Stripe") {

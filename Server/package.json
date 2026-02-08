@@ -7,7 +7,12 @@
     "dev": "nodemon server-working.js",
     "start": "node server-working.js",
     "seed": "node seed-database.js",
-    "create-admin": "node src/scripts/createDefaultAdmin.js"
+    "seed:all": "node seed-all.js",
+    "seed:menu": "node seed-menu-items.js",
+    "seed:recipes": "node seed-recipes.js",
+    "seed:offers": "node seed-offers.js",
+    "create-admin": "node src/scripts/createDefaultAdmin.js",
+    "setup": "npm install && node seed-all.js && node src/scripts/createDefaultAdmin.js"
   },
   "keywords": [],
   "author": "",
