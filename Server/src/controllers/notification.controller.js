@@ -208,3 +208,180 @@ exports.sendTestNotification = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// GET /api/notifications/analytics - Get notification analytics
+exports.getAnalytics = async (req, res) => {
+  try {
+    const { days = 30 } = req.query;
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - parseInt(days));
+
+    const [
+      totalNotifications,
+      unreadCount,
+      readCount,
+      clickedCount,
+      dismissedCount,
+      byType,
+      byPriority,
+      recentActivity,
+    ] = await Promise.all([
+      Notification.countDocuments({
+        userId: req.user.id,
+        createdAt: { $gte: startDate },
+      }),
+      Notification.countDocuments({
+        userId: req.user.id,
+        read: false,
+      }),
+      Notification.countDocuments({
+        userId: req.user.id,
+        read: true,
+        createdAt: { $gte: startDate },
+      }),
+      Notification.countDocuments({
+        userId: req.user.id,
+        clicked: true,
+        createdAt: { $gte: startDate },
+      }),
+      Notification.countDocuments({
+        userId: req.user.id,
+        dismissed: true,
+        createdAt: { $gte: startDate },
+      }),
+      Notification.aggregate([
+        {
+          $match: {
+            userId: new require("mongoose").Types.ObjectId(req.user.id),
+            createdAt: { $gte: startDate },
+          },
+        },
+        { $group: { _id: "$type", count: { $sum: 1 } } },
+      ]),
+      Notification.aggregate([
+        {
+          $match: {
+            userId: new require("mongoose").Types.ObjectId(req.user.id),
+            createdAt: { $gte: startDate },
+          },
+        },
+        { $group: { _id: "$priority", count: { $sum: 1 } } },
+      ]),
+      Notification.aggregate([
+        {
+          $match: {
+            userId: new require("mongoose").Types.ObjectId(req.user.id),
+            createdAt: {
+              $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+            },
+          },
+        },
+        {
+          $group: {
+            _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+            count: { $sum: 1 },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ]),
+    ]);
+
+    const engagementRate =
+      totalNotifications > 0
+        ? ((clickedCount / totalNotifications) * 100).toFixed(1)
+        : 0;
+
+    const readRate =
+      totalNotifications > 0
+        ? ((readCount / totalNotifications) * 100).toFixed(1)
+        : 0;
+
+    res.json({
+      summary: {
+        total: totalNotifications,
+        unread: unreadCount,
+        read: readCount,
+        clicked: clickedCount,
+        dismissed: dismissedCount,
+        engagementRate: parseFloat(engagementRate),
+        readRate: parseFloat(readRate),
+      },
+      byType: byType.reduce((acc, item) => {
+        acc[item._id] = item.count;
+        return acc;
+      }, {}),
+      byPriority: byPriority.reduce((acc, item) => {
+        acc[item._id] = item.count;
+        return acc;
+      }, {}),
+      recentActivity: recentActivity.map((item) => ({
+        date: item._id,
+        count: item.count,
+      })),
+      period: {
+        days: parseInt(days),
+        startDate: startDate.toISOString(),
+        endDate: new Date().toISOString(),
+      },
+    });
+  } catch (err) {
+    console.error("Get analytics error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// PATCH /api/notifications/:id/click - Mark notification as clicked
+exports.markAsClicked = async (req, res) => {
+  try {
+    const notification = await Notification.findOne({
+      _id: req.params.id,
+      userId: req.user.id,
+    });
+
+    if (!notification) {
+      return res.status(404).json({ message: "Notification not found" });
+    }
+
+    notification.clicked = true;
+    notification.clickedAt = new Date();
+    if (!notification.read) {
+      notification.read = true;
+      notification.readAt = new Date();
+    }
+    await notification.save();
+
+    res.json({
+      message: "Notification marked as clicked",
+      notification,
+    });
+  } catch (error) {
+    console.error("Mark as clicked error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// PATCH /api/notifications/:id/dismiss - Mark notification as dismissed
+exports.markAsDismissed = async (req, res) => {
+  try {
+    const notification = await Notification.findOne({
+      _id: req.params.id,
+      userId: req.user.id,
+    });
+
+    if (!notification) {
+      return res.status(404).json({ message: "Notification not found" });
+    }
+
+    notification.dismissed = true;
+    notification.dismissedAt = new Date();
+    await notification.save();
+
+    res.json({
+      message: "Notification dismissed",
+      notification,
+    });
+  } catch (error) {
+    console.error("Mark as dismissed error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+};

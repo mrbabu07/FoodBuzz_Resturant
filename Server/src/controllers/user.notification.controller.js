@@ -7,6 +7,15 @@ const ALLOWED_KEYS = [
   "promoEmails",
   "pushNotifications",
   "smsNotifications",
+  "quietHoursEnabled",
+  "quietHoursStart",
+  "quietHoursEnd",
+  "quietHoursWeekendOnly",
+  "notificationFrequency",
+  "digestTime",
+  "soundEnabled",
+  "vibrationEnabled",
+  "showPreview",
 ];
 
 // GET /api/users/me/notifications
@@ -24,6 +33,17 @@ exports.getMyNotificationPrefs = async (req, res) => {
       promoEmails: user.notificationPrefs?.promoEmails ?? false,
       pushNotifications: user.notificationPrefs?.pushNotifications ?? false,
       smsNotifications: user.notificationPrefs?.smsNotifications ?? false,
+      quietHoursEnabled: user.notificationPrefs?.quietHoursEnabled ?? false,
+      quietHoursStart: user.notificationPrefs?.quietHoursStart ?? "22:00",
+      quietHoursEnd: user.notificationPrefs?.quietHoursEnd ?? "08:00",
+      quietHoursWeekendOnly:
+        user.notificationPrefs?.quietHoursWeekendOnly ?? false,
+      notificationFrequency:
+        user.notificationPrefs?.notificationFrequency ?? "instant",
+      digestTime: user.notificationPrefs?.digestTime ?? "09:00",
+      soundEnabled: user.notificationPrefs?.soundEnabled ?? true,
+      vibrationEnabled: user.notificationPrefs?.vibrationEnabled ?? true,
+      showPreview: user.notificationPrefs?.showPreview ?? true,
     };
 
     res.json({
@@ -45,8 +65,35 @@ exports.updateMyNotificationPrefs = async (req, res) => {
     const update = {};
 
     for (const key of ALLOWED_KEYS) {
-      if (typeof req.body[key] === "boolean") {
-        update[`notificationPrefs.${key}`] = req.body[key];
+      if (req.body[key] !== undefined) {
+        // Handle boolean fields
+        if (
+          [
+            "orderEmails",
+            "statusEmails",
+            "promoEmails",
+            "pushNotifications",
+            "smsNotifications",
+            "quietHoursEnabled",
+            "quietHoursWeekendOnly",
+            "soundEnabled",
+            "vibrationEnabled",
+            "showPreview",
+          ].includes(key)
+        ) {
+          update[`notificationPrefs.${key}`] = Boolean(req.body[key]);
+        }
+        // Handle string fields
+        else if (
+          [
+            "quietHoursStart",
+            "quietHoursEnd",
+            "notificationFrequency",
+            "digestTime",
+          ].includes(key)
+        ) {
+          update[`notificationPrefs.${key}`] = String(req.body[key]);
+        }
       }
     }
 

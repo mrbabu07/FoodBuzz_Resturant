@@ -7,6 +7,25 @@ const notificationPrefsSchema = new mongoose.Schema(
     promoEmails: { type: Boolean, default: false },
     pushNotifications: { type: Boolean, default: false },
     smsNotifications: { type: Boolean, default: false },
+
+    // Quiet Hours (Do Not Disturb)
+    quietHoursEnabled: { type: Boolean, default: false },
+    quietHoursStart: { type: String, default: "22:00" }, // 10 PM
+    quietHoursEnd: { type: String, default: "08:00" }, // 8 AM
+    quietHoursWeekendOnly: { type: Boolean, default: false },
+
+    // Notification Frequency
+    notificationFrequency: {
+      type: String,
+      enum: ["instant", "hourly", "daily", "weekly"],
+      default: "instant",
+    },
+    digestTime: { type: String, default: "09:00" }, // For daily/weekly digests
+
+    // Advanced Settings
+    soundEnabled: { type: Boolean, default: true },
+    vibrationEnabled: { type: Boolean, default: true },
+    showPreview: { type: Boolean, default: true },
   },
   { _id: false },
 );

@@ -50,6 +50,25 @@ const notificationSchema = new mongoose.Schema(
     expiresAt: {
       type: Date,
     },
+    // Analytics fields
+    clicked: {
+      type: Boolean,
+      default: false,
+    },
+    clickedAt: {
+      type: Date,
+    },
+    dismissed: {
+      type: Boolean,
+      default: false,
+    },
+    dismissedAt: {
+      type: Date,
+    },
+    deliveryChannels: {
+      type: [String],
+      default: [],
+    },
   },
   {
     timestamps: true,

@@ -36,6 +36,8 @@ import ReceiptPage from "./pages/ReceiptPage";
 import OrderTrackingPage from "./pages/OrderTrackingPage";
 import NotificationPreferences from "./pages/NotificationPreferences";
 import NotificationPreferencesPage from "./pages/NotificationPreferencesPage";
+import NotificationHistoryPage from "./pages/NotificationHistoryPage";
+import NotificationAnalyticsPage from "./pages/NotificationAnalyticsPage";
 import RecipeDetailsPage from "./pages/RecipeDetailsPage";
 import RecipeSearchPage from "./pages/RecipeSearchPage";
 import OrderSearchPage from "./pages/OrderSearchPage";
@@ -198,6 +200,22 @@ export default function App() {
             element={
               <UserRoute>
                 <NotificationPreferencesPage />
+              </UserRoute>
+            }
+          />
+          <Route
+            path="/notification-history"
+            element={
+              <UserRoute>
+                <NotificationHistoryPage />
+              </UserRoute>
+            }
+          />
+          <Route
+            path="/notification-analytics"
+            element={
+              <UserRoute>
+                <NotificationAnalyticsPage />
               </UserRoute>
             }
           />

@@ -12,6 +12,9 @@ router.get("/", notificationController.getNotifications);
 // GET /api/notifications/unread-count - Get unread count
 router.get("/unread-count", notificationController.getUnreadCount);
 
+// GET /api/notifications/analytics - Get analytics
+router.get("/analytics", notificationController.getAnalytics);
+
 // POST /api/notifications/test - Send test notification
 router.post("/test", notificationController.sendTestNotification);
 
@@ -26,6 +29,12 @@ router.get("/:id", notificationController.getNotification);
 
 // PATCH /api/notifications/:id/read - Mark notification as read
 router.patch("/:id/read", notificationController.markAsRead);
+
+// PATCH /api/notifications/:id/click - Mark notification as clicked
+router.patch("/:id/click", notificationController.markAsClicked);
+
+// PATCH /api/notifications/:id/dismiss - Mark notification as dismissed
+router.patch("/:id/dismiss", notificationController.markAsDismissed);
 
 // DELETE /api/notifications/:id - Delete notification
 router.delete("/:id", notificationController.deleteNotification);

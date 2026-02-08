@@ -111,51 +111,57 @@ exports.changePassword = async (req, res) => {
 exports.updateNotificationPreferences = async (req, res) => {
   try {
     const userId = req.user.id;
-    const {
-      emailNotifications,
-      smsNotifications,
-      pushNotifications,
-      orderUpdates,
-      promotions,
-    } = req.body;
+    const prefs = req.body;
 
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Initialize notificationPreferences if it doesn't exist
-    if (!user.notificationPreferences) {
-      user.notificationPreferences = {};
+    // Initialize notificationPrefs if it doesn't exist
+    if (!user.notificationPrefs) {
+      user.notificationPrefs = {};
     }
 
-    // Update preferences
-    if (emailNotifications !== undefined)
-      user.notificationPreferences.emailNotifications =
-        Boolean(emailNotifications);
-    if (smsNotifications !== undefined)
-      user.notificationPreferences.smsNotifications = Boolean(smsNotifications);
-    if (pushNotifications !== undefined)
-      user.notificationPreferences.pushNotifications =
-        Boolean(pushNotifications);
-    if (orderUpdates !== undefined)
-      user.notificationPreferences.orderUpdates = Boolean(orderUpdates);
-    if (promotions !== undefined)
-      user.notificationPreferences.promotions = Boolean(promotions);
+    // Update all preference fields
+    const allowedFields = [
+      "orderEmails",
+      "statusEmails",
+      "promoEmails",
+      "pushNotifications",
+      "smsNotifications",
+      "quietHoursEnabled",
+      "quietHoursStart",
+      "quietHoursEnd",
+      "quietHoursWeekendOnly",
+      "notificationFrequency",
+      "digestTime",
+      "soundEnabled",
+      "vibrationEnabled",
+      "showPreview",
+    ];
 
+    allowedFields.forEach((field) => {
+      if (prefs[field] !== undefined) {
+        user.notificationPrefs[field] = prefs[field];
+      }
+    });
+
+    // Mark the subdocument as modified
+    user.markModified("notificationPrefs");
     await user.save();
 
     // Log activity
     await logActivity({
       userId,
       action: "NOTIFICATION_PREFERENCES_UPDATED",
-      meta: { preferences: user.notificationPreferences },
+      meta: { updatedFields: Object.keys(prefs) },
       req,
     });
 
     return res.json({
       message: "Notification preferences updated",
-      preferences: user.notificationPreferences,
+      notificationPrefs: user.notificationPrefs,
     });
   } catch (err) {
     console.error("updateNotificationPreferences error:", err);
@@ -168,21 +174,30 @@ exports.getNotificationPreferences = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const user = await User.findById(userId).select("notificationPreferences");
+    const user = await User.findById(userId).select("notificationPrefs");
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Default preferences if not set
-    const preferences = user.notificationPreferences || {
-      emailNotifications: true,
+    // Return preferences with defaults
+    const preferences = user.notificationPrefs || {
+      orderEmails: true,
+      statusEmails: true,
+      promoEmails: false,
+      pushNotifications: false,
       smsNotifications: false,
-      pushNotifications: true,
-      orderUpdates: true,
-      promotions: true,
+      quietHoursEnabled: false,
+      quietHoursStart: "22:00",
+      quietHoursEnd: "08:00",
+      quietHoursWeekendOnly: false,
+      notificationFrequency: "instant",
+      digestTime: "09:00",
+      soundEnabled: true,
+      vibrationEnabled: true,
+      showPreview: true,
     };
 
-    return res.json(preferences);
+    return res.json({ notificationPrefs: preferences });
   } catch (err) {
     console.error("getNotificationPreferences error:", err);
     return res.status(500).json({ message: "Server error" });

@@ -47,13 +47,13 @@ router.put(
 router.get(
   "/me/notifications",
   auth,
-  allowRoles("user"),
+  allowRoles("user", "admin", "staff"),
   getMyNotificationPrefs,
 );
 router.patch(
   "/me/notifications",
   auth,
-  allowRoles("user"),
+  allowRoles("user", "admin", "staff"),
   updateMyNotificationPrefs,
 );
 
@@ -61,13 +61,13 @@ router.patch(
 router.post(
   "/me/push-subscription",
   auth,
-  allowRoles("user", "admin"),
+  allowRoles("user", "admin", "staff"),
   savePushSubscription,
 );
 router.delete(
   "/me/push-subscription",
   auth,
-  allowRoles("user", "admin"),
+  allowRoles("user", "admin", "staff"),
   removePushSubscription,
 );
 
@@ -75,7 +75,7 @@ router.delete(
 router.post(
   "/me/test-notification",
   auth,
-  allowRoles("user", "admin"),
+  allowRoles("user", "admin", "staff"),
   sendTestNotification,
 );
 

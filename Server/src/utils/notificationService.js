@@ -28,6 +28,36 @@ class NotificationService {
   }
 
   /**
+   * Check if current time is within quiet hours
+   */
+  isQuietHours(prefs) {
+    if (!prefs || !prefs.quietHoursEnabled) return false;
+
+    const now = new Date();
+    const currentDay = now.getDay(); // 0 = Sunday, 6 = Saturday
+
+    // Check if quiet hours only apply to weekends
+    if (prefs.quietHoursWeekendOnly) {
+      if (currentDay !== 0 && currentDay !== 6) {
+        return false; // Not weekend, quiet hours don't apply
+      }
+    }
+
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+    const [startHour, startMin] = prefs.quietHoursStart.split(":").map(Number);
+    const [endHour, endMin] = prefs.quietHoursEnd.split(":").map(Number);
+    const startTime = startHour * 60 + startMin;
+    const endTime = endHour * 60 + endMin;
+
+    // Handle overnight quiet hours (e.g., 22:00 to 08:00)
+    if (startTime > endTime) {
+      return currentTime >= startTime || currentTime <= endTime;
+    }
+
+    return currentTime >= startTime && currentTime <= endTime;
+  }
+
+  /**
    * Send notification to user based on their preferences
    * @param {string} userId - User ID
    * @param {Object} notification - Notification data
@@ -56,6 +86,41 @@ class NotificationService {
         priority = "normal",
         expiresAt,
       } = notification;
+
+      // Check quiet hours (but allow urgent notifications through)
+      if (priority !== "urgent" && this.isQuietHours(user.notificationPrefs)) {
+        console.log(
+          `⏰ Quiet hours active for user ${userId}, notification queued`,
+        );
+        // Still save to database, but don't send push/email/sms
+        const dbNotification = await Notification.create({
+          userId,
+          type,
+          title,
+          message,
+          data,
+          priority,
+          expiresAt,
+          read: false,
+        });
+
+        return {
+          success: true,
+          notificationId: dbNotification._id,
+          results: [
+            {
+              type: "database",
+              status: "saved",
+              notificationId: dbNotification._id,
+            },
+          ],
+          summary: {
+            sent: 0,
+            failed: 0,
+            quietHours: true,
+          },
+        };
+      }
 
       // Create notification in database
       const dbNotification = await Notification.create({
