@@ -16,6 +16,7 @@ const {
   savePushSubscription,
   removePushSubscription,
   sendTestNotification,
+  getVapidPublicKey,
 } = require("../controllers/user.notification.controller");
 
 // Profile routes
@@ -77,5 +78,8 @@ router.post(
   allowRoles("user", "admin"),
   sendTestNotification,
 );
+
+// Get VAPID public key for push notifications
+router.get("/vapid-public-key", getVapidPublicKey);
 
 module.exports = router;

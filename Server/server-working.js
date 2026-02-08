@@ -4,6 +4,7 @@ console.log("Mongo URI:", process.env.MONGO_URI);
 const express = require("express");
 const connectDB = require("./src/config/db");
 const MenuItem = require("./src/models/MenuItem");
+const { initializePushService } = require("./src/utils/pushService");
 
 const app = express();
 
@@ -130,4 +131,7 @@ app.use((err, req, res, next) => {
 const PORT = 5000;
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 FoodBuzz API on http://localhost:${PORT}`);
+
+  // Initialize push notification service
+  initializePushService();
 });

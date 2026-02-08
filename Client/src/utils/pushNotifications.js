@@ -73,6 +73,36 @@ export const getServiceWorkerRegistration = async () => {
 };
 
 /**
+ * Get VAPID public key from server
+ */
+export const getVapidPublicKey = async () => {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/users/vapid-public-key`,
+    );
+    const data = await response.json();
+    return data.publicKey;
+  } catch (error) {
+    console.error("Failed to get VAPID public key:", error);
+    return null;
+  }
+};
+
+/**
+ * Convert VAPID key to Uint8Array
+ */
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
+/**
  * Subscribe to push notifications and save to backend
  */
 export const subscribeToPush = async () => {
@@ -93,12 +123,27 @@ export const subscribeToPush = async () => {
     let subscription = await registration.pushManager.getSubscription();
 
     if (!subscription) {
-      // Subscribe to push notifications
-      // Note: For production, you need VAPID keys from your backend
-      subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: null, // Add VAPID public key here in production
-      });
+      // Get VAPID public key from server
+      const vapidPublicKey = await getVapidPublicKey();
+
+      if (!vapidPublicKey) {
+        console.warn(
+          "VAPID key not available, using simulated push notifications",
+        );
+        // Still save subscription for future use
+        subscription = {
+          endpoint: "simulated-endpoint",
+          keys: { p256dh: "simulated", auth: "simulated" },
+        };
+      } else {
+        // Subscribe to push notifications with VAPID key
+        const applicationServerKey = urlBase64ToUint8Array(vapidPublicKey);
+
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: applicationServerKey,
+        });
+      }
     }
 
     // Save subscription to backend

@@ -10,7 +10,7 @@ import {
   isPushSubscribed,
   getNotificationPermission,
 } from "../utils/pushNotifications";
-import { showToast } from "../utils/toast";
+import { showSuccess, showError } from "../utils/toast";
 
 export default function NotificationPreferencesPage() {
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ export default function NotificationPreferencesPage() {
       setPreferences(data.notificationPrefs || preferences);
     } catch (error) {
       console.error("Failed to load preferences:", error);
-      showToast("Failed to load preferences", "error");
+      showError("Failed to load preferences");
     } finally {
       setLoading(false);
     }
@@ -62,10 +62,10 @@ export default function NotificationPreferencesPage() {
     try {
       setSaving(true);
       await updateNotificationPreferences(preferences);
-      showToast("Preferences saved successfully", "success");
+      showSuccess("Preferences saved successfully");
     } catch (error) {
       console.error("Failed to save preferences:", error);
-      showToast("Failed to save preferences", "error");
+      showError("Failed to save preferences");
     } finally {
       setSaving(false);
     }
@@ -77,20 +77,17 @@ export default function NotificationPreferencesPage() {
         await unsubscribeFromPush();
         setPushSubscribed(false);
         setPreferences((prev) => ({ ...prev, pushNotifications: false }));
-        showToast("Push notifications disabled", "success");
+        showSuccess("Push notifications disabled");
       } else {
         await subscribeToPush();
         setPushSubscribed(true);
         setPreferences((prev) => ({ ...prev, pushNotifications: true }));
-        showToast("Push notifications enabled", "success");
+        showSuccess("Push notifications enabled");
       }
       await checkPushStatus();
     } catch (error) {
       console.error("Failed to toggle push notifications:", error);
-      showToast(
-        error.message || "Failed to toggle push notifications",
-        "error",
-      );
+      showError(error.message || "Failed to toggle push notifications");
     }
   };
 

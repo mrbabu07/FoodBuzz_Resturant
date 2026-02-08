@@ -4,6 +4,18 @@
 const User = require("../models/User");
 const Notification = require("../models/Notification");
 const { logActivity } = require("./activityLogger");
+const { sendMail } = require("./mailer");
+const {
+  orderPlacedTemplate,
+  orderStatusTemplate,
+  promoTemplate,
+  recipeTemplate,
+  securityTemplate,
+} = require("./emailTemplates");
+const {
+  sendPushNotification,
+  createNotificationPayload,
+} = require("./pushService");
 
 /**
  * Notification Service for sending various types of notifications
@@ -214,23 +226,107 @@ class NotificationService {
   }
 
   /**
-   * Send email notification (simulated for demo)
+   * Send email notification (REAL EMAIL SENDING)
    */
   async sendEmailNotification(user, notification) {
-    // In production, integrate with actual email service (SendGrid, AWS SES, etc.)
-    console.log(`📧 Email notification sent to ${user.email}:`, {
-      to: user.email,
-      subject: notification.title,
-      body: notification.message,
-      type: notification.type,
-    });
+    try {
+      let htmlContent = "";
+      let subject = notification.title;
 
-    return {
-      provider: "demo",
-      recipient: user.email,
-      messageId: `email_${Date.now()}`,
-      timestamp: new Date().toISOString(),
-    };
+      // Generate appropriate email template based on notification type
+      switch (notification.type) {
+        case "order":
+          if (notification.data?.status === "placed") {
+            htmlContent = orderPlacedTemplate({
+              orderNumber:
+                notification.data.orderNumber || notification.data.orderId,
+              total: notification.data.total || 0,
+              items: notification.data.items || [],
+              deliveryAddress: notification.data.deliveryAddress || "",
+              phone: notification.data.phone || "",
+              _id: notification.data.orderId,
+            });
+          } else {
+            htmlContent = orderStatusTemplate(
+              {
+                orderNumber:
+                  notification.data.orderNumber || notification.data.orderId,
+                total: notification.data.total || 0,
+                _id: notification.data.orderId,
+              },
+              notification.data.status || "preparing",
+            );
+          }
+          break;
+
+        case "promo":
+          htmlContent = promoTemplate({
+            title: notification.title,
+            description: notification.message,
+            discountType: notification.data.discountType || "percentage",
+            discountValue: notification.data.discountValue || 10,
+            validUntil: notification.data.validUntil || new Date(),
+          });
+          break;
+
+        case "recipe":
+          htmlContent = recipeTemplate({
+            name: notification.data.recipeName || "New Recipe",
+            category: notification.data.category || "General",
+            description: notification.message,
+            imageUrl: notification.data.imageUrl || "",
+            _id: notification.data.recipeId,
+          });
+          break;
+
+        case "security":
+          htmlContent = securityTemplate({
+            message: notification.message,
+            action: notification.data.action || "",
+          });
+          break;
+
+        default:
+          // Generic template for other types
+          htmlContent = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <h2 style="color: #f97316;">${notification.title}</h2>
+              <p style="color: #333; line-height: 1.6;">${notification.message}</p>
+              <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
+              <p style="color: #6b7280; font-size: 14px;">
+                <strong>FoodBuzz</strong> - Delicious Food, Delivered Fast
+              </p>
+            </div>
+          `;
+      }
+
+      // Send actual email using nodemailer
+      const result = await sendMail({
+        to: user.email,
+        subject: subject,
+        html: htmlContent,
+      });
+
+      console.log(`✅ Email sent to ${user.email}: ${subject}`);
+
+      return {
+        provider: "smtp",
+        recipient: user.email,
+        messageId: result.messageId || `email_${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        success: true,
+      };
+    } catch (error) {
+      console.error(`❌ Email send failed to ${user.email}:`, error.message);
+
+      return {
+        provider: "smtp",
+        recipient: user.email,
+        error: error.message,
+        timestamp: new Date().toISOString(),
+        success: false,
+      };
+    }
   }
 
   /**
@@ -253,24 +349,54 @@ class NotificationService {
   }
 
   /**
-   * Send push notification (simulated for demo)
+   * Send push notification (REAL PUSH NOTIFICATION)
    */
   async sendPushNotification(user, notification) {
-    // In production, use web-push library or Firebase Cloud Messaging
-    console.log(`🔔 Push notification sent to user ${user._id}:`, {
-      subscription: user.pushSubscription?.endpoint,
-      title: notification.title,
-      body: notification.message,
-      type: notification.type,
-      data: notification.data,
-    });
+    try {
+      if (!user.pushSubscription || !user.pushSubscription.endpoint) {
+        console.log(`⚠️ No push subscription for user ${user._id}`);
+        return {
+          provider: "web-push",
+          success: false,
+          message: "No push subscription",
+        };
+      }
 
-    return {
-      provider: "demo",
-      endpoint: user.pushSubscription?.endpoint,
-      messageId: `push_${Date.now()}`,
-      timestamp: new Date().toISOString(),
-    };
+      // Create notification payload
+      const payload = createNotificationPayload(notification);
+
+      // Send push notification
+      const result = await sendPushNotification(user.pushSubscription, payload);
+
+      if (result.success) {
+        console.log(`✅ Push notification sent to user ${user._id}`);
+      } else {
+        console.log(
+          `⚠️ Push notification failed for user ${user._id}:`,
+          result.message,
+        );
+      }
+
+      return {
+        provider: "web-push",
+        endpoint: user.pushSubscription.endpoint,
+        messageId: `push_${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        ...result,
+      };
+    } catch (error) {
+      console.error(
+        `❌ Push notification error for user ${user._id}:`,
+        error.message,
+      );
+
+      return {
+        provider: "web-push",
+        success: false,
+        error: error.message,
+        timestamp: new Date().toISOString(),
+      };
+    }
   }
 
   /**

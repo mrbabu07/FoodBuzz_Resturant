@@ -209,3 +209,23 @@ exports.sendTestNotification = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+// GET /api/users/vapid-public-key
+exports.getVapidPublicKey = async (req, res) => {
+  try {
+    const { getVapidPublicKey } = require("../utils/pushService");
+    const publicKey = getVapidPublicKey();
+
+    if (!publicKey) {
+      return res.status(404).json({
+        message: "VAPID keys not configured",
+        note: "Run: npx web-push generate-vapid-keys",
+      });
+    }
+
+    res.json({ publicKey });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
