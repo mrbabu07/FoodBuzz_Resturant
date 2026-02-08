@@ -1,102 +1,53 @@
-// path: backend_sara/project/src/pages/ManageStaffPage.jsx
-import React, { useEffect, useMemo, useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Navigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import AdminLayout from "../layouts/AdminLayout";
+import { showSuccess, showError } from "../utils/toast";
 import { apiFetch } from "../utils/api";
 import { getUser } from "../utils/authStorage";
 
-import AdminFooter from "../components/AdminFooter";
-import AdminNavbar from "../components/AdminNavbar";
-
-const modalAnim = {
-  hidden: { opacity: 0, scale: 0.96, y: 10 },
-  show: {
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: { type: "spring", stiffness: 260, damping: 18 },
-  },
-  exit: { opacity: 0, scale: 0.98, y: 10, transition: { duration: 0.15 } },
-};
-
-function badge(role) {
-  if (role === "admin") return "bg-black text-white border-black";
-  if (role === "staff") return "bg-orange-500 text-white border-orange-500";
-  return "bg-white text-black border-orange-200";
-}
-
-function fmt(d) {
-  try {
-    const dt = new Date(d);
-    if (Number.isNaN(dt.getTime())) return String(d || "");
-    return dt.toLocaleString();
-  } catch {
-    return String(d || "");
-  }
-}
-
 export default function ManageStaffPage() {
-  // ✅ Admin guard (JWT based user)
   const me = getUser();
   if (!me) return <Navigate to="/login" replace />;
-  if (String(me.role || "").toLowerCase() !== "admin") return <Navigate to="/" replace />;
-
-  // ✅ Sidebar state (AdminNavbar expects this)
-  const [navOpen, setNavOpen] = useState(true);
+  if (String(me.role || "").toLowerCase() !== "admin")
+    return <Navigate to="/" replace />;
 
   const [users, setUsers] = useState([]);
-  const [q, setQ] = useState("");
-  const [activeFilter, setActiveFilter] = useState("all"); // all/active/inactive
   const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState("");
-
-  const [open, setOpen] = useState(false);
-  const [mode, setMode] = useState("create"); // create/edit/resetpass
+  const [searchTerm, setSearchTerm] = useState("");
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [showModal, setShowModal] = useState(false);
+  const [modalMode, setModalMode] = useState("create");
   const [saving, setSaving] = useState(false);
-
-  const emptyForm = {
+  const [formData, setFormData] = useState({
     id: "",
     name: "",
     email: "",
     phone: "",
+    password: "",
     isActive: true,
-    password: "", // only for create/reset
-  };
+  });
 
-  const [form, setForm] = useState(emptyForm);
+  useEffect(() => {
+    loadStaff();
+  }, [activeFilter]);
 
-  const load = async () => {
+  const loadStaff = async () => {
     try {
       setLoading(true);
-      setErr("");
-
       const params = new URLSearchParams();
-      if (q.trim()) params.set("search", q.trim());
       if (activeFilter === "active") params.set("active", "true");
       else if (activeFilter === "inactive") params.set("active", "false");
       else params.set("active", "all");
 
-      const data = await apiFetch(`/api/admin/staff?${params.toString()}`, { method: "GET" });
+      const data = await apiFetch(`/api/admin/staff?${params.toString()}`);
       setUsers(Array.isArray(data) ? data : []);
-    } catch (e) {
-      setErr(e?.message || "Failed to load staff");
+    } catch (error) {
+      showError("Failed to load staff");
       setUsers([]);
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // 🔎 live search debounce (small)
-  useEffect(() => {
-    const t = setTimeout(() => load(), 350);
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [q, activeFilter]);
 
   const stats = useMemo(() => {
     const total = users.length;
@@ -106,519 +57,547 @@ export default function ManageStaffPage() {
     return { total, active, staff, admins };
   }, [users]);
 
-  const openCreate = () => {
-    setMode("create");
-    setForm({ ...emptyForm, isActive: true, password: "" });
-    setOpen(true);
-  };
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
 
-  const openEdit = (u) => {
-    setMode("edit");
-    setForm({
-      id: u._id,
-      name: u.name || "",
-      email: u.email || "",
-      phone: u.phone || "",
-      isActive: u.isActive !== false,
+  const openCreateModal = () => {
+    setModalMode("create");
+    setFormData({
+      id: "",
+      name: "",
+      email: "",
+      phone: "",
       password: "",
+      isActive: true,
     });
-    setOpen(true);
+    setShowModal(true);
   };
 
-  const openResetPass = (u) => {
-    setMode("resetpass");
-    setForm({
-      id: u._id,
-      name: u.name || "",
-      email: u.email || "",
-      phone: u.phone || "",
-      isActive: u.isActive !== false,
+  const openEditModal = (user) => {
+    setModalMode("edit");
+    setFormData({
+      id: user._id,
+      name: user.name || "",
+      email: user.email || "",
+      phone: user.phone || "",
       password: "",
+      isActive: user.isActive !== false,
     });
-    setOpen(true);
+    setShowModal(true);
   };
 
-  const close = () => {
-    setOpen(false);
-    setForm(emptyForm);
+  const openResetPasswordModal = (user) => {
+    setModalMode("resetpass");
+    setFormData({
+      id: user._id,
+      name: user.name || "",
+      email: user.email || "",
+      phone: user.phone || "",
+      password: "",
+      isActive: user.isActive !== false,
+    });
+    setShowModal(true);
   };
 
-  const onSave = async () => {
-    const name = form.name.trim();
-    const email = form.email.trim().toLowerCase();
-    const phone = form.phone.trim();
-    const isActive = form.isActive !== false;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    if (!name || !email) {
-      alert("Name and Email লাগবে!");
+    if (!formData.name.trim() || !formData.email.trim()) {
+      showError("Name and Email are required");
       return;
     }
 
     setSaving(true);
     try {
-      if (mode === "create") {
-        // ✅ password required OR leave empty to auto-generate backend
-        const payload = { name, email, phone };
-        if (form.password.trim()) payload.password = form.password.trim();
+      if (modalMode === "create") {
+        const payload = {
+          name: formData.name.trim(),
+          email: formData.email.trim().toLowerCase(),
+          phone: formData.phone.trim(),
+        };
+        if (formData.password.trim())
+          payload.password = formData.password.trim();
 
         await apiFetch("/api/admin/staff", {
           method: "POST",
           body: JSON.stringify(payload),
         });
 
-        alert("✅ Staff created. Email + Password staff email এ পাঠানো হয়েছে (SMTP ঠিক থাকলে)।");
-        close();
-        await load();
-        return;
-      }
-
-      if (mode === "edit") {
-        await apiFetch(`/api/admin/staff/${form.id}`, {
+        showSuccess("Staff created successfully! Credentials sent via email.");
+      } else if (modalMode === "edit") {
+        await apiFetch(`/api/admin/staff/${formData.id}`, {
           method: "PATCH",
-          body: JSON.stringify({ name, phone, isActive }),
+          body: JSON.stringify({
+            name: formData.name.trim(),
+            phone: formData.phone.trim(),
+            isActive: formData.isActive,
+          }),
         });
-        close();
-        await load();
-        return;
-      }
 
-      if (mode === "resetpass") {
-        // ✅ if empty, backend auto generate করে email করবে
+        showSuccess("Staff updated successfully!");
+      } else if (modalMode === "resetpass") {
         const payload = {};
-        if (form.password.trim()) payload.password = form.password.trim();
+        if (formData.password.trim())
+          payload.password = formData.password.trim();
 
-        await apiFetch(`/api/admin/staff/${form.id}/password`, {
+        await apiFetch(`/api/admin/staff/${formData.id}/password`, {
           method: "PATCH",
           body: JSON.stringify(payload),
         });
 
-        alert("✅ Password reset done. New password staff email এ গেছে (SMTP ঠিক থাকলে)।");
-        close();
-        await load();
-        return;
+        showSuccess(
+          "Password reset successfully! New password sent via email.",
+        );
       }
-    } catch (e) {
-      alert(e?.message || "Action failed");
+
+      setShowModal(false);
+      loadStaff();
+    } catch (error) {
+      showError(error.message || "Operation failed");
     } finally {
       setSaving(false);
     }
   };
 
-  const toggleActive = async (u) => {
-    // prevent self deactivation
-    if (String(u?._id) === String(me?.id || me?._id || "")) {
-      alert("নিজের account deactivate করা যাবে না 🙂");
+  const toggleActive = async (user) => {
+    if (String(user._id) === String(me?.id || me?._id)) {
+      showError("You cannot deactivate your own account");
       return;
     }
+
     try {
-      await apiFetch(`/api/admin/staff/${u._id}`, {
+      await apiFetch(`/api/admin/staff/${user._id}`, {
         method: "PATCH",
-        body: JSON.stringify({ isActive: !(u.isActive !== false) }),
+        body: JSON.stringify({ isActive: !user.isActive }),
       });
-      await load();
-    } catch (e) {
-      alert(e?.message || "Failed");
+      showSuccess(
+        `Staff ${user.isActive ? "deactivated" : "activated"} successfully`,
+      );
+      loadStaff();
+    } catch (error) {
+      showError("Failed to update status");
     }
   };
 
-  const removeUser = async (u) => {
-    if (!confirm(`Delete ${u.name || u.email}?`)) return;
+  const handleDelete = async (user) => {
+    if (!confirm(`Are you sure you want to delete ${user.name || user.email}?`))
+      return;
+
     try {
-      await apiFetch(`/api/admin/staff/${u._id}`, { method: "DELETE" });
-      await load();
-    } catch (e) {
-      alert(e?.message || "Failed");
+      await apiFetch(`/api/admin/staff/${user._id}`, { method: "DELETE" });
+      showSuccess("Staff deleted successfully");
+      loadStaff();
+    } catch (error) {
+      showError("Failed to delete staff");
     }
   };
 
-  // ✅ Admin layout spacing (same as ManageUsersPage)
-  const sidebarPad = navOpen ? "md:pl-64" : "md:pl-20";
+  const getRoleBadge = (role) => {
+    if (role === "admin") {
+      return (
+        <span className="px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+          Admin
+        </span>
+      );
+    }
+    return (
+      <span className="px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-orange-500 to-amber-500 text-white">
+        Staff
+      </span>
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* ✅ Admin Sidebar */}
-      <AdminNavbar navOpen={navOpen} setNavOpen={setNavOpen} />
+    <AdminLayout
+      title="Staff Management"
+      subtitle="Manage staff accounts and permissions"
+      icon="👥"
+    >
+      {/* Stats Bar */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="bg-gradient-to-br from-blue-500 to-cyan-500 rounded-3xl p-6 text-white shadow-xl">
+          <div className="text-4xl mb-2">👥</div>
+          <div className="text-3xl font-black">{stats.total}</div>
+          <div className="text-sm font-semibold opacity-90">Total Staff</div>
+        </div>
+        <div className="bg-gradient-to-br from-green-500 to-emerald-500 rounded-3xl p-6 text-white shadow-xl">
+          <div className="text-4xl mb-2">✅</div>
+          <div className="text-3xl font-black">{stats.active}</div>
+          <div className="text-sm font-semibold opacity-90">Active</div>
+        </div>
+        <div className="bg-gradient-to-br from-orange-500 to-amber-500 rounded-3xl p-6 text-white shadow-xl">
+          <div className="text-4xl mb-2">🧑‍🍳</div>
+          <div className="text-3xl font-black">{stats.staff}</div>
+          <div className="text-sm font-semibold opacity-90">Staff Members</div>
+        </div>
+        <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-3xl p-6 text-white shadow-xl">
+          <div className="text-4xl mb-2">👑</div>
+          <div className="text-3xl font-black">{stats.admins}</div>
+          <div className="text-sm font-semibold opacity-90">Admins</div>
+        </div>
+      </div>
 
-      <div className={`${sidebarPad} transition-all duration-300`}>
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          {/* Top Banner */}
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45 }}
-            className="rounded-3xl bg-black text-white p-6 md:p-7 border border-orange-500/30 shadow-xl relative overflow-hidden"
+      {/* Controls */}
+      <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border-2 border-orange-100 p-6 mb-8">
+        <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
+          {/* Search */}
+          <div className="relative flex-1 w-full lg:max-w-md">
+            <input
+              type="text"
+              placeholder="Search staff by name or email..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-slate-200 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition-all text-lg"
+            />
+            <svg
+              className="w-6 h-6 absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
+
+          {/* Filter */}
+          <div className="flex gap-2">
+            {["all", "active", "inactive"].map((filter) => (
+              <button
+                key={filter}
+                onClick={() => setActiveFilter(filter)}
+                className={`px-6 py-3 rounded-2xl font-bold transition-all duration-300 capitalize ${
+                  activeFilter === filter
+                    ? "bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg scale-105"
+                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                }`}
+              >
+                {filter}
+              </button>
+            ))}
+          </div>
+
+          {/* Add Button */}
+          <button
+            onClick={openCreateModal}
+            className="px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white font-bold rounded-2xl hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-3 whitespace-nowrap"
           >
-            <div className="pointer-events-none absolute -top-24 -right-24 w-80 h-80 bg-orange-500/20 blur-3xl rounded-full" />
-            <div className="pointer-events-none absolute -bottom-28 -left-28 w-96 h-96 bg-white/10 blur-3xl rounded-full" />
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+            Add Staff
+          </button>
+        </div>
+      </div>
 
-            <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
-              <div>
-                <p className="text-orange-300 text-sm font-semibold">Admin Panel</p>
-                <h1 className="text-3xl md:text-4xl font-extrabold leading-tight">
-                  Manage Staff 🧑‍🍳
-                </h1>
-                <p className="text-white/80 mt-2">
-                  Create staff accounts, reset passwords, and deactivate when needed.
-                </p>
-                <p className="text-xs text-white/60 mt-3">
-                  Logged as:{" "}
-                  <span className="text-orange-300 font-bold">
-                    {me?.name || me?.fullName || me?.email}
-                  </span>
-                </p>
+      {/* Staff Grid */}
+      {loading ? (
+        <div className="flex justify-center items-center py-20">
+          <div className="text-center">
+            <div className="relative w-20 h-20 mx-auto mb-6">
+              <div className="absolute inset-0 rounded-full border-4 border-orange-200 border-t-orange-600 animate-spin"></div>
+            </div>
+            <p className="text-slate-600 text-xl font-bold">Loading staff...</p>
+          </div>
+        </div>
+      ) : filteredUsers.length === 0 ? (
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border-2 border-orange-100 p-20 text-center">
+          <div className="text-8xl mb-6">👥</div>
+          <h3 className="text-3xl font-black text-slate-800 mb-4">
+            No Staff Found
+          </h3>
+          <p className="text-slate-600 text-lg mb-8">
+            {searchTerm
+              ? "Try a different search term"
+              : "Start by adding your first staff member"}
+          </p>
+          <button
+            onClick={openCreateModal}
+            className="px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-2xl hover:shadow-xl hover:scale-105 transition-all duration-300"
+          >
+            Add First Staff
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredUsers.map((user) => (
+            <div
+              key={user._id}
+              className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border-2 border-orange-100 p-6 hover:shadow-2xl hover:scale-105 transition-all duration-300"
+            >
+              {/* Header */}
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center text-white text-2xl font-black shadow-lg">
+                    {user.name?.charAt(0).toUpperCase() || "?"}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-black text-slate-800">
+                      {user.name}
+                    </h3>
+                    {getRoleBadge(user.role)}
+                  </div>
+                </div>
               </div>
 
-              <div className="flex items-center gap-3">
+              {/* Info */}
+              <div className="space-y-3 mb-4">
+                <div className="flex items-center gap-2 text-slate-600">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <span className="text-sm font-semibold">{user.email}</span>
+                </div>
+                {user.phone && (
+                  <div className="flex items-center gap-2 text-slate-600">
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                      />
+                    </svg>
+                    <span className="text-sm font-semibold">{user.phone}</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-bold ${
+                      user.isActive
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                  >
+                    {user.isActive ? "Active" : "Inactive"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="grid grid-cols-2 gap-2">
                 <button
-                  onClick={openCreate}
-                  className="px-5 py-2 rounded-full bg-orange-500 hover:bg-orange-600 transition font-extrabold"
+                  onClick={() => openEditModal(user)}
+                  className="px-4 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-300 text-sm"
                 >
-                  + Create Staff
+                  Edit
+                </button>
+                <button
+                  onClick={() => openResetPasswordModal(user)}
+                  className="px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-300 text-sm"
+                >
+                  Reset Pass
+                </button>
+                <button
+                  onClick={() => toggleActive(user)}
+                  className={`px-4 py-3 font-bold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-300 text-sm ${
+                    user.isActive
+                      ? "bg-gradient-to-r from-yellow-500 to-orange-500 text-white"
+                      : "bg-gradient-to-r from-green-500 to-emerald-500 text-white"
+                  }`}
+                >
+                  {user.isActive ? "Deactivate" : "Activate"}
+                </button>
+                <button
+                  onClick={() => handleDelete(user)}
+                  className="px-4 py-3 bg-gradient-to-r from-red-500 to-rose-500 text-white font-bold rounded-xl hover:shadow-lg hover:scale-105 transition-all duration-300 text-sm"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-gradient-to-r from-orange-600 to-amber-600 text-white p-6 rounded-t-3xl">
+              <div className="flex items-center justify-between">
+                <h2 className="text-3xl font-black">
+                  {modalMode === "create"
+                    ? "Add New Staff"
+                    : modalMode === "edit"
+                      ? "Edit Staff"
+                      : "Reset Password"}
+                </h2>
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center transition-all"
+                >
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
                 </button>
               </div>
             </div>
 
-            <div className="absolute left-0 right-0 bottom-0 h-2 bg-gradient-to-r from-orange-500 via-white/10 to-orange-500 opacity-90" />
-          </motion.div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-            {[
-              { label: "Total", value: stats.total },
-              { label: "Active", value: stats.active },
-              { label: "Staff", value: stats.staff },
-              { label: "Admins", value: stats.admins },
-            ].map((s) => (
-              <div
-                key={s.label}
-                className="rounded-2xl border border-orange-200 bg-white shadow p-4"
-              >
-                <p className="text-sm text-gray-600">{s.label}</p>
-                <p className="text-3xl font-extrabold text-orange-600 mt-1">{s.value}</p>
-                <div className="h-1 mt-3 rounded-full bg-gradient-to-r from-orange-500 via-black to-orange-500 opacity-80" />
-              </div>
-            ))}
-          </div>
-
-          {/* Filters */}
-          <div className="mt-6 rounded-2xl border border-orange-200 bg-white shadow p-4">
-            <div className="flex flex-col md:flex-row gap-4 md:items-center md:justify-between">
-              <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
-                <select
-                  value={activeFilter}
-                  onChange={(e) => setActiveFilter(e.target.value)}
-                  className="px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white"
-                >
-                  <option value="all">All Status</option>
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-              </div>
-
-              <div className="w-full md:max-w-md">
+            <form onSubmit={handleSubmit} className="p-6 space-y-6">
+              {/* Name */}
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2">
+                  Full Name *
+                </label>
                 <input
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  placeholder="Search by name / email / phone..."
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
+                  required
+                  disabled={modalMode === "resetpass"}
+                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition-all disabled:bg-slate-100"
+                  placeholder="e.g., John Doe"
                 />
               </div>
-            </div>
-          </div>
 
-          {/* Table */}
-          <div className="mt-6 rounded-2xl border border-orange-200 bg-white shadow overflow-hidden">
-            <div className="px-5 py-4 flex items-center justify-between">
-              <h2 className="text-xl font-extrabold text-orange-600">Staff Accounts</h2>
-              <p className="text-sm text-gray-600">
-                {loading ? (
-                  "Loading..."
-                ) : err ? (
-                  <span className="text-red-600">{err}</span>
-                ) : (
-                  <>
-                    Showing <span className="font-bold">{users.length}</span>
-                  </>
-                )}
-              </p>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-sm">
-                <thead className="bg-orange-50">
-                  <tr className="text-left">
-                    <th className="px-5 py-3 text-orange-700 font-bold">Staff</th>
-                    <th className="px-5 py-3 text-orange-700 font-bold">Contact</th>
-                    <th className="px-5 py-3 text-orange-700 font-bold">Role</th>
-                    <th className="px-5 py-3 text-orange-700 font-bold">Status</th>
-                    <th className="px-5 py-3 text-orange-700 font-bold text-right">Actions</th>
-                  </tr>
-                </thead>
-
-                <tbody className="divide-y divide-orange-100">
-                  {!loading &&
-                    !err &&
-                    users.map((u) => {
-                      const isActive = u.isActive !== false;
-                      return (
-                        <tr key={u._id} className="hover:bg-orange-50/60 transition">
-                          <td className="px-5 py-4">
-                            <p className="font-extrabold text-black">{u.name || "—"}</p>
-                            <p className="text-xs text-gray-500">
-                              {u._id} • {fmt(u.createdAt)}
-                            </p>
-                          </td>
-
-                          <td className="px-5 py-4">
-                            <p className="font-semibold text-gray-800">{u.email || "—"}</p>
-                            <p className="text-xs text-gray-600">{u.phone || "—"}</p>
-                          </td>
-
-                          <td className="px-5 py-4">
-                            <span
-                              className={`inline-flex items-center px-3 py-1 rounded-full border font-extrabold ${badge(
-                                u.role
-                              )}`}
-                            >
-                              {u.role}
-                            </span>
-                          </td>
-
-                          <td className="px-5 py-4">
-                            <span
-                              className={`inline-flex items-center gap-2 px-3 py-1 rounded-full border ${
-                                isActive
-                                  ? "bg-white border-orange-200"
-                                  : "bg-gray-50 border-gray-200"
-                              }`}
-                            >
-                              <span
-                                className={`w-2 h-2 rounded-full ${
-                                  isActive ? "bg-orange-500" : "bg-gray-400"
-                                }`}
-                              />
-                              <span className="font-bold text-gray-800">
-                                {isActive ? "Active" : "Inactive"}
-                              </span>
-                            </span>
-                          </td>
-
-                          <td className="px-5 py-4 text-right">
-                            <div className="flex justify-end gap-2 flex-wrap">
-                              <button
-                                onClick={() => openEdit(u)}
-                                className="px-3 py-2 rounded-lg bg-black text-white font-bold hover:bg-orange-500 transition"
-                              >
-                                Edit
-                              </button>
-
-                              <button
-                                onClick={() => openResetPass(u)}
-                                className="px-3 py-2 rounded-lg border border-orange-200 bg-white text-black font-extrabold hover:bg-orange-50 transition"
-                              >
-                                Reset Pass
-                              </button>
-
-                              <button
-                                onClick={() => toggleActive(u)}
-                                className={`px-3 py-2 rounded-lg font-extrabold transition border ${
-                                  isActive
-                                    ? "bg-white text-black border-orange-200 hover:bg-orange-50"
-                                    : "bg-orange-500 text-white border-orange-500 hover:bg-orange-600"
-                                }`}
-                              >
-                                {isActive ? "Deactivate" : "Activate"}
-                              </button>
-
-                              <button
-                                onClick={() => removeUser(u)}
-                                className="px-3 py-2 rounded-lg bg-red-600 text-white font-extrabold hover:bg-red-700 transition"
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-
-                  {!loading && !err && !users.length && (
-                    <tr>
-                      <td colSpan={5} className="px-5 py-10 text-center text-gray-500">
-                        No staff found.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="h-2 bg-gradient-to-r from-orange-500 via-black to-orange-500 opacity-90" />
-          </div>
-
-          {/* Modal */}
-          <AnimatePresence>
-            {open && (
-              <div
-                className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center px-4"
-                onClick={close}
-              >
-                <motion.div
-                  variants={modalAnim}
-                  initial="hidden"
-                  animate="show"
-                  exit="exit"
-                  className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-orange-200 overflow-hidden"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <div className="p-6 bg-black text-white relative">
-                    <div className="absolute left-0 right-0 bottom-0 h-2 bg-gradient-to-r from-orange-500 via-white/10 to-orange-500 opacity-90" />
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="text-orange-300 text-sm font-semibold">
-                          {mode === "create"
-                            ? "Create Staff"
-                            : mode === "edit"
-                            ? "Edit Staff"
-                            : "Reset Password"}
-                        </p>
-                        <h3 className="text-2xl font-extrabold">{form.email || "—"}</h3>
-                        <p className="text-white/80 text-sm mt-1">
-                          Role: <span className="font-bold text-orange-300">staff</span>
-                        </p>
-                      </div>
-                      <button
-                        onClick={close}
-                        className="text-white/90 hover:text-white text-3xl leading-none font-bold"
-                        aria-label="Close"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="p-6 space-y-4">
-                    {(mode === "create" || mode === "edit") && (
-                      <>
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="text-sm font-bold text-black">Name</label>
-                            <input
-                              value={form.name}
-                              onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
-                              className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                              placeholder="e.g. Sara Ahmed"
-                            />
-                          </div>
-
-                          <div>
-                            <label className="text-sm font-bold text-black">Email</label>
-                            <input
-                              value={form.email}
-                              onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
-                              disabled={mode === "edit"}
-                              className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 disabled:bg-gray-50"
-                              placeholder="e.g. sara@mail.com"
-                            />
-                          </div>
-
-                          <div>
-                            <label className="text-sm font-bold text-black">Phone</label>
-                            <input
-                              value={form.phone}
-                              onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
-                              className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                              placeholder="01XXXXXXXXX"
-                            />
-                          </div>
-
-                          <div className="flex items-end">
-                            <label className="inline-flex items-center gap-2 text-sm font-bold text-black">
-                              <input
-                                type="checkbox"
-                                checked={form.isActive !== false}
-                                onChange={(e) =>
-                                  setForm((p) => ({ ...p, isActive: e.target.checked }))
-                                }
-                              />
-                              Active account
-                            </label>
-                          </div>
-                        </div>
-
-                        {mode === "create" && (
-                          <div>
-                            <label className="text-sm font-bold text-black">
-                              Password (optional)
-                            </label>
-                            <input
-                              value={form.password}
-                              onChange={(e) =>
-                                setForm((p) => ({ ...p, password: e.target.value }))
-                              }
-                              className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                              placeholder="Leave empty = auto-generate and email will be sent"
-                            />
-                            <p className="text-xs text-gray-500 mt-1">
-                              Create হলে staff email এ credentials যাবে (SMTP ঠিক থাকলে)।
-                            </p>
-                          </div>
-                        )}
-                      </>
-                    )}
-
-                    {mode === "resetpass" && (
-                      <div>
-                        <label className="text-sm font-bold text-black">
-                          New Password (optional)
-                        </label>
-                        <input
-                          value={form.password}
-                          onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))}
-                          className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                          placeholder="Leave empty = auto-generate and email will be sent"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">
-                          Reset করলে new password staff email এ যাবে (SMTP ঠিক থাকলে)।
-                        </p>
-                      </div>
-                    )}
-
-                    <div className="flex gap-2 justify-end pt-2">
-                      <button
-                        onClick={close}
-                        className="px-5 py-2 rounded-xl border border-orange-200 bg-white hover:bg-orange-50 font-extrabold text-black transition"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        disabled={saving}
-                        onClick={onSave}
-                        className="px-5 py-2 rounded-xl bg-orange-500 text-white font-extrabold hover:bg-orange-600 transition disabled:opacity-60"
-                      >
-                        {saving
-                          ? "Saving..."
-                          : mode === "create"
-                          ? "Create"
-                          : mode === "edit"
-                          ? "Update"
-                          : "Reset"}
-                      </button>
-                    </div>
-
-                    <p className="text-xs text-gray-500">
-                      Backend API: /api/admin/staff (admin only). Token লাগবে।
-                    </p>
-                  </div>
-                </motion.div>
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-2">
+                  Email Address *
+                </label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  required
+                  disabled={modalMode !== "create"}
+                  className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition-all disabled:bg-slate-100"
+                  placeholder="e.g., john@example.com"
+                />
               </div>
-            )}
-          </AnimatePresence>
 
-          {/* ✅ Footer */}
-          <AdminFooter />
+              {/* Phone */}
+              {modalMode !== "resetpass" && (
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) =>
+                      setFormData({ ...formData, phone: e.target.value })
+                    }
+                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition-all"
+                    placeholder="e.g., +880 1234567890"
+                  />
+                </div>
+              )}
+
+              {/* Password */}
+              {(modalMode === "create" || modalMode === "resetpass") && (
+                <div>
+                  <label className="block text-sm font-bold text-slate-700 mb-2">
+                    Password {modalMode === "create" && "(Optional)"}
+                  </label>
+                  <input
+                    type="password"
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData({ ...formData, password: e.target.value })
+                    }
+                    className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition-all"
+                    placeholder="Leave empty to auto-generate"
+                  />
+                  <p className="text-xs text-slate-500 mt-2">
+                    {modalMode === "create"
+                      ? "If left empty, a password will be auto-generated and sent via email"
+                      : "Leave empty to auto-generate a new password"}
+                  </p>
+                </div>
+              )}
+
+              {/* Active Status */}
+              {modalMode === "edit" && (
+                <div className="flex items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={formData.isActive}
+                    onChange={(e) =>
+                      setFormData({ ...formData, isActive: e.target.checked })
+                    }
+                    className="w-6 h-6 rounded-lg border-2 border-slate-300 text-orange-500 focus:ring-4 focus:ring-orange-100"
+                  />
+                  <label className="text-sm font-bold text-slate-700">
+                    Active Account
+                  </label>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex gap-4 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="flex-1 px-6 py-4 bg-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-300 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="flex-1 px-6 py-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-xl hover:shadow-xl hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {saving
+                    ? "Saving..."
+                    : modalMode === "create"
+                      ? "Create Staff"
+                      : modalMode === "edit"
+                        ? "Update Staff"
+                        : "Reset Password"}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
-    </div>
+      )}
+    </AdminLayout>
   );
 }

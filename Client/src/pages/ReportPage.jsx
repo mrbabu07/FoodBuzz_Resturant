@@ -1,6 +1,5 @@
-import React, { useState } from "react";
-import AdminFooter from "../components/AdminFooter";
-import AdminNavbar from "../components/AdminNavbar";
+import { useState } from "react";
+import AdminLayout from "../layouts/AdminLayout";
 
 const categories = ["All", "Active", "Blocked"];
 
@@ -59,7 +58,6 @@ const initialReviews = [
   { id: 3, userId: 1, message: "Will order again.", rating: 5 },
   { id: 4, userId: 1, message: "Good packaging.", rating: 4 },
   { id: 5, userId: 1, message: "Fast delivery.", rating: 5 },
-
   { id: 6, userId: 3, message: "Could be better.", rating: 3 },
   { id: 7, userId: 4, message: "Loved it!", rating: 4 },
   { id: 8, userId: 2, message: "Late delivery.", rating: 2 },
@@ -69,24 +67,13 @@ export default function ReportPage() {
   const [users, setUsers] = useState(initialUsers);
   const [filter, setFilter] = useState("All");
   const [selectedUserId, setSelectedUserId] = useState(null);
-  const [profileUser, setProfileUser] = useState(null); // for modal
-
-  const [offers, setOffers] = useState([]);
-  const [offerText, setOfferText] = useState("");
-
-  const [navOpen, setNavOpen] = useState(false);
-
-  const sidebarWidth = navOpen ? 240 : 64;
-
-  // MULTI select for home page reviews:
+  const [profileUser, setProfileUser] = useState(null);
   const [homePageReviewIds, setHomePageReviewIds] = useState([]);
 
-  // Filtered user list based on filter
   const filteredUsers = users.filter((u) =>
     filter === "All" ? true : u.status.toLowerCase() === filter.toLowerCase(),
   );
 
-  // Block/unblock user toggle
   const toggleBlockUser = (id) => {
     setUsers((prev) =>
       prev.map((user) =>
@@ -97,31 +84,15 @@ export default function ReportPage() {
     );
   };
 
-  // Reviews of selected user or all if none selected
   const displayedReviews = selectedUserId
     ? initialReviews.filter((r) => r.userId === selectedUserId)
     : initialReviews;
 
-  // Add offer
-  const addOffer = (e) => {
-    e.preventDefault();
-    if (!offerText.trim()) return;
-    setOffers((prev) => [...prev, offerText.trim()]);
-    setOfferText("");
-  };
-
-  // Open user profile modal
   const openProfile = (userId) => {
     const user = users.find((u) => u.id === userId);
     setProfileUser(user);
   };
 
-  // Close profile modal
-  const closeProfile = () => {
-    setProfileUser(null);
-  };
-
-  // Toggle review select for home page display (multi)
   const toggleHomePageReview = (reviewId) => {
     setHomePageReviewIds((prev) =>
       prev.includes(reviewId)
@@ -130,7 +101,6 @@ export default function ReportPage() {
     );
   };
 
-  // Handle display reviews button click (just alert here, you can connect to backend)
   const displaySelectedReviews = () => {
     if (homePageReviewIds.length === 0) {
       alert("Please select at least one review to display on home page.");
@@ -140,168 +110,255 @@ export default function ReportPage() {
       "Selected review IDs to display on home page: " +
         homePageReviewIds.join(", "),
     );
-    // এখানে তুমি API কল করে সার্ভারে পাঠাতে পারো।
   };
 
   return (
-    <div
-      className="p-4 sm:p-6 lg:p-10 space-y-10 max-w-7xl mx-auto transition-all duration-300"
-      style={{ marginLeft: navOpen ? 240 : 64 }}
+    <AdminLayout
+      title="User Management & Reports"
+      subtitle="Manage users, reviews, and analytics"
+      icon="📊"
     >
-      <AdminNavbar navOpen={navOpen} setNavOpen={setNavOpen} />
-      <h1 className="text-3xl font-bold mb-4 text-orange-600 mt-10 md:mt-0">
-        User Management & Reports
-      </h1>
+      {/* Stats Bar */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="bg-gradient-to-br from-blue-500 to-cyan-500 rounded-3xl p-6 text-white shadow-xl">
+          <div className="text-4xl mb-2">👥</div>
+          <div className="text-3xl font-black">{users.length}</div>
+          <div className="text-sm font-semibold opacity-90">Total Users</div>
+        </div>
+        <div className="bg-gradient-to-br from-green-500 to-emerald-500 rounded-3xl p-6 text-white shadow-xl">
+          <div className="text-4xl mb-2">✅</div>
+          <div className="text-3xl font-black">
+            {users.filter((u) => u.status === "active").length}
+          </div>
+          <div className="text-sm font-semibold opacity-90">Active Users</div>
+        </div>
+        <div className="bg-gradient-to-br from-red-500 to-rose-500 rounded-3xl p-6 text-white shadow-xl">
+          <div className="text-4xl mb-2">🚫</div>
+          <div className="text-3xl font-black">
+            {users.filter((u) => u.status === "blocked").length}
+          </div>
+          <div className="text-sm font-semibold opacity-90">Blocked Users</div>
+        </div>
+        <div className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-3xl p-6 text-white shadow-xl">
+          <div className="text-4xl mb-2">⭐</div>
+          <div className="text-3xl font-black">{initialReviews.length}</div>
+          <div className="text-sm font-semibold opacity-90">Total Reviews</div>
+        </div>
+      </div>
 
-      {/* ====== User Filter Nav ====== */}
-      <section>
-        <h2 className="text-xl font-semibold mb-4">Filter Users</h2>
+      {/* Filter Section */}
+      <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border-2 border-orange-100 p-6 mb-8">
+        <h2 className="text-2xl font-black text-slate-800 mb-4 flex items-center gap-3">
+          <span className="text-3xl">🔍</span>
+          Filter Users
+        </h2>
         <div className="flex gap-3 flex-wrap">
           {categories.map((cat) => (
             <button
               key={cat}
-              className={`px-4 py-2 rounded-full border ${
-                filter === cat
-                  ? "bg-orange-500 text-white"
-                  : "bg-white text-gray-700 border-orange-400"
-              } hover:bg-orange-100`}
               onClick={() => {
                 setFilter(cat);
                 setSelectedUserId(null);
               }}
+              className={`px-6 py-3 rounded-2xl font-bold transition-all duration-300 ${
+                filter === cat
+                  ? "bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg scale-105"
+                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+              }`}
             >
               {cat}
             </button>
           ))}
         </div>
-      </section>
+      </div>
 
-      {/* ====== User List Section ====== */}
-      <section>
-        <h2 className="text-xl font-semibold mb-4">Users</h2>
-        <div className="overflow-x-auto rounded shadow border border-gray-300">
-          <table className="min-w-full divide-y divide-gray-200 table-auto">
-            <thead className="bg-orange-100">
+      {/* Users Table */}
+      <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border-2 border-orange-100 overflow-hidden mb-8">
+        <div className="p-6 bg-gradient-to-r from-orange-500 to-amber-500 text-white">
+          <h2 className="text-2xl font-black flex items-center gap-3">
+            <span className="text-3xl">👥</span>
+            Users List
+          </h2>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gradient-to-r from-slate-100 to-slate-200">
               <tr>
-                <th className="px-4 py-2 text-left text-sm font-medium text-orange-700 uppercase">
-                  Name
+                <th className="px-6 py-4 text-left text-sm font-bold text-slate-700 uppercase">
+                  User
                 </th>
-                <th className="px-4 py-2 text-left text-sm font-medium text-orange-700 uppercase">
+                <th className="px-6 py-4 text-left text-sm font-bold text-slate-700 uppercase">
                   Email
                 </th>
-                <th className="px-4 py-2 text-center text-sm font-medium text-orange-700 uppercase">
+                <th className="px-6 py-4 text-center text-sm font-bold text-slate-700 uppercase">
                   Status
                 </th>
-                <th className="px-4 py-2 text-center text-sm font-medium text-orange-700 uppercase">
+                <th className="px-6 py-4 text-center text-sm font-bold text-slate-700 uppercase">
                   Reviews
                 </th>
-                <th className="px-4 py-2 text-center text-sm font-medium text-orange-700 uppercase">
+                <th className="px-6 py-4 text-center text-sm font-bold text-slate-700 uppercase">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredUsers.length === 0 && (
+            <tbody className="divide-y divide-slate-200">
+              {filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="text-center py-4 text-gray-500">
-                    No users found.
+                  <td colSpan="5" className="text-center py-12">
+                    <div className="text-6xl mb-4">👤</div>
+                    <p className="text-slate-600 text-lg font-semibold">
+                      No users found
+                    </p>
                   </td>
                 </tr>
+              ) : (
+                filteredUsers.map((user) => (
+                  <tr
+                    key={user.id}
+                    className={`hover:bg-orange-50 transition-colors cursor-pointer ${
+                      selectedUserId === user.id ? "bg-orange-100" : ""
+                    }`}
+                    onClick={() => setSelectedUserId(user.id)}
+                  >
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={user.photo}
+                          alt={user.name}
+                          className="w-12 h-12 rounded-full object-cover border-2 border-orange-200"
+                          onError={(e) =>
+                            (e.target.src =
+                              "https://placehold.co/48x48/f97316/white?text=User")
+                          }
+                        />
+                        <div>
+                          <div className="font-bold text-slate-800">
+                            {user.name}
+                          </div>
+                          <div className="text-sm text-slate-600">
+                            {user.address}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-slate-700">{user.email}</td>
+                    <td className="px-6 py-4 text-center">
+                      <span
+                        className={`px-4 py-2 rounded-full text-xs font-bold ${
+                          user.status === "active"
+                            ? "bg-green-500 text-white"
+                            : "bg-red-500 text-white"
+                        }`}
+                      >
+                        {user.status === "active" ? "Active" : "Blocked"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <span className="text-2xl font-black text-orange-600">
+                        {user.reviews}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex gap-2 justify-center">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleBlockUser(user.id);
+                          }}
+                          className={`px-4 py-2 rounded-xl text-white text-sm font-bold transition-all hover:scale-105 ${
+                            user.status === "active"
+                              ? "bg-gradient-to-r from-red-500 to-rose-500"
+                              : "bg-gradient-to-r from-green-500 to-emerald-500"
+                          }`}
+                        >
+                          {user.status === "active" ? "Block" : "Unblock"}
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openProfile(user.id);
+                          }}
+                          className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-sm font-bold hover:scale-105 transition-all"
+                        >
+                          View Profile
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
               )}
-              {filteredUsers.map((user) => (
-                <tr
-                  key={user.id}
-                  className={`hover:bg-orange-50 cursor-pointer ${
-                    selectedUserId === user.id ? "bg-orange-100" : ""
-                  }`}
-                  onClick={() => setSelectedUserId(user.id)}
-                >
-                  <td className="px-4 py-3 flex items-center gap-3">
-                    <img
-                      src={user.photo}
-                      alt={user.name}
-                      className="w-10 h-10 rounded-full object-cover"
-                      onError={(e) =>
-                        (e.target.src =
-                          "https://placehold.co/40x40/f97316/white?text=User")
-                      }
-                    />
-                    {user.name}
-                  </td>
-                  <td className="px-4 py-3">{user.email}</td>
-                  <td className="px-4 py-3 text-center capitalize">
-                    {user.status === "active" ? (
-                      <span className="text-green-600 font-semibold">
-                        Active
-                      </span>
-                    ) : (
-                      <span className="text-red-600 font-semibold">
-                        Blocked
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-center">{user.reviews}</td>
-                  <td className="px-4 py-3 text-center space-x-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleBlockUser(user.id);
-                      }}
-                      className={`px-3 py-1 rounded text-white text-sm ${
-                        user.status === "active"
-                          ? "bg-red-500 hover:bg-red-600"
-                          : "bg-green-500 hover:bg-green-600"
-                      }`}
-                    >
-                      {user.status === "active" ? "Block" : "Unblock"}
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openProfile(user.id);
-                      }}
-                      className="px-3 py-1 rounded bg-blue-500 hover:bg-blue-600 text-white text-sm"
-                    >
-                      View Profile
-                    </button>
-                  </td>
-                </tr>
-              ))}
             </tbody>
           </table>
         </div>
-      </section>
+      </div>
 
-      {/* ====== Reviews Section with multi-select for home page ====== */}
-      <section>
-        <h2 className="text-xl font-semibold mb-4">
-          Reviews{" "}
+      {/* Reviews Section */}
+      <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl border-2 border-orange-100 p-8 mb-8">
+        <h2 className="text-2xl font-black text-slate-800 mb-6 flex items-center gap-3">
+          <span className="text-3xl">⭐</span>
+          Reviews
           {selectedUserId &&
-            `(User: ${users.find((u) => u.id === selectedUserId)?.name})`}
-          {!selectedUserId && "(All Users)"}
+            ` - ${users.find((u) => u.id === selectedUserId)?.name}`}
+          {!selectedUserId && " - All Users"}
         </h2>
-        <div className="bg-white rounded shadow border border-gray-300 p-4 max-h-60 overflow-y-auto">
+        <div className="space-y-4 max-h-96 overflow-y-auto">
           {displayedReviews.length === 0 ? (
-            <p className="text-center text-gray-500">No reviews to show.</p>
+            <div className="text-center py-12">
+              <div className="text-6xl mb-4">💬</div>
+              <p className="text-slate-600 text-lg font-semibold">
+                No reviews to show
+              </p>
+            </div>
           ) : (
             displayedReviews.map((review) => {
               const user = users.find((u) => u.id === review.userId);
               return (
                 <div
                   key={review.id}
-                  className="mb-3 border-b border-gray-200 pb-2 flex items-center justify-between"
+                  className="bg-gradient-to-r from-slate-50 to-slate-100 rounded-2xl p-6 border-2 border-slate-200 hover:border-orange-300 transition-all"
                 >
-                  <div>
-                    <p className="font-semibold">{user?.name || "Unknown"}</p>
-                    <p className="text-gray-700">{review.message}</p>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <img
+                          src={user?.photo}
+                          alt={user?.name}
+                          className="w-10 h-10 rounded-full border-2 border-orange-200"
+                        />
+                        <div>
+                          <p className="font-bold text-slate-800">
+                            {user?.name || "Unknown"}
+                          </p>
+                          <div className="flex gap-1">
+                            {[...Array(5)].map((_, i) => (
+                              <span
+                                key={i}
+                                className={`text-lg ${
+                                  i < review.rating
+                                    ? "text-yellow-500"
+                                    : "text-slate-300"
+                                }`}
+                              >
+                                ⭐
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-slate-700 ml-13">{review.message}</p>
+                    </div>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={homePageReviewIds.includes(review.id)}
+                        onChange={() => toggleHomePageReview(review.id)}
+                        className="w-6 h-6 rounded-lg border-2 border-slate-300 text-orange-500 focus:ring-4 focus:ring-orange-100"
+                      />
+                      <span className="text-sm font-semibold text-slate-600">
+                        Show on Home
+                      </span>
+                    </label>
                   </div>
-                  <input
-                    type="checkbox"
-                    checked={homePageReviewIds.includes(review.id)}
-                    onChange={() => toggleHomePageReview(review.id)}
-                    className="ml-4 cursor-pointer"
-                    title="Select review to display on home page"
-                  />
                 </div>
               );
             })
@@ -309,132 +366,151 @@ export default function ReportPage() {
         </div>
         <button
           onClick={displaySelectedReviews}
-          className="mt-4 px-6 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition"
+          className="mt-6 px-8 py-4 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-2xl hover:shadow-xl hover:scale-105 transition-all duration-300"
         >
           Display Selected Reviews on Home Page
         </button>
-      </section>
+      </div>
 
-      {/* ====== Add Offer Section ====== */}
-      <section>
-        <h2 className="text-xl font-semibold mb-4">Add Offer</h2>
-        <form
-          onSubmit={addOffer}
-          className="flex flex-col sm:flex-row gap-3 max-w-xl"
-          autoComplete="off"
-        >
-          <input
-            type="text"
-            className="border border-gray-300 rounded px-3 py-2 flex-grow focus:outline-none focus:ring-2 focus:ring-orange-400"
-            placeholder="Write your offer here..."
-            value={offerText}
-            onChange={(e) => setOfferText(e.target.value)}
-            required
-          />
-          <button
-            type="submit"
-            className="bg-orange-500 text-white rounded px-5 py-2 hover:bg-orange-600 transition"
-          >
-            Add Offer
-          </button>
-        </form>
-
-        {offers.length > 0 && (
-          <div className="mt-6 max-w-xl space-y-2">
-            <h3 className="font-semibold mb-2">Current Offers:</h3>
-            <ul className="list-disc list-inside">
-              {offers.map((offer, i) => (
-                <li key={i} className="text-gray-700">
-                  {offer}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </section>
-
-      {/* ====== Profile Modal ====== */}
+      {/* Profile Modal */}
       {profileUser && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 p-4"
-          onClick={closeProfile}
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          onClick={() => setProfileUser(null)}
         >
           <div
-            className="bg-white rounded-lg max-w-2xl w-full p-6 relative"
+            className="bg-white rounded-3xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              onClick={closeProfile}
-              className="absolute top-3 right-3 text-gray-600 hover:text-gray-900 text-xl font-bold"
-              title="Close"
-            >
-              &times;
-            </button>
-            <div className="flex items-center gap-5 mb-4">
-              <img
-                src={profileUser.photo}
-                alt={profileUser.name}
-                className="w-20 h-20 rounded-full object-cover"
-                onError={(e) =>
-                  (e.target.src =
-                    "https://placehold.co/80x80/f97316/white?text=User")
-                }
-              />
-              <div>
-                <h3 className="text-2xl font-bold">{profileUser.name}</h3>
-                <p className="text-gray-600">{profileUser.email}</p>
-                <p className="text-gray-600">{profileUser.address}</p>
-                <p
-                  className={`mt-1 font-semibold ${
-                    profileUser.status === "active"
-                      ? "text-green-600"
-                      : "text-red-600"
-                  }`}
+            <div className="sticky top-0 bg-gradient-to-r from-orange-600 to-amber-600 text-white p-6 rounded-t-3xl">
+              <div className="flex items-center justify-between">
+                <h2 className="text-3xl font-black">User Profile</h2>
+                <button
+                  onClick={() => setProfileUser(null)}
+                  className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-xl flex items-center justify-center transition-all"
                 >
-                  {profileUser.status.toUpperCase()}
-                </p>
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
               </div>
             </div>
 
-            <div className="mb-4">
-              <h4 className="font-semibold text-lg mb-2">Orders</h4>
-              {profileUser.orders.length === 0 ? (
-                <p className="text-gray-500">No orders yet.</p>
-              ) : (
-                <ul className="list-disc list-inside max-h-40 overflow-y-auto border border-gray-200 rounded p-2">
-                  {profileUser.orders.map((order) => (
-                    <li key={order.id} className="text-gray-700">
-                      {order.item} -{" "}
-                      <span className="text-sm text-gray-500">
-                        {order.date}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+            <div className="p-8 space-y-6">
+              {/* User Info */}
+              <div className="flex items-center gap-6">
+                <img
+                  src={profileUser.photo}
+                  alt={profileUser.name}
+                  className="w-24 h-24 rounded-full object-cover border-4 border-orange-200"
+                  onError={(e) =>
+                    (e.target.src =
+                      "https://placehold.co/96x96/f97316/white?text=User")
+                  }
+                />
+                <div>
+                  <h3 className="text-3xl font-black text-slate-800">
+                    {profileUser.name}
+                  </h3>
+                  <p className="text-slate-600 text-lg">{profileUser.email}</p>
+                  <p className="text-slate-600">{profileUser.address}</p>
+                  <span
+                    className={`inline-block mt-2 px-4 py-2 rounded-full text-sm font-bold ${
+                      profileUser.status === "active"
+                        ? "bg-green-500 text-white"
+                        : "bg-red-500 text-white"
+                    }`}
+                  >
+                    {profileUser.status.toUpperCase()}
+                  </span>
+                </div>
+              </div>
 
-            <div>
-              <h4 className="font-semibold text-lg mb-2">Reviews</h4>
-              {initialReviews.filter((r) => r.userId === profileUser.id)
-                .length === 0 ? (
-                <p className="text-gray-500">No reviews yet.</p>
-              ) : (
-                <ul className="list-disc list-inside max-h-40 overflow-y-auto border border-gray-200 rounded p-2">
-                  {initialReviews
-                    .filter((r) => r.userId === profileUser.id)
-                    .map((r) => (
-                      <li key={r.id} className="text-gray-700">
-                        {r.message}
-                      </li>
+              {/* Orders */}
+              <div>
+                <h4 className="text-xl font-black text-slate-800 mb-4 flex items-center gap-2">
+                  <span className="text-2xl">📦</span>
+                  Orders
+                </h4>
+                {profileUser.orders.length === 0 ? (
+                  <p className="text-slate-500 text-center py-8">
+                    No orders yet
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {profileUser.orders.map((order) => (
+                      <div
+                        key={order.id}
+                        className="bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl p-4 border-2 border-slate-200"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-slate-800">
+                            {order.item}
+                          </span>
+                          <span className="text-sm text-slate-600">
+                            {order.date}
+                          </span>
+                        </div>
+                      </div>
                     ))}
-                </ul>
-              )}
+                  </div>
+                )}
+              </div>
+
+              {/* Reviews */}
+              <div>
+                <h4 className="text-xl font-black text-slate-800 mb-4 flex items-center gap-2">
+                  <span className="text-2xl">⭐</span>
+                  Reviews
+                </h4>
+                {initialReviews.filter((r) => r.userId === profileUser.id)
+                  .length === 0 ? (
+                  <p className="text-slate-500 text-center py-8">
+                    No reviews yet
+                  </p>
+                ) : (
+                  <div className="space-y-2">
+                    {initialReviews
+                      .filter((r) => r.userId === profileUser.id)
+                      .map((r) => (
+                        <div
+                          key={r.id}
+                          className="bg-gradient-to-r from-slate-50 to-slate-100 rounded-xl p-4 border-2 border-slate-200"
+                        >
+                          <div className="flex gap-1 mb-2">
+                            {[...Array(5)].map((_, i) => (
+                              <span
+                                key={i}
+                                className={`text-lg ${
+                                  i < r.rating
+                                    ? "text-yellow-500"
+                                    : "text-slate-300"
+                                }`}
+                              >
+                                ⭐
+                              </span>
+                            ))}
+                          </div>
+                          <p className="text-slate-700">{r.message}</p>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
       )}
-      <AdminFooter />
-    </div>
+    </AdminLayout>
   );
 }
