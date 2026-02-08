@@ -1,82 +1,144 @@
-// Enhanced Notifications Utility with Backend Integration
+// Real Notifications Utility with Database Backend
 // File: src/utils/notifications.js
 
 import { apiFetch } from "./api";
 
-const KEY = "roms_notifications_v1";
+// ============================================
+// API-BASED NOTIFICATION FUNCTIONS
+// ============================================
 
-// notification shape:
-// { id, userEmail, type: "tracking"|"popup"|"order"|"promo", text, details, createdAt, read: false }
-
-export function getMe() {
+/**
+ * Get all notifications from backend
+ */
+export async function getNotifications(options = {}) {
   try {
-    return JSON.parse(localStorage.getItem("roms_current_user") || "null");
-  } catch {
-    return null;
+    const { page = 1, limit = 20, type, read, priority } = options;
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+
+    if (type) params.append("type", type);
+    if (read !== undefined) params.append("read", read.toString());
+    if (priority) params.append("priority", priority);
+
+    const response = await apiFetch(`/api/notifications?${params.toString()}`);
+    return response;
+  } catch (error) {
+    console.error("Failed to get notifications:", error);
+    throw error;
   }
 }
 
-export function loadAllNotifications() {
+/**
+ * Get unread notification count
+ */
+export async function getUnreadCount() {
   try {
-    const raw = JSON.parse(localStorage.getItem(KEY) || "[]");
-    return Array.isArray(raw) ? raw : [];
-  } catch {
-    return [];
+    const response = await apiFetch("/api/notifications/unread-count");
+    return response.count || 0;
+  } catch (error) {
+    console.error("Failed to get unread count:", error);
+    return 0;
   }
 }
 
-export function saveAllNotifications(list) {
-  localStorage.setItem(KEY, JSON.stringify(list || []));
-  window.dispatchEvent(new Event("roms_notifications_changed"));
+/**
+ * Get single notification
+ */
+export async function getNotification(id) {
+  try {
+    const response = await apiFetch(`/api/notifications/${id}`);
+    return response;
+  } catch (error) {
+    console.error("Failed to get notification:", error);
+    throw error;
+  }
 }
 
-export function getMyNotifications(userEmail) {
-  const all = loadAllNotifications();
-  const email = (userEmail || "").toLowerCase();
-  return all
-    .filter((n) => (n.userEmail || "").toLowerCase() === email)
-    .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+/**
+ * Mark notification as read
+ */
+export async function markAsRead(id) {
+  try {
+    const response = await apiFetch(`/api/notifications/${id}/read`, {
+      method: "PATCH",
+    });
+    window.dispatchEvent(new Event("notifications_updated"));
+    return response;
+  } catch (error) {
+    console.error("Failed to mark notification as read:", error);
+    throw error;
+  }
 }
 
-export function getUnreadCount(userEmail) {
-  return getMyNotifications(userEmail).filter((n) => !n.read).length;
+/**
+ * Mark all notifications as read
+ */
+export async function markAllAsRead() {
+  try {
+    const response = await apiFetch("/api/notifications/mark-all-read", {
+      method: "PATCH",
+    });
+    window.dispatchEvent(new Event("notifications_updated"));
+    return response;
+  } catch (error) {
+    console.error("Failed to mark all as read:", error);
+    throw error;
+  }
 }
 
-export function addNotification(n) {
-  const all = loadAllNotifications();
-  const withId = {
-    id: `NTF-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-    createdAt: new Date().toISOString(),
-    read: false,
-    ...n,
-  };
-  all.unshift(withId);
-  saveAllNotifications(all);
-  return withId;
+/**
+ * Delete notification
+ */
+export async function deleteNotification(id) {
+  try {
+    const response = await apiFetch(`/api/notifications/${id}`, {
+      method: "DELETE",
+    });
+    window.dispatchEvent(new Event("notifications_updated"));
+    return response;
+  } catch (error) {
+    console.error("Failed to delete notification:", error);
+    throw error;
+  }
 }
 
-export function markAllRead(userEmail) {
-  const all = loadAllNotifications();
-  const email = (userEmail || "").toLowerCase();
-  const next = all.map((n) =>
-    (n.userEmail || "").toLowerCase() === email ? { ...n, read: true } : n,
-  );
-  saveAllNotifications(next);
+/**
+ * Delete all read notifications
+ */
+export async function deleteAllRead() {
+  try {
+    const response = await apiFetch("/api/notifications", {
+      method: "DELETE",
+    });
+    window.dispatchEvent(new Event("notifications_updated"));
+    return response;
+  } catch (error) {
+    console.error("Failed to delete all read notifications:", error);
+    throw error;
+  }
 }
 
-export function markRead(id, read = true) {
-  const all = loadAllNotifications();
-  const next = all.map((n) => (n.id === id ? { ...n, read } : n));
-  saveAllNotifications(next);
+/**
+ * Send test notification
+ */
+export async function sendTestNotification() {
+  try {
+    const response = await apiFetch("/api/notifications/test", {
+      method: "POST",
+    });
+    window.dispatchEvent(new Event("notifications_updated"));
+    return response;
+  } catch (error) {
+    console.error("Failed to send test notification:", error);
+    throw error;
+  }
 }
 
-export function deleteNotification(id) {
-  const all = loadAllNotifications();
-  const next = all.filter((n) => n.id !== id);
-  saveAllNotifications(next);
-}
-
-// Backend Integration Functions
+// ============================================
+// NOTIFICATION PREFERENCE FUNCTIONS
+// ============================================
 
 /**
  * Get notification preferences from backend
@@ -145,169 +207,84 @@ export async function removePushSubscription() {
 }
 
 /**
- * Send test notification
+ * Create notification from backend data (for push notifications)
  */
-export async function sendTestNotification() {
+export function createNotificationFromBackend(backendNotification) {
+  // This is now handled by the backend - just trigger a refresh
+  window.dispatchEvent(new Event("notifications_updated"));
+  return backendNotification;
+}
+
+/**
+ * Sync notifications with backend
+ */
+export async function syncNotifications() {
   try {
-    const response = await apiFetch("/api/users/me/test-notification", {
-      method: "POST",
-    });
+    const response = await getNotifications({ limit: 50 });
+    window.dispatchEvent(new Event("notifications_updated"));
     return response;
   } catch (error) {
-    console.error("Failed to send test notification:", error);
-    throw error;
+    console.error("Failed to sync notifications:", error);
+    return null;
+  }
+}
+
+// ============================================
+// NOTIFICATION TYPE CONSTANTS
+// ============================================
+
+// Enhanced notification types
+export const NotificationTypes = {
+  ORDER_PLACED: "order",
+  ORDER_PREPARING: "order",
+  ORDER_READY: "order",
+  ORDER_DELIVERED: "order",
+  ORDER_CANCELLED: "order",
+  PROMO_NEW: "promo",
+  RECIPE_NEW: "recipe",
+  SECURITY_ALERT: "security",
+  SYSTEM_UPDATE: "system",
+};
+
+// ============================================
+// HELPER FUNCTIONS (DEPRECATED - Use API)
+// ============================================
+
+/**
+ * @deprecated Use getNotifications() instead
+ * Legacy function for backward compatibility
+ */
+export function getMe() {
+  try {
+    return JSON.parse(localStorage.getItem("roms_current_user") || "null");
+  } catch {
+    return null;
   }
 }
 
 /**
- * Create notification from backend data
+ * @deprecated Notifications are now stored in database
+ * This function is kept for backward compatibility only
  */
-export function createNotificationFromBackend(backendNotification) {
-  const me = getMe();
-  if (!me?.email) return null;
-
-  return addNotification({
-    userEmail: me.email,
-    type: backendNotification.type || "popup",
-    text: backendNotification.title || "New Notification",
-    details: backendNotification.message || backendNotification.body || "",
-    data: backendNotification.data || {},
-  });
+export function getMyNotifications() {
+  console.warn(
+    "getMyNotifications is deprecated. Use getNotifications() API instead.",
+  );
+  return [];
 }
 
 /**
- * Sync notifications with backend (future enhancement)
+ * @deprecated Use markAsRead() instead
  */
-export async function syncNotifications() {
-  // This would fetch notifications from backend in a real implementation
-  // For now, we'll keep using localStorage
-  console.log("Notification sync not implemented yet");
-}
-
-// Enhanced notification types
-export const NotificationTypes = {
-  ORDER_PLACED: "order_placed",
-  ORDER_PREPARING: "order_preparing",
-  ORDER_READY: "order_ready",
-  ORDER_DELIVERED: "order_delivered",
-  ORDER_CANCELLED: "order_cancelled",
-  PROMO_NEW: "promo_new",
-  RECIPE_NEW: "recipe_new",
-  SECURITY_ALERT: "security_alert",
-  SYSTEM_UPDATE: "system_update",
-};
-
-/**
- * Create order notification
- */
-export function createOrderNotification(orderData, status) {
-  const me = getMe();
-  if (!me?.email) return null;
-
-  const statusMessages = {
-    [NotificationTypes.ORDER_PLACED]: {
-      text: `Order #${orderData.orderNumber} placed successfully! 🎉`,
-      details: "Your order has been received and is being prepared.",
-    },
-    [NotificationTypes.ORDER_PREPARING]: {
-      text: `Order #${orderData.orderNumber} is being prepared 👨‍🍳`,
-      details: "Our chefs are working on your delicious meal.",
-    },
-    [NotificationTypes.ORDER_READY]: {
-      text: `Order #${orderData.orderNumber} is ready! ✅`,
-      details: "Your order is ready for pickup or delivery.",
-    },
-    [NotificationTypes.ORDER_DELIVERED]: {
-      text: `Order #${orderData.orderNumber} delivered! 🚚`,
-      details: "Your order has been delivered. Enjoy your meal!",
-    },
-    [NotificationTypes.ORDER_CANCELLED]: {
-      text: `Order #${orderData.orderNumber} cancelled ❌`,
-      details: "Your order has been cancelled. Refund will be processed.",
-    },
-  };
-
-  const message = statusMessages[status] || {
-    text: `Order #${orderData.orderNumber} updated`,
-    details: "Your order status has been updated.",
-  };
-
-  return addNotification({
-    userEmail: me.email,
-    type: "tracking",
-    text: message.text,
-    details: message.details,
-    data: {
-      orderId: orderData._id,
-      orderNumber: orderData.orderNumber,
-      status,
-    },
-  });
+export function markRead(id) {
+  console.warn("markRead is deprecated. Use markAsRead() API instead.");
+  return markAsRead(id);
 }
 
 /**
- * Create promo notification
+ * @deprecated Use markAllAsRead() instead
  */
-export function createPromoNotification(promoData) {
-  const me = getMe();
-  if (!me?.email) return null;
-
-  return addNotification({
-    userEmail: me.email,
-    type: "popup",
-    text: `🎁 ${promoData.title}`,
-    details: promoData.description,
-    data: {
-      promoId: promoData._id,
-      promoCode: promoData.code,
-      discount: promoData.discount,
-    },
-  });
-}
-
-/**
- * Create recipe notification
- */
-export function createRecipeNotification(recipeData) {
-  const me = getMe();
-  if (!me?.email) return null;
-
-  return addNotification({
-    userEmail: me.email,
-    type: "popup",
-    text: `🍽️ New Recipe: ${recipeData.name}`,
-    details: "Check out our latest delicious recipe!",
-    data: {
-      recipeId: recipeData._id,
-      recipeName: recipeData.name,
-      category: recipeData.category,
-    },
-  });
-}
-
-// demo seed (optional)
-export function seedDemoNotificationsIfEmpty(userEmail) {
-  const mine = getMyNotifications(userEmail);
-  if (mine.length) return;
-
-  addNotification({
-    userEmail,
-    type: "tracking",
-    text: "Your order #ORD-101 is processing!",
-    details: "We started preparing your food. Track live status.",
-  });
-
-  addNotification({
-    userEmail,
-    type: "popup",
-    text: "Order #ORD-099 completed ✅",
-    details: "Thanks! You can view the receipt anytime from dashboard.",
-  });
-
-  addNotification({
-    userEmail,
-    type: "popup",
-    text: "🎁 Special Offer: 20% Off!",
-    details: "Use code SAVE20 on your next order. Valid until tomorrow!",
-  });
+export function markAllRead() {
+  console.warn("markAllRead is deprecated. Use markAllAsRead() API instead.");
+  return markAllAsRead();
 }

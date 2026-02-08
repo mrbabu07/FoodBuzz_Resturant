@@ -2,6 +2,7 @@
 // File: src/utils/notificationService.js
 
 const User = require("../models/User");
+const Notification = require("../models/Notification");
 const { logActivity } = require("./activityLogger");
 
 /**
@@ -35,7 +36,32 @@ class NotificationService {
       }
 
       const results = [];
-      const { type, title, message, data = {} } = notification;
+      const {
+        type,
+        title,
+        message,
+        data = {},
+        priority = "normal",
+        expiresAt,
+      } = notification;
+
+      // Create notification in database
+      const dbNotification = await Notification.create({
+        userId,
+        type,
+        title,
+        message,
+        data,
+        priority,
+        expiresAt,
+        read: false,
+      });
+
+      results.push({
+        type: "database",
+        status: "saved",
+        notificationId: dbNotification._id,
+      });
 
       // Determine which notifications to send based on type and user preferences
       const shouldSendEmail = this.shouldSendEmail(
@@ -103,6 +129,7 @@ class NotificationService {
         userId,
         action: "NOTIFICATION_SENT",
         meta: {
+          notificationId: dbNotification._id,
           notificationType: type,
           title,
           channels: results.map((r) => r.type),
@@ -113,6 +140,7 @@ class NotificationService {
 
       return {
         success: true,
+        notificationId: dbNotification._id,
         results,
         summary: {
           sent: results.filter((r) => r.status === "sent").length,

@@ -119,6 +119,7 @@ app.use("/api/favorites", require("./src/routes/favorites.routes"));
 app.use("/api/reviews", require("./src/routes/review.routes"));
 app.use("/api/upload", require("./src/routes/upload.routes"));
 app.use("/api/payments", require("./src/routes/payment.routes"));
+app.use("/api/notifications", require("./src/routes/notification.routes"));
 
 // Error handler
 app.use((err, req, res, next) => {

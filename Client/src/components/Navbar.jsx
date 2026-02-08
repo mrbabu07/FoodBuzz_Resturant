@@ -4,12 +4,11 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import {
   getMe,
-  getMyNotifications,
+  getNotifications,
   getUnreadCount,
   deleteNotification,
-  markRead,
-  markAllRead,
-  seedDemoNotificationsIfEmpty,
+  markAsRead,
+  markAllAsRead,
 } from "../utils/notifications";
 
 export default function Navbar() {
@@ -45,7 +44,7 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const refreshNotes = (user) => {
+  const refreshNotes = async (user) => {
     const u = user || getMe();
     if (!u?.email) {
       setNotes([]);
@@ -53,12 +52,16 @@ export default function Navbar() {
       return;
     }
 
-    // demo seed (optional)
-    seedDemoNotificationsIfEmpty(u.email);
-
-    const list = getMyNotifications(u.email);
-    setNotes(list);
-    setUnread(getUnreadCount(u.email));
+    try {
+      // Fetch notifications from API
+      const response = await getNotifications({ limit: 50 });
+      setNotes(response.notifications || []);
+      setUnread(response.unreadCount || 0);
+    } catch (error) {
+      console.error("Failed to fetch notifications:", error);
+      setNotes([]);
+      setUnread(0);
+    }
   };
 
   useEffect(() => {
@@ -69,9 +72,8 @@ export default function Navbar() {
 
   useEffect(() => {
     const onChange = () => refreshNotes();
-    window.addEventListener("roms_notifications_changed", onChange);
-    return () =>
-      window.removeEventListener("roms_notifications_changed", onChange);
+    window.addEventListener("notifications_updated", onChange);
+    return () => window.removeEventListener("notifications_updated", onChange);
   }, []);
 
   // 🔄 Close panels on route change
@@ -108,22 +110,34 @@ export default function Navbar() {
   const toggleDropdownDesktop = () => setDropdownDesktopOpen((prev) => !prev);
   const toggleNotifications = () => setShowNotifications((prev) => !prev);
 
-  const handleDetails = (note) => {
-    // open করলে read করে দেই
-    markRead(note.id, true);
-    refreshNotes(me);
+  const handleDetails = async (note) => {
+    // Mark as read when opened
+    try {
+      await markAsRead(note._id);
+      refreshNotes(me);
+    } catch (error) {
+      console.error("Failed to mark as read:", error);
+    }
 
-    if (note.type === "popup") {
-      setModalText(note.details || note.text);
+    if (
+      note.type === "popup" ||
+      note.type === "promo" ||
+      note.type === "system"
+    ) {
+      setModalText(note.message || note.title);
       setShowModal(true);
-    } else if (note.type === "tracking") {
+    } else if (note.type === "tracking" || note.type === "order") {
       navigate("/order_tracking");
     }
   };
 
-  const handleRemoveNotification = (id) => {
-    deleteNotification(id);
-    refreshNotes(me);
+  const handleRemoveNotification = async (id) => {
+    try {
+      await deleteNotification(id);
+      refreshNotes(me);
+    } catch (error) {
+      console.error("Failed to delete notification:", error);
+    }
   };
 
   const goProtected = (path) => {
@@ -244,10 +258,14 @@ export default function Navbar() {
                     </div>
 
                     <button
-                      onClick={() => {
+                      onClick={async () => {
                         if (!me?.email) return;
-                        markAllRead(me.email);
-                        refreshNotes(me);
+                        try {
+                          await markAllAsRead();
+                          refreshNotes(me);
+                        } catch (error) {
+                          console.error("Failed to mark all as read:", error);
+                        }
                       }}
                       className="px-4 py-2 rounded-xl bg-white/20 backdrop-blur-sm text-white font-bold hover:bg-white/30 transition-all"
                     >
@@ -283,7 +301,7 @@ export default function Navbar() {
                     <ul className="divide-y divide-orange-100">
                       {notes.map((note) => (
                         <li
-                          key={note.id}
+                          key={note._id}
                           className={`p-4 hover:bg-orange-50 transition-all ${
                             note.read ? "bg-white" : "bg-orange-50/60"
                           }`}
@@ -291,11 +309,11 @@ export default function Navbar() {
                           <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0 flex-1">
                               <p className="text-gray-900 font-bold truncate">
-                                {note.text}
+                                {note.title}
                               </p>
-                              {note.details && (
+                              {note.message && (
                                 <p className="text-sm text-gray-600 mt-1">
-                                  {note.details}
+                                  {note.message}
                                 </p>
                               )}
 
@@ -308,18 +326,32 @@ export default function Navbar() {
                                 </button>
 
                                 <button
-                                  onClick={() => {
-                                    markRead(note.id, !note.read);
-                                    refreshNotes(me);
+                                  onClick={async () => {
+                                    try {
+                                      if (note.read) {
+                                        // Can't mark as unread via API, just refresh
+                                        console.log(
+                                          "Mark as unread not supported",
+                                        );
+                                      } else {
+                                        await markAsRead(note._id);
+                                        refreshNotes(me);
+                                      }
+                                    } catch (error) {
+                                      console.error(
+                                        "Failed to toggle read status:",
+                                        error,
+                                      );
+                                    }
                                   }}
                                   className="px-3 py-1 text-xs rounded-lg border-2 border-gray-200 hover:bg-gray-50 transition-all font-bold"
                                 >
-                                  {note.read ? "Mark unread" : "Mark read"}
+                                  {note.read ? "Read" : "Mark read"}
                                 </button>
 
                                 <button
                                   onClick={() =>
-                                    handleRemoveNotification(note.id)
+                                    handleRemoveNotification(note._id)
                                   }
                                   className="px-3 py-1 bg-red-500 text-white text-xs rounded-lg hover:bg-red-600 transition-all font-bold"
                                 >
