@@ -1,23 +1,20 @@
-# 🍽️ FoodBuzz - Restaurant Order Management System (ROMS)
+# 🍽️ FoodBuzz - Restaurant Management System
 
-**Version:** 2.2.0  
-**Date:** January 23, 2026  
-**Status:** ✅ Production Ready
+**Version:** 3.0.0  
+**Status:** ✅ Production Ready with Inventory Management
 
 ---
 
 ## 📋 Table of Contents
 
 1. [Quick Start](#-quick-start)
-2. [System Overview](#-system-overview)
-3. [Features](#-features)
-4. [Installation](#-installation)
-5. [Configuration](#-configuration)
-6. [API Documentation](#-api-documentation)
-7. [User Accounts](#-user-accounts)
-8. [Recent Features](#-recent-features)
-9. [Troubleshooting](#-troubleshooting)
-10. [Development](#-development)
+2. [Features](#-features)
+3. [Installation](#-installation)
+4. [Configuration](#-configuration)
+5. [API Documentation](#-api-documentation)
+6. [Technology Stack](#-technology-stack)
+7. [Project Structure](#-project-structure)
+8. [Troubleshooting](#-troubleshooting)
 
 ---
 
@@ -26,126 +23,73 @@
 ### Prerequisites
 
 - Node.js 16+
-- MongoDB Atlas account
-- Internet connection
+- MongoDB (local or Atlas)
+- npm or yarn
 
-### Start the Application
+### Start Application
 
-1. **Start Backend:**
+```bash
+# 1. Start Backend
+cd Server
+npm install
+npm start
 
-   ```bash
-   cd backend/backend_sara/roms-backend
-   node server-working.js
-   ```
+# 2. Start Frontend (new terminal)
+cd Client
+npm install
+npm run dev
 
-2. **Start Frontend:**
-
-   ```bash
-   cd backend/backend_sara/project
-   npm run dev
-   ```
-
-3. **Access Application:**
-   - Frontend: http://localhost:5173
-   - Backend API: http://localhost:5000
-   - Login: http://localhost:5173/login
-
-### Default Login Credentials
-
-| Role     | Email                 | Password    | Access Level          |
-| -------- | --------------------- | ----------- | --------------------- |
-| Admin    | admin@foodbuzz.com    | admin123    | Full system access    |
-| Staff    | staff@foodbuzz.com    | staff123    | Operations management |
-| Customer | customer@foodbuzz.com | customer123 | Browse and order      |
-
----
-
-## 🏗️ System Overview
-
-### Architecture
-
-- **Frontend:** React + Vite + Tailwind CSS
-- **Backend:** Node.js + Express.js
-- **Database:** MongoDB Atlas
-- **Authentication:** JWT tokens
-- **File Storage:** ImgBB API
-- **Payments:** Stripe integration
-- **Email:** SMTP (Gmail)
-
-### Ports
-
-- **Frontend:** 5173 (Vite dev server)
-- **Backend:** 5000 (Express server)
-- **Database:** MongoDB Atlas (cloud)
-
-### Project Structure
-
+# 3. Access Application
+Frontend: http://localhost:5173
+Backend: http://localhost:5000
 ```
-backend_sara/
-├── project/                 # React Frontend
-│   ├── src/
-│   │   ├── components/      # Reusable components
-│   │   ├── pages/          # Page components
-│   │   ├── context/        # React contexts
-│   │   ├── utils/          # Utility functions
-│   │   └── styles/         # CSS files
-│   └── public/             # Static assets
-├── roms-backend/           # Node.js Backend
-│   ├── src/
-│   │   ├── controllers/    # Route handlers
-│   │   ├── models/         # Database schemas
-│   │   ├── routes/         # API routes
-│   │   ├── middleware/     # Custom middleware
-│   │   └── utils/          # Backend utilities
-│   └── server-working.js   # Main server file
-└── README.md              # This file
-```
+
+### Default Login
+
+| Role     | Email                 | Password    |
+| -------- | --------------------- | ----------- |
+| Admin    | admin@foodbuzz.com    | admin123    |
+| Staff    | staff@foodbuzz.com    | staff123    |
+| Customer | customer@foodbuzz.com | customer123 |
 
 ---
 
 ## ✨ Features
 
-### Core Features
+### Core Features ✅
 
-- ✅ **User Authentication** - JWT-based login/register
-- ✅ **Role-Based Access** - Admin, Staff, Customer roles
-- ✅ **Recipe Management** - CRUD operations with categories
-- ✅ **Menu Management** - Food items with pricing
-- ✅ **Order System** - Cart, checkout, tracking
-- ✅ **Payment Integration** - Stripe, COD, bKash, Nagad
-- ✅ **Image Upload** - ImgBB integration
-- ✅ **Search & Filter** - Advanced filtering options
+- User Authentication (JWT)
+- Role-Based Access (Admin/Staff/Customer)
+- Menu Management
+- Recipe Management
+- Order System (Cart, Checkout, Tracking)
+- Payment Integration (Stripe, COD, bKash, Nagad)
+- Reviews & Ratings
+- Favorites System
+- Notifications (Email, Push, Toast)
+- Live Chat Support (Tawk.to)
+- Image Upload (ImgBB)
 
-### Advanced Features
+### NEW: Inventory Management System ✅
 
-- ✅ **Push Notifications** - Web Push API integration
-- ✅ **Live Chat Support** - Tawk.to integration
-- ✅ **Toast Notifications** - React Hot Toast
-- ✅ **Favorites System** - Save recipes and menu items
-- ✅ **Review System** - Rate and review items
-- ✅ **Email Notifications** - Order confirmations, promotions
-- ✅ **Allergen Information** - Dietary restrictions support
-- ✅ **Dark Mode Support** - Theme switching
-- ✅ **Mobile Responsive** - Works on all devices
+- **Ingredient Tracking** - Track all ingredients with stock levels
+- **Supplier Management** - Manage supplier information
+- **Purchase Orders** - Create purchases with approval workflow
+- **Stock Adjustments** - Track wastage, spoilage, theft
+- **Recipe Mapping** - Link ingredients to menu items
+- **Auto Stock Deduction** - Automatically deduct stock on orders
+- **Low Stock Alerts** - Get alerts when stock is low
+- **Food Cost Calculation** - Calculate cost per menu item
+- **Inventory Dashboard** - Overview of inventory status
 
-### Admin Features
+### Planned Features 🔄
 
-- ✅ **Dashboard Analytics** - Statistics and reports
-- ✅ **User Management** - Create, edit, delete users
-- ✅ **Staff Management** - Manage staff accounts
-- ✅ **Order Management** - Track and update orders
-- ✅ **Promotional Emails** - Send marketing campaigns
-- ✅ **Activity Logs** - Track system activities
-- ✅ **Bulk Operations** - Import/export data
-
-### Security Features
-
-- ✅ **Password Hashing** - bcrypt encryption
-- ✅ **JWT Authentication** - Secure token-based auth
-- ✅ **Rate Limiting** - Prevent API abuse
-- ✅ **CORS Protection** - Cross-origin security
-- ✅ **Input Validation** - Prevent injection attacks
-- ✅ **Security Headers** - Helmet.js protection
+- POS System (Split bills, discounts, void/refund)
+- Table Management (Floor map, table status)
+- Kitchen Display System
+- Delivery Management
+- Staff Management
+- Advanced Reports & Analytics
 
 ---
 
@@ -153,510 +97,606 @@ backend_sara/
 
 ### Backend Setup
 
-1. **Navigate to backend directory:**
+```bash
+cd Server
+npm install
+```
 
-   ```bash
-   cd backend/backend_sara/roms-backend
-   ```
+**Create `.env` file:**
 
-2. **Install dependencies:**
+```env
+# Server
+PORT=5000
+NODE_ENV=development
 
-   ```bash
-   npm install
-   ```
+# Database
+MONGO_URI=your_mongodb_connection_string
 
-3. **Create admin user:**
+# JWT
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRE=7d
 
-   ```bash
-   node src/scripts/createDefaultAdmin.js
-   ```
+# Frontend
+FRONTEND_URL=http://localhost:5173
 
-4. **Seed database (optional):**
-   ```bash
-   node seed-database.js
-   ```
+# Email (Gmail SMTP)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_app_password
+
+# Image Upload (ImgBB)
+IMGBB_API_KEY=your_imgbb_api_key
+
+# Payment (Stripe)
+STRIPE_SECRET_KEY=your_stripe_secret_key
+
+# Push Notifications (Optional)
+VAPID_PUBLIC_KEY=your_vapid_public_key
+VAPID_PRIVATE_KEY=your_vapid_private_key
+VAPID_SUBJECT=mailto:your_email@example.com
+```
+
+**Seed Database:**
+
+```bash
+npm run seed:all
+```
 
 ### Frontend Setup
 
-1. **Navigate to frontend directory:**
-
-   ```bash
-   cd backend/backend_sara/project
-   ```
-
-2. **Install dependencies:**
-
-   ```bash
-   npm install
-   ```
-
-3. **Install additional libraries:**
-   ```bash
-   npm install react-hot-toast
-   ```
+```bash
+cd Client
+npm install
+npm run dev
+```
 
 ---
 
 ## ⚙️ Configuration
 
-### Environment Variables (.env)
+### Environment Variables
 
-Create `.env` file in `roms-backend/` directory:
+**Required:**
 
-```env
-# Server Configuration
-PORT=5000
-NODE_ENV=development
+- `MONGO_URI` - MongoDB connection string
+- `JWT_SECRET` - Secret key for JWT tokens
+- `FRONTEND_URL` - Frontend URL for CORS
 
+**Optional:**
 
+- `SMTP_*` - Email configuration
+- `IMGBB_API_KEY` - Image upload
+- `STRIPE_SECRET_KEY` - Payment processing
+- `VAPID_*` - Push notifications
 
-### Vite Configuration
+### Vite Proxy (Already Configured)
 
-The frontend uses Vite proxy to bypass CORS issues:
+Frontend uses Vite proxy to connect to backend:
 
 ```javascript
-// project/vite.config.js
-export default defineConfig({
-  plugins: [react()],
-  server: {
-    proxy: {
-      "/api": {
-        target: "http://localhost:5000",
-        changeOrigin: true,
-        secure: false,
-      },
-    },
-  },
-});
+// Client/vite.config.js
+server: {
+  proxy: {
+    '/api': {
+      target: 'http://localhost:5000',
+      changeOrigin: true
+    }
+  }
+}
 ```
-
-### Tawk.to Live Chat
-
-- **Property ID:** `697332db7d1f9f19791eeada`
-- **Widget ID:** `1jfl0jb41`
-- **Dashboard:** https://dashboard.tawk.to/
 
 ---
 
 ## 📡 API Documentation
 
-### Authentication Endpoints
+### Authentication
 
-| Method | Endpoint                    | Description            | Access |
-| ------ | --------------------------- | ---------------------- | ------ |
-| POST   | `/api/auth/register`        | Register new user      | Public |
-| POST   | `/api/auth/login`           | User login             | Public |
-| POST   | `/api/auth/forgot-password` | Request password reset | Public |
-| POST   | `/api/auth/reset-password`  | Reset password         | Public |
+```
+POST   /api/auth/register    - Register new user
+POST   /api/auth/login       - User login
+```
 
-### Recipe Endpoints
+### Menu Items
 
-| Method | Endpoint           | Description      | Access      |
-| ------ | ------------------ | ---------------- | ----------- |
-| GET    | `/api/recipes`     | Get all recipes  | Public      |
-| GET    | `/api/recipes/:id` | Get recipe by ID | Public      |
-| POST   | `/api/recipes`     | Create recipe    | Admin/Staff |
-| PUT    | `/api/recipes/:id` | Update recipe    | Admin/Staff |
-| DELETE | `/api/recipes/:id` | Delete recipe    | Admin       |
+```
+GET    /api/menu-items       - Get all menu items
+GET    /api/menu-items/:id   - Get menu item by ID
+POST   /api/menu-items       - Create menu item (Admin/Staff)
+PUT    /api/menu-items/:id   - Update menu item (Admin/Staff)
+DELETE /api/menu-items/:id   - Delete menu item (Admin)
+```
 
-### Menu Item Endpoints
+### Recipes
 
-| Method | Endpoint              | Description         | Access      |
-| ------ | --------------------- | ------------------- | ----------- |
-| GET    | `/api/menu-items`     | Get all menu items  | Public      |
-| GET    | `/api/menu-items/:id` | Get menu item by ID | Public      |
-| POST   | `/api/menu-items`     | Create menu item    | Admin/Staff |
-| PUT    | `/api/menu-items/:id` | Update menu item    | Admin/Staff |
-| DELETE | `/api/menu-items/:id` | Delete menu item    | Admin       |
+```
+GET    /api/recipes          - Get all recipes
+GET    /api/recipes/:id      - Get recipe by ID
+POST   /api/recipes          - Create recipe (Admin/Staff)
+PUT    /api/recipes/:id      - Update recipe (Admin/Staff)
+DELETE /api/recipes/:id      - Delete recipe (Admin)
+```
 
-### Order Endpoints
+### Orders
 
-| Method | Endpoint                 | Description         | Access           |
-| ------ | ------------------------ | ------------------- | ---------------- |
-| GET    | `/api/orders`            | Get user orders     | User             |
-| GET    | `/api/orders/:id`        | Get order by ID     | User/Staff/Admin |
-| POST   | `/api/orders`            | Create order        | User             |
-| PUT    | `/api/orders/:id/status` | Update order status | Staff/Admin      |
+```
+POST   /api/orders           - Place order
+GET    /api/orders/my        - Get my orders
+GET    /api/orders/:id       - Get order by ID
+GET    /api/orders/:id/receipt - Get order receipt
+PATCH  /api/orders/:id/status - Update order status (Admin/Staff)
+DELETE /api/orders/:id        - Cancel order
+```
 
-### Payment Endpoints
+### Inventory (NEW)
 
-| Method | Endpoint                        | Description            | Access |
-| ------ | ------------------------------- | ---------------------- | ------ |
-| POST   | `/api/payments/create-checkout` | Create Stripe checkout | User   |
-| POST   | `/api/payments/verify`          | Verify payment         | User   |
-| GET    | `/api/payments/history`         | Get payment history    | User   |
-| POST   | `/api/payments/refund`          | Process refund         | Admin  |
+**Ingredients:**
 
-### Favorites & Wishlist
+```
+GET    /api/inventory/ingredients              - Get all ingredients
+GET    /api/inventory/ingredients/low-stock    - Get low stock items
+GET    /api/inventory/ingredients/:id          - Get ingredient by ID
+POST   /api/inventory/ingredients              - Create ingredient
+PUT    /api/inventory/ingredients/:id          - Update ingredient
+DELETE /api/inventory/ingredients/:id          - Delete ingredient
+```
 
-| Method | Endpoint                         | Description          | Access |
-| ------ | -------------------------------- | -------------------- | ------ |
-| POST   | `/api/user/favorites/add`        | Add favorite recipe  | User   |
-| DELETE | `/api/user/favorites/remove/:id` | Remove favorite      | User   |
-| GET    | `/api/user/favorites`            | Get favorites        | User   |
-| POST   | `/api/user/wishlist/add`         | Add wishlist item    | User   |
-| DELETE | `/api/user/wishlist/remove/:id`  | Remove wishlist item | User   |
-| GET    | `/api/user/wishlist`             | Get wishlist         | User   |
+**Suppliers:**
 
-### Upload Endpoints
+```
+GET    /api/inventory/suppliers       - Get all suppliers
+POST   /api/inventory/suppliers       - Create supplier
+PUT    /api/inventory/suppliers/:id   - Update supplier
+DELETE /api/inventory/suppliers/:id   - Delete supplier
+```
 
-| Method | Endpoint            | Description           | Access      |
-| ------ | ------------------- | --------------------- | ----------- |
-| POST   | `/api/upload/image` | Upload image to ImgBB | Admin/Staff |
+**Purchases:**
 
-### Admin Endpoints
+```
+GET    /api/inventory/purchases           - Get all purchases
+GET    /api/inventory/purchases/:id       - Get purchase by ID
+POST   /api/inventory/purchases           - Create purchase
+PATCH  /api/inventory/purchases/:id/status - Update purchase status
+```
 
-| Method | Endpoint                    | Description              | Access |
-| ------ | --------------------------- | ------------------------ | ------ |
-| GET    | `/api/admin/users`          | Get all users            | Admin  |
-| PUT    | `/api/admin/users/:id/role` | Update user role         | Admin  |
-| DELETE | `/api/admin/users/:id`      | Delete user              | Admin  |
-| GET    | `/api/admin/staff`          | Get all staff            | Admin  |
-| POST   | `/api/admin/promo/send`     | Send promotional email   | Admin  |
-| GET    | `/api/admin/stats`          | Get dashboard statistics | Admin  |
+**Stock Adjustments:**
 
----
+```
+GET    /api/inventory/adjustments              - Get all adjustments
+POST   /api/inventory/adjustments              - Create adjustment
+PATCH  /api/inventory/adjustments/:id/approve  - Approve adjustment
+```
 
-## 👥 User Accounts
+**Recipe Ingredients:**
 
-### Admin Account
+```
+GET    /api/inventory/recipes/:menuItemId           - Get recipe ingredients
+POST   /api/inventory/recipes                       - Save recipe ingredients
+GET    /api/inventory/recipes/:menuItemId/food-cost - Calculate food cost
+```
 
-- **Email:** admin@foodbuzz.com
-- **Password:** admin123
-- **Permissions:**
-  - Full system access
-  - User management
-  - Staff management
-  - System configuration
-  - Analytics and reports
-  - Promotional campaigns
+**Dashboard:**
 
-### Staff Account
+```
+GET    /api/inventory/stats   - Get inventory statistics
+```
 
-- **Email:** staff@foodbuzz.com
-- **Password:** staff123
-- **Permissions:**
-  - Recipe management
-  - Menu management
-  - Order processing
-  - Customer support
-  - Limited analytics
+### Reviews
 
-### Customer Account
+```
+GET    /api/reviews/my        - Get my reviews
+POST   /api/reviews           - Create review
+DELETE /api/reviews/:id       - Delete review
+```
 
-- **Email:** customer@foodbuzz.com
-- **Password:** customer123
-- **Permissions:**
-  - Browse recipes and menu
-  - Place orders
-  - Track orders
-  - Manage favorites
-  - Write reviews
+### Favorites
 
-### Database Content
-
-#### Recipes (6 items)
-
-1. Grilled Chicken Breast (Chicken)
-2. Beef Stir Fry (Beef)
-3. Grilled Salmon (Fish)
-4. Tomato Soup (Soup)
-5. Chocolate Cake (Dessert)
-6. Fresh Lemonade (Drink)
-
-#### Menu Items (8 items)
-
-1. Classic Burger - $12.99
-2. Margherita Pizza - $14.99
-3. Caesar Salad - $9.99
-4. Chicken Wings - $11.99
-5. Spaghetti Carbonara - $15.99
-6. Grilled Steak - $24.99
-7. Tiramisu - $7.99
-8. Iced Coffee - $4.99
+```
+GET    /api/favorites         - Get favorites
+POST   /api/favorites         - Add favorite
+DELETE /api/favorites/:id     - Remove favorite
+```
 
 ---
 
-## 🆕 Recent Features
+## 🛠️ Technology Stack
 
-### 1. Push Notifications (Web Push API)
+### Backend
 
-- **Status:** ✅ Complete
-- **Files:** `public/sw.js`, `utils/pushNotifications.js`, `components/NotificationPermission.jsx`
-- **Features:**
-  - Service worker for background notifications
-  - 6 pre-configured notification templates
-  - Permission request banner
-  - Integration with order placement
-  - Dark mode support
-  - Browser compatibility detection
+- **Runtime:** Node.js
+- **Framework:** Express.js
+- **Database:** MongoDB with Mongoose
+- **Authentication:** JWT (JSON Web Tokens)
+- **File Upload:** ImgBB API
+- **Email:** Nodemailer (SMTP)
+- **Payments:** Stripe
 
-### 2. Live Chat Support (Tawk.to)
+### Frontend
 
-- **Status:** ✅ Complete
-- **Files:** `utils/tawkTo.js`, `index.html`
-- **Features:**
-  - Real-time customer support
-  - Automatic user identification
-  - Role-based tagging
-  - Mobile responsive
-  - Chat history tracking
+- **Framework:** React 18
+- **Build Tool:** Vite
+- **Styling:** Tailwind CSS
+- **Routing:** React Router v6
+- **State Management:** Context API
+- **HTTP Client:** Fetch API
+- **Notifications:** React Hot Toast
+- **Live Chat:** Tawk.to
 
-### 3. Toast Notifications (React Hot Toast)
+### DevOps
 
-- **Status:** ✅ Complete
-- **Files:** `utils/toast.js`, `App.jsx`
-- **Features:**
-  - 20+ pre-configured toast functions
-  - Beautiful animations
-  - Auto-dismiss functionality
-  - Orange theme matching
-  - Non-blocking notifications
+- **Version Control:** Git
+- **Package Manager:** npm
+- **Environment:** dotenv
 
-### 4. Consistent Design System
+---
 
-- **Status:** ✅ Complete
-- **Files:** Multiple page components
-- **Features:**
-  - White background theme (`bg-white`)
-  - Orange color scheme (`orange-500`, `orange-600`)
-  - Premium shadows (`shadow-2xl`)
-  - Modern rounded corners (`rounded-3xl`)
-  - Professional typography (`font-black`)
+## 📁 Project Structure
 
-### 5. Receipt Page Fix
-
-- **Status:** ✅ Complete
-- **Files:** `pages/ReceiptPage.jsx`
-- **Features:**
-  - Proper receipt functionality
-  - Order details display
-  - Print functionality
-  - Error handling
-  - Consistent design
+```
+FoodBuzz/
+├── Client/                    # Frontend (React + Vite)
+│   ├── public/               # Static assets
+│   ├── src/
+│   │   ├── components/       # Reusable components
+│   │   ├── pages/           # Page components
+│   │   ├── context/         # React contexts
+│   │   ├── utils/           # Utility functions
+│   │   └── styles/          # CSS files
+│   ├── package.json
+│   └── vite.config.js
+│
+├── Server/                   # Backend (Node.js + Express)
+│   ├── src/
+│   │   ├── controllers/     # Route handlers
+│   │   ├── models/          # Database schemas
+│   │   ├── routes/          # API routes
+│   │   ├── middleware/      # Custom middleware
+│   │   └── utils/           # Backend utilities
+│   ├── seed-*.js            # Database seed scripts
+│   ├── server-working.js    # Main server file
+│   ├── package.json
+│   └── .env                 # Environment variables
+│
+└── README.md                # This file
+```
 
 ---
 
 ## 🔧 Troubleshooting
 
-### Common Issues
+### Backend Not Starting
 
-#### Backend Not Starting
+**Issue:** Server won't start
+
+**Solution:**
 
 ```bash
-cd backend/backend_sara/roms-backend
+cd Server
 npm install
-node server-working.js
+# Check if MongoDB is running
+# Verify .env file exists
+npm start
 ```
 
-#### Frontend Not Starting
+### Frontend Not Starting
+
+**Issue:** Frontend won't start
+
+**Solution:**
 
 ```bash
-cd backend/backend_sara/project
+cd Client
 npm install
 npm run dev
 ```
 
-#### Login Issues
+### Database Connection Failed
 
-1. Ensure admin user is created:
-   ```bash
-   cd roms-backend
-   node src/scripts/createDefaultAdmin.js
-   ```
-2. Check credentials: admin@foodbuzz.com / admin123
-3. Clear browser cache
-
-#### Database Connection Issues
-
-**MongoDB Atlas Connection Failed:**
-
-If you see errors like:
-
-- `querySrv ECONNREFUSED _mongodb._tcp.cluster0.g6xesjf.mongodb.net`
-- `bad auth : authentication failed`
+**Issue:** Cannot connect to MongoDB
 
 **Solutions:**
 
-1. **Check MongoDB Atlas Dashboard:**
-   - Visit: https://cloud.mongodb.com/
-   - Ensure your cluster is running (not paused)
-   - If paused, click "Resume"
+1. Check MongoDB is running (local) or accessible (Atlas)
+2. Verify `MONGO_URI` in `.env` file
+3. Check network/firewall settings
+4. For MongoDB Atlas: Whitelist your IP address
 
-2. **Update Database User:**
-   - Go to "Database Access" → Find user "FoodBuzz"
-   - Reset password to: `1234Foodbuzz`
-   - Or create new user with these credentials
+### CORS Errors
 
-3. **Whitelist IP Address:**
-   - Go to "Network Access" → Add current IP
-   - For development: use `0.0.0.0/0` (all IPs)
+**Issue:** CORS policy blocking requests
 
-4. **Verify Connection String:**
-   - Check `.env` file has correct MONGO_URI
-   - Format: `mongodb+srv://FoodBuzz:1234Foodbuzz@cluster0.g6xesjf.mongodb.net/FoodBuzzDB?retryWrites=true&w=majority`
+**Solution:**
 
-**Mongoose Schema Warnings:**
-
-If you see duplicate index warnings, they've been fixed in the latest version. Restart the server to clear them.
-
-#### CORS Issues
-
-- The project uses Vite proxy to bypass CORS
+- Ensure backend is running on port 5000
 - Ensure frontend is running on port 5173
-- Backend should be on port 5000
+- Vite proxy should handle CORS automatically
+- Restart both servers
 
-#### Image Upload Issues
+### Login Issues
 
-1. Check ImgBB API key in `.env`
+**Issue:** Cannot login with default credentials
+
+**Solution:**
+
+```bash
+cd Server
+node src/scripts/createDefaultAdmin.js
+```
+
+### Image Upload Not Working
+
+**Issue:** Images not uploading
+
+**Solution:**
+
+1. Check `IMGBB_API_KEY` in `.env`
 2. Verify file size < 5MB
-3. Ensure file format is JPEG, PNG, GIF, or WebP
+3. Check file format (JPEG, PNG, GIF, WebP)
 
-### Error Messages
+### Port Already in Use
 
-| Error                              | Solution                                                   |
-| ---------------------------------- | ---------------------------------------------------------- |
-| "Cannot connect to MongoDB"        | Check internet, MongoDB Atlas status, and credentials      |
-| "bad auth : authentication failed" | Reset MongoDB Atlas user password to `1234Foodbuzz`        |
-| "querySrv ECONNREFUSED"            | Check internet connection and MongoDB Atlas cluster status |
-| "Duplicate schema index"           | Fixed in latest version - restart server                   |
-| "JWT token invalid"                | Clear browser storage and login again                      |
-| "Permission denied"                | Check user role and route permissions                      |
-| "File too large"                   | Reduce image size to < 5MB                                 |
-| "CORS error"                       | Restart frontend dev server                                |
+**Issue:** Port 5000 or 5173 already in use
 
----
+**Solution:**
 
-## 💻 Development
+**Windows:**
 
-### Adding New Features
+```bash
+# Find process using port
+netstat -ano | findstr :5000
+# Kill process
+taskkill /PID <PID> /F
+```
 
-1. **Backend API:**
-   - Create controller in `src/controllers/`
-   - Define routes in `src/routes/`
-   - Add middleware if needed
-   - Update this README
+**Linux/Mac:**
 
-2. **Frontend Component:**
-   - Create component in `src/components/` or `src/pages/`
-   - Add routing if needed
-   - Update navigation
-   - Test responsiveness
-
-### Code Style
-
-- **Backend:** Use Express.js patterns
-- **Frontend:** Use React functional components with hooks
-- **Styling:** Use Tailwind CSS classes
-- **State:** Use React Context for global state
-
-### Testing
-
-#### Manual Testing Checklist
-
-- [ ] User registration and login
-- [ ] Recipe CRUD operations
-- [ ] Menu item CRUD operations
-- [ ] Order placement and tracking
-- [ ] Payment processing
-- [ ] Image upload
-- [ ] Push notifications
-- [ ] Live chat
-- [ ] Toast notifications
-- [ ] Mobile responsiveness
-
-#### API Testing
-
-Use the provided test files:
-
-- `test-all-endpoints.js` - Test all API endpoints
-- `test-connection.js` - Test database connection
-- `test-api.html` - Frontend API testing
-
-### Deployment
-
-#### Production Checklist
-
-- [ ] Update environment variables
-- [ ] Configure production MongoDB cluster
-- [ ] Set up production Stripe keys
-- [ ] Configure CORS for production domain
-- [ ] Enable rate limiting
-- [ ] Set up SSL certificates
-- [ ] Configure email service
-- [ ] Set up monitoring
-
-#### Environment Variables for Production
-
-```env
-NODE_ENV=production
-FRONTEND_URL=https://yourdomain.com
-MONGO_URI=mongodb+srv://production-cluster...
-JWT_SECRET=your-super-secure-secret
-STRIPE_SECRET_KEY=sk_live_...
+```bash
+# Find and kill process
+lsof -ti:5000 | xargs kill -9
 ```
 
 ---
 
-## 📚 Resources
+## 🎯 Usage Guide
 
-### Documentation
+### For Customers
 
-- [React Documentation](https://reactjs.org/docs)
-- [Express.js Guide](https://expressjs.com/en/guide)
-- [MongoDB Manual](https://docs.mongodb.com/manual)
-- [Tailwind CSS](https://tailwindcss.com/docs)
-- [Stripe API](https://stripe.com/docs/api)
+1. **Browse Menu** - View available food items
+2. **Add to Cart** - Select items and quantities
+3. **Checkout** - Enter delivery details
+4. **Place Order** - Choose payment method
+5. **Track Order** - Monitor order status
+6. **Write Reviews** - Rate and review items
 
-### External Services
+### For Staff
 
-- **MongoDB Atlas:** https://cloud.mongodb.com/
-- **ImgBB API:** https://api.imgbb.com/
-- **Stripe Dashboard:** https://dashboard.stripe.com/
-- **Tawk.to Dashboard:** https://dashboard.tawk.to/
+1. **Manage Orders** - View and update order status
+2. **Manage Menu** - Add/edit menu items
+3. **Manage Recipes** - Add/edit recipes
+4. **Manage Inventory** - Track ingredients and stock
+5. **Process Purchases** - Enter purchase orders
+6. **View Reports** - Check sales and inventory
 
-### Support
+### For Admin
 
-- **GitHub Issues:** Create issues for bugs or feature requests
-- **Email:** Contact development team
-- **Live Chat:** Use Tawk.to widget on the application
-
----
-
-## 📊 Project Statistics
-
-- **Total Files:** 100+ files
-- **Backend Routes:** 50+ API endpoints
-- **Frontend Pages:** 25+ pages
-- **Components:** 15+ reusable components
-- **Database Models:** 7 main models
-- **Features:** 30+ implemented features
-- **Development Time:** 6+ months
-- **Lines of Code:** 10,000+ lines
+1. **Full Access** - All staff features
+2. **User Management** - Manage users and staff
+3. **System Settings** - Configure system
+4. **Analytics** - View detailed reports
+5. **Approvals** - Approve purchases and adjustments
 
 ---
 
-## 🎯 Future Enhancements
+## 📊 Inventory Management Guide
 
-### Planned Features
+### Managing Ingredients
 
-- [ ] Mobile app (React Native)
-- [ ] Advanced analytics dashboard
-- [ ] Multi-language support
-- [ ] Inventory management
-- [ ] Loyalty program
-- [ ] Social media integration
-- [ ] Advanced reporting
-- [ ] API rate limiting dashboard
+**Add Ingredient:**
 
-### Performance Optimizations
+1. Go to Inventory → Ingredients
+2. Click "Add Ingredient"
+3. Fill in details (name, category, unit, stock, price)
+4. Set min/max stock levels
+5. Save
 
-- [ ] Image optimization and CDN
-- [ ] Database query optimization
-- [ ] Caching implementation
-- [ ] Code splitting
-- [ ] Lazy loading
-- [ ] Service worker caching
+**Low Stock Alerts:**
+
+- System automatically detects when stock ≤ minimum
+- View low stock items in dashboard
+- Get notifications (if configured)
+
+### Managing Suppliers
+
+**Add Supplier:**
+
+1. Go to Inventory → Suppliers
+2. Click "Add Supplier"
+3. Enter contact information
+4. Specify items supplied
+5. Set payment terms
+6. Save
+
+### Creating Purchase Orders
+
+**Create Purchase:**
+
+1. Go to Inventory → Purchases
+2. Click "Create Purchase"
+3. Select supplier
+4. Add items with quantities and prices
+5. Review total
+6. Submit for approval
+7. When received, stock auto-updates
+
+### Stock Adjustments
+
+**Adjust Stock:**
+
+1. Go to Inventory → Adjustments
+2. Click "Create Adjustment"
+3. Select ingredient
+4. Choose type (wastage, spoilage, etc.)
+5. Enter quantity and reason
+6. Submit for approval
+7. Stock updates after approval
+
+### Recipe Mapping
+
+**Map Recipe:**
+
+1. Go to Inventory → Recipe Mapping
+2. Select menu item
+3. Add ingredients with quantities
+4. System calculates food cost
+5. View food cost percentage
+6. Save recipe
+
+**Auto Stock Deduction:**
+
+- When order is placed
+- System finds recipe for each item
+- Calculates ingredient quantities
+- Automatically deducts from stock
+
+---
+
+## 🔐 Security Best Practices
+
+### For Production
+
+1. **Environment Variables**
+   - Never commit `.env` file
+   - Use strong JWT secret
+   - Rotate secrets regularly
+
+2. **Database**
+   - Use strong passwords
+   - Enable authentication
+   - Whitelist IP addresses
+   - Regular backups
+
+3. **API**
+   - Enable rate limiting
+   - Validate all inputs
+   - Use HTTPS
+   - Implement CORS properly
+
+4. **Passwords**
+   - Enforce strong passwords
+   - Hash with bcrypt
+   - Implement password reset
+   - Use 2FA (optional)
+
+---
+
+## 📈 Performance Tips
+
+### Backend
+
+- Use database indexes
+- Implement caching (Redis)
+- Optimize queries
+- Use pagination
+- Enable compression
+
+### Frontend
+
+- Lazy load components
+- Optimize images
+- Use code splitting
+- Minimize bundle size
+- Enable service worker
+
+---
+
+## 🚀 Deployment
+
+### Backend Deployment
+
+**Recommended Platforms:**
+
+- Heroku
+- Railway
+- Render
+- DigitalOcean
+- AWS
+
+**Steps:**
+
+1. Set environment variables
+2. Configure MongoDB Atlas
+3. Deploy code
+4. Run migrations/seeds
+5. Test endpoints
+
+### Frontend Deployment
+
+**Recommended Platforms:**
+
+- Vercel
+- Netlify
+- GitHub Pages
+- Cloudflare Pages
+
+**Steps:**
+
+1. Build production bundle: `npm run build`
+2. Deploy `dist` folder
+3. Configure environment variables
+4. Set up custom domain (optional)
+
+---
+
+## 📞 Support
+
+### Common Issues
+
+**Issue:** Order placement fails  
+**Solution:** Ensure backend is running and cart has valid items
+
+**Issue:** Receipt not loading  
+**Solution:** Check order status (must be Placed or later)
+
+**Issue:** Stock not deducting  
+**Solution:** Ensure recipe mapping exists for menu items
+
+**Issue:** Low stock alerts not showing  
+**Solution:** Check min stock levels are set for ingredients
+
+### Getting Help
+
+1. Check this README
+2. Review error messages in console
+3. Check server logs
+4. Verify environment variables
+5. Test API endpoints directly
+
+---
+
+## 🎉 Features Roadmap
+
+### Phase 1 (Current) ✅
+
+- ✅ Basic ordering system
+- ✅ User authentication
+- ✅ Menu & recipe management
+- ✅ Inventory management
+- ✅ Payment integration
+- ✅ Notifications
+
+### Phase 2 (Next) 🔄
+
+- POS System
+- Table Management
+- Kitchen Display System
+- Advanced reporting
+
+### Phase 3 (Future) 📅
+
+- Delivery management
+- Staff management
+- Mobile app
+- Multi-location support
 
 ---
 
@@ -668,52 +708,45 @@ This project is proprietary software developed for FoodBuzz Restaurant.
 
 ## 👨‍💻 Development Team
 
-- **Backend Development:** Node.js, Express.js, MongoDB
-- **Frontend Development:** React, Vite, Tailwind CSS
-- **Integration:** Payment gateways, Email services, File upload
-- **Testing:** Manual testing, API testing
-- **Documentation:** Comprehensive guides and API docs
+**Backend:** Node.js, Express.js, MongoDB  
+**Frontend:** React, Vite, Tailwind CSS  
+**Integration:** Payment gateways, Email, File upload  
+**Testing:** Manual testing, API testing
+
+---
+
+## 🎯 Quick Commands
+
+```bash
+# Backend
+cd Server
+npm install          # Install dependencies
+npm start           # Start server
+npm run seed:all    # Seed database
+
+# Frontend
+cd Client
+npm install         # Install dependencies
+npm run dev         # Start dev server
+npm run build       # Build for production
+
+# Database
+# Create admin user
+node Server/src/scripts/createDefaultAdmin.js
+
+# Seed menu items
+node Server/seed-menu-items.js
+
+# Seed recipes
+node Server/seed-recipes.js
+```
 
 ---
 
 **Last Updated:** February 9, 2026  
-**Version:** 2.3.0  
+**Version:** 3.0.0  
 **Status:** ✅ Production Ready
 
 ---
 
-## 📖 Additional Documentation
-
-For detailed guides and references, see:
-
-- **PRODUCTION_ROADMAP_SUMMARY.md** - 🎯 Quick overview of production features needed
-- **FEATURE_ROADMAP.md** - 🚀 Complete feature roadmap with specifications
-- **PHASE_1_IMPLEMENTATION_GUIDE.md** - 📋 Week-by-week implementation plan
-- **LATEST_UPDATES.md** - Recent changes and enhancements
-- **SETUP_GUIDE.md** - Detailed installation instructions
-- **TROUBLESHOOTING_GUIDE.md** - Common issues and solutions
-- **PROJECT_STATUS.md** - Complete feature checklist
-- **QUICK_REFERENCE.md** - Quick start commands
-- **UI_ENHANCEMENT_GUIDE.md** - UI/UX improvement plans
-- **NEW_FEATURES_ADDED.md** - Feature documentation
-- **COMPLETE_PROJECT_SUMMARY.md** - Project overview
-
----
-
-**Last Updated:** February 9, 2026  
-**Version:** 2.3.0  
-**Status:** ✅ Production Ready
-
----
-
-## 🎉 Getting Started
-
-Ready to use FoodBuzz ROMS? Follow these steps:
-
-1. **Clone or download the project**
-2. **Follow the [Installation](#-installation) guide**
-3. **Start with the [Quick Start](#-quick-start) section**
-4. **Login using the [default credentials](#-user-accounts)**
-5. **Explore the features and customize as needed**
-
-**Welcome to FoodBuzz - Your complete restaurant management solution!** 🍽️✨
+**Welcome to FoodBuzz - Your Complete Restaurant Management Solution! 🍽️✨**
