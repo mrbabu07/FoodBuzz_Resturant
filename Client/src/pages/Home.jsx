@@ -26,39 +26,55 @@ export default function Home() {
       setLoading(true);
 
       // Fetch featured menu items (get random 6 items)
-      const menuResponse = await fetch("/api/menu-items");
-      if (menuResponse.ok) {
-        const menuData = await menuResponse.json();
-        // Shuffle and take 6 random items
-        const shuffled = [...menuData].sort(() => 0.5 - Math.random());
-        setFeaturedMenuItems(shuffled.slice(0, 6));
+      try {
+        const menuResponse = await fetch("/api/menu-items");
+        if (menuResponse.ok) {
+          const menuData = await menuResponse.json();
+          // Shuffle and take 6 random items
+          const shuffled = [...menuData].sort(() => 0.5 - Math.random());
+          setFeaturedMenuItems(shuffled.slice(0, 6));
 
-        // Set today's special (first available item from shuffled)
-        const special = shuffled.find((item) => item.isAvailable !== false);
-        setTodaysSpecial(special);
+          // Set today's special (first available item from shuffled)
+          const special = shuffled.find((item) => item.isAvailable !== false);
+          setTodaysSpecial(special);
 
-        // Update menu items count
-        setStats((prev) => ({ ...prev, totalMenuItems: menuData.length }));
+          // Update menu items count
+          setStats((prev) => ({ ...prev, totalMenuItems: menuData.length }));
+        }
+      } catch (err) {
+        console.log("Menu items fetch error:", err);
       }
 
       // Fetch popular recipes (get recent recipes)
-      const recipesResponse = await fetch("/api/recipes/recent");
-      if (recipesResponse.ok) {
-        const recipesData = await recipesResponse.json();
-        setPopularRecipes(recipesData.slice(0, 4));
+      try {
+        const recipesResponse = await fetch("/api/recipes/recent");
+        if (recipesResponse.ok) {
+          const recipesData = await recipesResponse.json();
+          setPopularRecipes(recipesData.slice(0, 4));
+        }
+      } catch (err) {
+        console.log("Recipes fetch error:", err);
       }
 
-      // Fetch real stats
+      // Fetch real stats (optional - won't break if backend is down)
+      // Commented out to avoid 404 errors when backend is not running
+      // Uncomment when backend is available
+      /*
       try {
-        // Get total orders count (if admin endpoint available)
         const ordersResponse = await fetch("/api/orders");
         if (ordersResponse.ok) {
           const ordersData = await ordersResponse.json();
           setStats((prev) => ({ ...prev, totalOrders: ordersData.length }));
         }
       } catch (err) {
-        console.log("Stats fetch error (non-critical):", err);
+        console.log("Orders stats fetch error (non-critical):", err);
+        // Set demo stats if backend is not available
+        setStats((prev) => ({ ...prev, totalOrders: 150 }));
       }
+      */
+
+      // Use demo stats for now
+      setStats((prev) => ({ ...prev, totalOrders: 150 }));
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
