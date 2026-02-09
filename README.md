@@ -208,31 +208,7 @@ Create `.env` file in `roms-backend/` directory:
 PORT=5000
 NODE_ENV=development
 
-# Database
-MONGO_URI=mongodb+srv://FoodBuzz:1234Foodbuzz@cluster0.g6xesjf.mongodb.net/FoodBuzzDB?retryWrites=true&w=majority
 
-# Authentication
-JWT_SECRET=foodbuzz_super_secret_key_2024
-JWT_EXPIRE=7d
-
-# Frontend URL
-FRONTEND_URL=http://localhost:5173
-
-# Email Configuration
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=fabliharaidah7@gmail.com
-SMTP_PASS=tuwrgxuvkwebiyce
-
-# Image Upload (ImgBB)
-IMGBB_API_KEY=22a91fa701f5d2997001a3ec065bb6ae
-
-# Payment (Stripe)
-STRIPE_SECRET_KEY=sk_test_51SpqdkRqGJhKGJhKGJhK...
-STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
-PAYMENT_SUCCESS_URL=http://localhost:5173/payment/success
-PAYMENT_CANCEL_URL=http://localhost:5173/payment/cancel
-```
 
 ### Vite Configuration
 
@@ -710,6 +686,9 @@ This project is proprietary software developed for FoodBuzz Restaurant.
 
 For detailed guides and references, see:
 
+- **PRODUCTION_ROADMAP_SUMMARY.md** - 🎯 Quick overview of production features needed
+- **FEATURE_ROADMAP.md** - 🚀 Complete feature roadmap with specifications
+- **PHASE_1_IMPLEMENTATION_GUIDE.md** - 📋 Week-by-week implementation plan
 - **LATEST_UPDATES.md** - Recent changes and enhancements
 - **SETUP_GUIDE.md** - Detailed installation instructions
 - **TROUBLESHOOTING_GUIDE.md** - Common issues and solutions
