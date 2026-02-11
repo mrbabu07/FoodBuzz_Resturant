@@ -126,11 +126,91 @@ const userSchema = new mongoose.Schema(
       ],
       default: [],
     },
+
+    // ✅ Loyalty Points System
+    loyaltyPoints: {
+      balance: { type: Number, default: 0, min: 0 },
+      totalEarned: { type: Number, default: 0, min: 0 },
+      totalRedeemed: { type: Number, default: 0, min: 0 },
+      tier: {
+        type: String,
+        enum: ["bronze", "silver", "gold", "platinum"],
+        default: "bronze",
+      },
+      lastUpdated: { type: Date, default: Date.now },
+    },
+
+    // ✅ Referral System
+    referralCode: {
+      type: String,
+      unique: true,
+      sparse: true,
+      uppercase: true,
+    },
+    referredBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    referralStats: {
+      totalReferrals: { type: Number, default: 0 },
+      successfulReferrals: { type: Number, default: 0 },
+      rewardsEarned: { type: Number, default: 0 },
+    },
   },
   { timestamps: true },
 );
 
 // Index for better query performance
 userSchema.index({ role: 1, isActive: 1 });
+userSchema.index({ referralCode: 1 });
+userSchema.index({ referredBy: 1 });
+
+// Generate unique referral code before saving (only for new users)
+userSchema.pre("save", async function () {
+  // Only generate for new user documents that don't have a code
+  if (this.isNew && !this.referralCode && this.role === "user") {
+    try {
+      this.referralCode = await generateUniqueReferralCode();
+    } catch (error) {
+      console.error("Failed to generate referral code:", error);
+      // Continue without referral code - can be generated later
+    }
+  }
+});
+
+// Helper function to generate unique referral code
+async function generateUniqueReferralCode() {
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let code;
+  let isUnique = false;
+
+  while (!isUnique) {
+    code = "";
+    for (let i = 0; i < 8; i++) {
+      code += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    const existing = await mongoose
+      .model("User")
+      .findOne({ referralCode: code });
+    if (!existing) isUnique = true;
+  }
+
+  return code;
+}
+
+// Method to update loyalty tier based on total earned points
+userSchema.methods.updateLoyaltyTier = function () {
+  const totalEarned = this.loyaltyPoints.totalEarned;
+
+  if (totalEarned >= 10000) {
+    this.loyaltyPoints.tier = "platinum";
+  } else if (totalEarned >= 5000) {
+    this.loyaltyPoints.tier = "gold";
+  } else if (totalEarned >= 2000) {
+    this.loyaltyPoints.tier = "silver";
+  } else {
+    this.loyaltyPoints.tier = "bronze";
+  }
+};
 
 module.exports = mongoose.model("User", userSchema);

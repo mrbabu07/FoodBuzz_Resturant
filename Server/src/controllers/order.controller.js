@@ -322,6 +322,22 @@ exports.updateOrderStatus = async (req, res) => {
     order.statusHistory.push({ status, at: new Date() });
     await order.save();
 
+    // ✅ Award loyalty points when order is delivered
+    if (status === "Delivered" && oldStatus !== "Delivered") {
+      try {
+        const { awardPointsForOrder } = require("./loyalty.controller");
+        const { awardReferrerBonus } = require("./referral.controller");
+
+        // Award points to customer
+        await awardPointsForOrder(order.userId, order._id, order.total);
+
+        // Award referrer bonus if this is customer's first order
+        await awardReferrerBonus(order.userId);
+      } catch (loyaltyError) {
+        console.error("Failed to award loyalty points:", loyaltyError);
+      }
+    }
+
     // ✅ Activity: ORDER_STATUS_CHANGED (log to the order owner)
     await logActivity({
       userId: order.userId,
@@ -734,5 +750,55 @@ exports.canModifyOrder = async (req, res) => {
   } catch (err) {
     console.error("canModifyOrder error:", err);
     return res.status(500).json({ message: "Server error" });
+  }
+};
+
+// POST /api/orders/:id/reorder - Reorder a previous order
+exports.reorderOrder = async (req, res) => {
+  try {
+    const originalOrder = await Order.findOne({
+      _id: req.params.id,
+      userId: req.user.id,
+    }).lean();
+
+    if (!originalOrder) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // Check if menu items are still available
+    const menuItemIds = originalOrder.items.map((item) => item.menuItemId);
+    const availableItems = await MenuItem.find({
+      _id: { $in: menuItemIds },
+      isAvailable: true,
+    }).lean();
+
+    const availableItemIds = new Set(
+      availableItems.map((item) => item._id.toString()),
+    );
+
+    // Filter items that are still available
+    const reorderItems = originalOrder.items.filter((item) =>
+      availableItemIds.has(item.menuItemId.toString()),
+    );
+
+    if (reorderItems.length === 0) {
+      return res.status(400).json({
+        message: "None of the items from this order are currently available",
+      });
+    }
+
+    const unavailableItems = originalOrder.items.filter(
+      (item) => !availableItemIds.has(item.menuItemId.toString()),
+    );
+
+    res.json({
+      message: "Order items ready for reorder",
+      items: reorderItems,
+      unavailableItems: unavailableItems.map((item) => item.name),
+      originalOrderId: originalOrder._id,
+    });
+  } catch (error) {
+    console.error("Reorder error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 };

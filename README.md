@@ -82,6 +82,19 @@ Backend: http://localhost:5000
 - **Food Cost Calculation** - Calculate cost per menu item
 - **Inventory Dashboard** - Overview of inventory status
 
+### NEW: POS (Point of Sale) Dashboard ✅
+
+- **Fast Order Creation** - Direct add items without cart page
+- **Instant Menu Search** - Search menu items in real-time
+- **Item Notes** - Add special instructions (no onion, extra spicy)
+- **Order Types** - Switch between Dine-in and Takeaway
+- **Split Bill** - Divide bill into multiple parts (2-5 people)
+- **Quick Discounts** - Apply percentage or fixed discounts
+- **Print Receipt** - Auto-print receipt after order placement
+- **Multiple Payment Methods** - Cash, Card, or Stripe
+- **Auto Inventory Update** - Stock automatically deducted on order
+- **Real-time Totals** - Live calculation with tax and discounts
+
 ### NEW: Enhanced User Experience ✅
 
 #### Profile Page Enhancements
@@ -99,9 +112,22 @@ Backend: http://localhost:5000
 - **Print Recipes** - One-click printing for recipe cards
 - **Enhanced Cards** - Fully clickable with hover animations and quick actions
 
+### NEW: POS (Point of Sale) System ✅
+
+- **Fast Order Creation** - Direct add items without cart page
+- **Instant Menu Search** - Search and filter menu items in real-time
+- **Item Notes** - Add special instructions (no onion, extra spicy, etc.)
+- **Dine-In / Takeaway** - Quick toggle between order types
+- **Split Bill** - Split total into 2, 3, 4, or 5 parts
+- **Quick Discounts** - Apply percentage or fixed amount discounts
+- **Print Receipt** - Auto-print receipt after order placement
+- **Payment Methods** - Cash, Card, or Stripe integration
+- **Auto Inventory Update** - Automatically deduct stock on order
+- **Real-time Totals** - Live calculation of subtotal, tax, discount, total
+
 ### Planned Features 🔄
 
-- POS System (Split bills, discounts, void/refund)
+- Table Management (Floor map, table status)
 - Table Management (Floor map, table status)
 - Kitchen Display System
 - Delivery Management
@@ -297,6 +323,22 @@ GET    /api/inventory/recipes/:menuItemId/food-cost - Calculate food cost
 ```
 GET    /api/inventory/stats   - Get inventory statistics
 ```
+
+### POS (Point of Sale) (NEW)
+
+```
+POST   /api/orders/pos              - Create POS order (Admin/Staff only)
+GET    /api/orders/pos              - Get all POS orders (Admin/Staff only)
+PATCH  /api/orders/pos/:id/status   - Update POS order status (Admin/Staff only)
+```
+
+**Features:**
+
+- Fast order creation without cart
+- Auto inventory deduction
+- Support for dine-in and takeaway
+- Discount and tax calculation
+- Multiple payment methods (cash, card, stripe)
 
 ### Reviews
 

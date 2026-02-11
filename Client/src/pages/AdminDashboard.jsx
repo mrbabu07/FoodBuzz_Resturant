@@ -361,7 +361,22 @@ export default function AdminDashboard() {
             <span className="text-3xl">⚡</span>
             Quick Actions
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <a
+              href="/pos"
+              className="p-6 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 rounded-2xl transition-all duration-300 group shadow-xl"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-white/20 backdrop-blur-xl rounded-xl flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                  💳
+                </div>
+                <div>
+                  <div className="font-bold text-lg">POS System</div>
+                  <div className="text-sm text-blue-100">Fast ordering</div>
+                </div>
+              </div>
+            </a>
+
             <a
               href="/managemenuadmin"
               className="p-6 bg-white/10 hover:bg-white/20 backdrop-blur-xl rounded-2xl transition-all duration-300 group"

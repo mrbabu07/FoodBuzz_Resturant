@@ -14,6 +14,7 @@ const {
   cancelOrder,
   modifyOrder,
   canModifyOrder,
+  reorderOrder,
 } = require("../controllers/order.controller");
 
 const { downloadReceiptPdf } = require("../controllers/receipt.pdf.controller");
@@ -57,6 +58,14 @@ router.put(
   auth,
   allowRoles("user", "admin", "staff"),
   modifyOrder,
+);
+
+// Reorder route
+router.post(
+  "/:id/reorder",
+  auth,
+  allowRoles("user", "admin", "staff"),
+  reorderOrder,
 );
 
 module.exports = router;

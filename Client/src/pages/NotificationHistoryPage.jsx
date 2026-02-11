@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { showSuccess, showError } from "../utils/toast";
+import { apiFetch } from "../utils/api";
 
 export default function NotificationHistoryPage() {
   const navigate = useNavigate();
@@ -28,7 +29,6 @@ export default function NotificationHistoryPage() {
   const loadNotifications = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
       const queryParams = new URLSearchParams({
         page: pagination.page,
         limit: pagination.limit,
@@ -37,18 +37,7 @@ export default function NotificationHistoryPage() {
         ...(filters.priority && { priority: filters.priority }),
       });
 
-      const response = await fetch(
-        `http://localhost:5000/api/notifications?${queryParams}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      if (!response.ok) throw new Error("Failed to load notifications");
-
-      const data = await response.json();
+      const data = await apiFetch(`/api/notifications?${queryParams}`);
       setNotifications(data.notifications);
       setPagination(data.pagination);
     } catch (error) {
@@ -63,19 +52,7 @@ export default function NotificationHistoryPage() {
     if (!confirm("Are you sure you want to delete this notification?")) return;
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `http://localhost:5000/api/notifications/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      if (!response.ok) throw new Error("Failed to delete notification");
-
+      await apiFetch(`/api/notifications/${id}`, { method: "DELETE" });
       showSuccess("Notification deleted");
       loadNotifications();
     } catch (error) {
@@ -93,17 +70,7 @@ export default function NotificationHistoryPage() {
       return;
 
     try {
-      const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:5000/api/notifications`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) throw new Error("Failed to delete notifications");
-
-      const data = await response.json();
+      const data = await apiFetch(`/api/notifications`, { method: "DELETE" });
       showSuccess(`${data.count} notifications deleted`);
       loadNotifications();
     } catch (error) {

@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { showSuccess, showError } from "../utils/toast";
+import { apiFetch } from "../utils/api";
+import { getUser } from "../utils/authStorage";
 
 export default function ReviewsPage() {
   const [myReviews, setMyReviews] = useState([]);
@@ -9,9 +11,7 @@ export default function ReviewsPage() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const userData = JSON.parse(
-      localStorage.getItem("roms_current_user") || "null",
-    );
+    const userData = getUser();
     setUser(userData);
     if (userData) {
       fetchMyReviews();
@@ -23,19 +23,8 @@ export default function ReviewsPage() {
   const fetchMyReviews = async () => {
     try {
       setLoading(true);
-      const token = JSON.parse(
-        localStorage.getItem("roms_current_user"),
-      )?.token;
-      const response = await fetch("/api/reviews/my", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setMyReviews(data);
-      }
+      const data = await apiFetch("/api/reviews/my");
+      setMyReviews(data);
     } catch (error) {
       console.error("Error fetching reviews:", error);
     } finally {
@@ -47,22 +36,9 @@ export default function ReviewsPage() {
     if (!confirm("Are you sure you want to delete this review?")) return;
 
     try {
-      const token = JSON.parse(
-        localStorage.getItem("roms_current_user"),
-      )?.token;
-      const response = await fetch(`/api/reviews/${reviewId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.ok) {
-        showSuccess("Review deleted successfully");
-        fetchMyReviews();
-      } else {
-        showError("Failed to delete review");
-      }
+      await apiFetch(`/api/reviews/${reviewId}`, { method: "DELETE" });
+      showSuccess("Review deleted successfully");
+      fetchMyReviews();
     } catch (error) {
       console.error("Error deleting review:", error);
       showError("Error deleting review");

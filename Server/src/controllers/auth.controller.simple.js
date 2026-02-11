@@ -15,7 +15,7 @@ function signToken(user) {
 // POST /api/auth/register
 exports.register = async (req, res) => {
   try {
-    const { name, email, password, address } = req.body;
+    const { name, email, password, address, referralCode } = req.body;
 
     if (!name || !email || !password) {
       return res
@@ -47,10 +47,28 @@ exports.register = async (req, res) => {
       isActive: true,
     });
 
+    // Process referral code if provided
+    if (referralCode) {
+      const { processReferral } = require("./referral.controller");
+      await processReferral(user._id, referralCode);
+    }
+
+    // Send verification email
+    try {
+      const {
+        sendVerificationEmail,
+      } = require("./email.verification.controller");
+      await sendVerificationEmail(user._id);
+    } catch (emailError) {
+      console.error("Failed to send verification email:", emailError);
+      // Don't fail registration if email fails
+    }
+
     const token = signToken(user);
 
     return res.status(201).json({
-      message: "Registered successfully",
+      message:
+        "Registered successfully. Please check your email to verify your account.",
       token,
       user: {
         id: user._id,
@@ -59,6 +77,9 @@ exports.register = async (req, res) => {
         role: user.role,
         address: user.address,
         isActive: user.isActive,
+        emailVerified: user.emailVerified,
+        loyaltyPoints: user.loyaltyPoints,
+        referralCode: user.referralCode,
       },
     });
   } catch (err) {

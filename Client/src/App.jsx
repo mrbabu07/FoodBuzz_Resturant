@@ -34,6 +34,7 @@ import CartPage from "./pages/CartPage";
 import PlaceOrderPage from "./pages/PlaceOrderPage";
 import ReceiptPage from "./pages/ReceiptPage";
 import OrderTrackingPage from "./pages/OrderTrackingPage";
+import OrderLifecycleManagement from "./pages/OrderLifecycleManagement"; // ✅ Order Lifecycle
 import NotificationPreferences from "./pages/NotificationPreferences";
 import NotificationPreferencesPage from "./pages/NotificationPreferencesPage";
 import NotificationHistoryPage from "./pages/NotificationHistoryPage";
@@ -56,6 +57,7 @@ import ReportPage from "./pages/ReportPage";
 import AuthorsTable from "./pages/AuthorsTable";
 import ManageStaffPage from "./pages/ManageStaffPage";
 import ManageUsersPage from "./pages/ManageUsersPage"; // ✅ NEW
+import POSDashboard from "./pages/POSDashboard"; // ✅ POS System
 
 // Staff system
 import StaffRoute from "./StaffRoute";
@@ -106,6 +108,7 @@ export default function App() {
     "/register",
     "/managestaff",
     "/manageusers", // ✅ NEW
+    "/pos", // ✅ POS Dashboard
   ];
 
   const shouldHideLayout =
@@ -258,6 +261,14 @@ export default function App() {
             }
           />
           <Route
+            path="/my-orders"
+            element={
+              <UserRoute>
+                <OrderLifecycleManagement />
+              </UserRoute>
+            }
+          />
+          <Route
             path="/payment-success"
             element={
               <UserRoute>
@@ -358,6 +369,26 @@ export default function App() {
             element={
               <PrivateRoute>
                 <ManageUsersPage />
+              </PrivateRoute>
+            }
+          />
+
+          {/* ✅ NEW: POS Dashboard */}
+          <Route
+            path="/pos"
+            element={
+              <PrivateRoute>
+                <POSDashboard />
+              </PrivateRoute>
+            }
+          />
+
+          {/* ✅ NEW: POS Dashboard */}
+          <Route
+            path="/pos"
+            element={
+              <PrivateRoute>
+                <POSDashboard />
               </PrivateRoute>
             }
           />

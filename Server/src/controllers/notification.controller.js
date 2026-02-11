@@ -1,5 +1,6 @@
 const Notification = require("../models/Notification");
 const { logActivity } = require("../utils/activityLogger");
+const mongoose = require("mongoose");
 
 // GET /api/notifications - Get user's notifications
 exports.getNotifications = async (req, res) => {
@@ -252,7 +253,7 @@ exports.getAnalytics = async (req, res) => {
       Notification.aggregate([
         {
           $match: {
-            userId: new require("mongoose").Types.ObjectId(req.user.id),
+            userId: new mongoose.Types.ObjectId(req.user.id),
             createdAt: { $gte: startDate },
           },
         },
@@ -261,7 +262,7 @@ exports.getAnalytics = async (req, res) => {
       Notification.aggregate([
         {
           $match: {
-            userId: new require("mongoose").Types.ObjectId(req.user.id),
+            userId: new mongoose.Types.ObjectId(req.user.id),
             createdAt: { $gte: startDate },
           },
         },
@@ -270,7 +271,7 @@ exports.getAnalytics = async (req, res) => {
       Notification.aggregate([
         {
           $match: {
-            userId: new require("mongoose").Types.ObjectId(req.user.id),
+            userId: new mongoose.Types.ObjectId(req.user.id),
             createdAt: {
               $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
             },

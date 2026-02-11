@@ -12,6 +12,7 @@ const orderItemSchema = new mongoose.Schema(
     imageUrl: { type: String, default: "" },
     price: { type: Number, default: 0 }, // snapshot at order time
     qty: { type: Number, default: 1 },
+    notes: { type: String, default: "" }, // ✅ Added for POS item notes
   },
   { _id: false },
 );
@@ -32,6 +33,8 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
 
+    userEmail: { type: String, default: "" }, // ✅ Added for POS
+
     items: { type: [orderItemSchema], default: [] },
 
     subtotal: { type: Number, default: 0 },
@@ -42,7 +45,7 @@ const orderSchema = new mongoose.Schema(
 
     paymentMethod: {
       type: String,
-      enum: ["COD", "Stripe", "stripe", "bkash", "nagad", "cash"],
+      enum: ["COD", "Stripe", "stripe", "bkash", "nagad", "cash", "card"], // ✅ Added "cash" and "card"
       default: "COD",
     },
 
@@ -64,6 +67,14 @@ const orderSchema = new mongoose.Schema(
     // Order scheduling
     scheduledFor: { type: Date, default: null },
     isScheduled: { type: Boolean, default: false },
+
+    // ✅ POS specific fields
+    orderType: {
+      type: String,
+      enum: ["delivery", "dine-in", "takeaway"],
+      default: "delivery",
+    },
+    tableNumber: { type: String, default: "" },
 
     status: { type: String, default: "Placed" },
     statusHistory: {

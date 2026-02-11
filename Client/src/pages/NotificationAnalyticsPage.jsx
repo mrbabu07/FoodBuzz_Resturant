@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { showError } from "../utils/toast";
+import { apiFetch } from "../utils/api";
 
 export default function NotificationAnalyticsPage() {
   const navigate = useNavigate();
@@ -15,19 +16,9 @@ export default function NotificationAnalyticsPage() {
   const loadAnalytics = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("token");
-      const response = await fetch(
-        `http://localhost:5000/api/notifications/analytics?days=${period}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
+      const data = await apiFetch(
+        `/api/notifications/analytics?days=${period}`,
       );
-
-      if (!response.ok) throw new Error("Failed to load analytics");
-
-      const data = await response.json();
       setAnalytics(data);
     } catch (error) {
       console.error("Failed to load analytics:", error);

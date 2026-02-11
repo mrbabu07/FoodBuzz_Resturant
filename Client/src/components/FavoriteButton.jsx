@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../utils/api";
+import { getToken } from "../utils/authStorage";
 import {
   showFavoriteAdded,
   showFavoriteRemoved,
@@ -9,9 +11,15 @@ import {
 export default function FavoriteButton({ itemId, type = "recipe" }) {
   const [isFavorite, setIsFavorite] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (itemId) {
+    // Check if user is logged in
+    const token = getToken();
+    setIsLoggedIn(!!token);
+
+    if (itemId && token) {
       checkFavoriteStatus();
     }
   }, [itemId]);
@@ -28,14 +36,21 @@ export default function FavoriteButton({ itemId, type = "recipe" }) {
       const data = await apiFetch(endpoint);
       setIsFavorite(data.isFavorite || data.isInWishlist || false);
     } catch (err) {
-      // User might not be logged in, that's okay
-      console.log("Not logged in or error checking favorite");
+      // User might not be logged in or error checking favorite
+      console.log("Error checking favorite status");
     }
   };
 
   const toggleFavorite = async (e) => {
     e.preventDefault();
     e.stopPropagation();
+
+    // Check if user is logged in
+    if (!isLoggedIn) {
+      showError("Please login to add favorites");
+      setTimeout(() => navigate("/login"), 1500);
+      return;
+    }
 
     if (!itemId) {
       showError("Invalid item");
@@ -60,7 +75,7 @@ export default function FavoriteButton({ itemId, type = "recipe" }) {
         showFavoriteAdded();
       }
     } catch (err) {
-      showError(err.message || "Please login to add favorites");
+      showError(err.message || "Failed to update favorites");
     } finally {
       setLoading(false);
     }
@@ -80,7 +95,13 @@ export default function FavoriteButton({ itemId, type = "recipe" }) {
           ? "bg-red-500 text-white shadow-lg"
           : "bg-white text-gray-400 hover:text-red-500 border-2 border-gray-200"
       } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
-      title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+      title={
+        !isLoggedIn
+          ? "Login to add favorites"
+          : isFavorite
+            ? "Remove from favorites"
+            : "Add to favorites"
+      }
     >
       <svg
         className="w-6 h-6"

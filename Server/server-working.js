@@ -121,7 +121,16 @@ app.use("/api/reviews", require("./src/routes/review.routes"));
 app.use("/api/upload", require("./src/routes/upload.routes"));
 app.use("/api/payments", require("./src/routes/payment.routes"));
 app.use("/api/notifications", require("./src/routes/notification.routes"));
-app.use("/api/inventory", require("./src/routes/inventory.routes")); // ✅ NEW
+app.use("/api/inventory", require("./src/routes/inventory.routes")); // ✅ Inventory Management
+app.use("/api/orders/pos", require("./src/routes/pos.routes")); // ✅ POS System
+app.use("/api/orders", require("./src/routes/order.lifecycle.routes")); // ✅ Order Lifecycle (Cancel, Return, Timeline)
+app.use("/api/loyalty", require("./src/routes/loyalty.routes")); // ✅ Loyalty Points System
+app.use("/api/referral", require("./src/routes/referral.routes")); // ✅ Referral System
+app.use("/api/flash-deals", require("./src/routes/flashdeal.routes")); // ✅ Flash Deals
+app.use("/api/banners", require("./src/routes/banner.routes")); // ✅ Promo Banners
+app.use("/api/recommendations", require("./src/routes/recommendation.routes")); // ✅ Recommendations
+app.use("/api/subscriptions", require("./src/routes/subscription.routes")); // ✅ Subscription Meals
+app.use("/api/health", require("./src/routes/health.routes")); // ✅ Health Check & Monitoring
 
 // Error handler
 app.use((err, req, res, next) => {
