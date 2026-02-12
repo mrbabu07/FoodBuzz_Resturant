@@ -68,6 +68,51 @@
   }
 }
 
+@keyframes carousel-slide {
+  0% {
+    opacity: 0;
+    transform: translateX(100px) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes zoom-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes card-hover-glow {
+  0% {
+    box-shadow: 0 4px 20px rgba(249, 115, 22, 0.2);
+  }
+  50% {
+    box-shadow: 0 8px 40px rgba(249, 115, 22, 0.4);
+  }
+  100% {
+    box-shadow: 0 4px 20px rgba(249, 115, 22, 0.2);
+  }
+}
+
 @keyframes pulse-glow {
   0%,
   100% {
@@ -194,6 +239,39 @@
 
   .animate-rotate-slow {
     animation: rotate-slow 20s linear infinite;
+  }
+
+  .animate-carousel-slide {
+    animation: carousel-slide 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .animate-zoom-in {
+    animation: zoom-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .animate-slide-fade-in {
+    animation: slide-fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .animate-card-hover-glow {
+    animation: card-hover-glow 2s ease-in-out infinite;
+  }
+
+  /* Smooth Transitions */
+  .transition-smooth {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .transition-smooth-slow {
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .transition-bounce {
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .transition-elastic {
+    transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
 
   /* Glass Effects */

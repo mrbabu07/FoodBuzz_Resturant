@@ -6,13 +6,18 @@
   "scripts": {
     "dev": "nodemon server-working.js",
     "start": "node server-working.js",
+    "start:prod": "NODE_ENV=production node server-working.js",
     "seed": "node seed-database.js",
     "seed:all": "node seed-all.js",
+    "seed:complete": "node seed-complete-database.js",
     "seed:menu": "node seed-menu-items.js",
     "seed:recipes": "node seed-recipes.js",
+    "seed:more-recipes": "node seed-more-recipes.js",
     "seed:offers": "node seed-offers.js",
     "create-admin": "node src/scripts/createDefaultAdmin.js",
-    "setup": "npm install && node seed-all.js && node src/scripts/createDefaultAdmin.js"
+    "setup": "npm install && node seed-all.js && node src/scripts/createDefaultAdmin.js",
+    "security-check": "node check-security.js",
+    "test": "echo \"No tests specified\" && exit 0"
   },
   "keywords": [],
   "author": "",

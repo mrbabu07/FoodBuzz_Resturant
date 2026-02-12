@@ -722,6 +722,9 @@ lsof -ti:5000 | xargs kill -9
 **Issue:** Low stock alerts not showing  
 **Solution:** Check min stock levels are set for ingredients
 
+**Issue:** Images not loading in Recipe Categories  
+**Solution:** Images now use reliable Unsplash CDN. Clear browser cache if issues persist.
+
 ### Getting Help
 
 1. Check this README
@@ -729,6 +732,104 @@ lsof -ti:5000 | xargs kill -9
 3. Check server logs
 4. Verify environment variables
 5. Test API endpoints directly
+
+---
+
+## 🚀 Production Deployment
+
+### Quick Production Build
+
+```bash
+# Windows
+build-production.bat
+
+# Manual Build
+cd Client
+npm run build
+
+cd ../Server
+npm install --production
+```
+
+### Production Files
+
+- **Frontend Build**: `Client/dist/` - Deploy to Vercel, Netlify, or static hosting
+- **Backend**: `Server/` - Deploy to Railway, Render, Heroku, or VPS
+- **Environment**: Use `.env.production` files (see examples)
+
+### Deployment Guides
+
+📖 **Comprehensive Guides:**
+
+- `PRODUCTION_DEPLOYMENT.md` - Complete deployment instructions
+- `PRODUCTION_CHECKLIST.md` - Pre-deployment checklist
+- `Server/SECURITY.md` - Security best practices
+- `Server/.env.production.example` - Production environment template
+
+### Quick Deploy Options
+
+**Option 1: Vercel (Frontend) + Railway (Backend)**
+
+```bash
+# Deploy Backend to Railway
+railway login
+railway init
+railway up
+
+# Deploy Frontend to Vercel
+vercel --prod
+```
+
+**Option 2: Netlify + Render**
+
+- Drag `Client/dist` to Netlify
+- Connect GitHub repo to Render
+
+**Option 3: VPS (Full Control)**
+
+- See `PRODUCTION_DEPLOYMENT.md` for complete VPS setup
+
+### Production Scripts
+
+```bash
+# Build for production
+npm run build:prod          # Client
+npm run start:prod          # Server
+
+# Test production build locally
+test-production.bat         # Windows
+npm run preview             # Client preview
+
+# Security check
+cd Server
+npm run security-check
+```
+
+### Environment Variables
+
+**Client** (`.env.production`):
+
+```env
+VITE_API_URL=https://your-api-domain.com
+VITE_APP_NAME=FoodBuzz
+```
+
+**Server** (`.env.production`):
+
+```env
+NODE_ENV=production
+MONGO_URI=mongodb+srv://...
+JWT_SECRET=your_32_char_secret
+FRONTEND_URL=https://your-domain.com
+```
+
+### Post-Deployment
+
+1. ✅ Change default admin password
+2. ✅ Test all features
+3. ✅ Monitor error logs
+4. ✅ Setup automated backups
+5. ✅ Configure monitoring/alerts
 
 ---
 

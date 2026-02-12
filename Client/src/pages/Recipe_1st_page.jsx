@@ -650,12 +650,12 @@ export default function Recipe_1st_page() {
         <section className="max-w-6xl mx-auto px-6 mb-20">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Trending Recipes */}
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-orange-100 p-8 hover:shadow-3xl transition-all duration-500">
+            <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-orange-100 p-8 hover:shadow-3xl transition-all duration-500 ease-out hover:-translate-y-1">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-3xl font-black bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
                   🔥 Trending Now
                 </h3>
-                <div className="bg-gradient-to-r from-orange-100 to-red-100 text-orange-700 px-4 py-2 rounded-full text-sm font-bold">
+                <div className="bg-gradient-to-r from-orange-100 to-red-100 text-orange-700 px-4 py-2 rounded-full text-sm font-bold animate-pulse">
                   Hot Picks
                 </div>
               </div>
@@ -664,25 +664,28 @@ export default function Recipe_1st_page() {
                 {trendingRecipes.slice(0, 3).map((recipe, index) => (
                   <div
                     key={recipe._id || index}
-                    className="flex items-center gap-4 p-4 bg-orange-50 rounded-2xl hover:bg-orange-100 transition-all cursor-pointer"
+                    className="flex items-center gap-4 p-4 bg-orange-50 rounded-2xl hover:bg-orange-100 transition-all duration-300 ease-out cursor-pointer hover:scale-[1.02] hover:shadow-md"
+                    style={{
+                      animation: `slide-fade-in 0.5s ease-out ${index * 0.15}s both`,
+                    }}
                   >
                     <img
                       src={recipe.imageUrl}
                       alt={recipe.name}
-                      className="w-16 h-16 rounded-xl object-cover"
+                      className="w-16 h-16 rounded-xl object-cover transition-transform duration-300 hover:scale-110"
                       onError={(e) => {
                         e.currentTarget.src = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" fill="%23f97316"/><text x="32" y="32" text-anchor="middle" dy=".3em" fill="white" font-size="12">🍽️</text></svg>`;
                       }}
                     />
                     <div className="flex-1">
-                      <h4 className="font-bold text-gray-900 line-clamp-1">
+                      <h4 className="font-bold text-gray-900 line-clamp-1 transition-colors duration-200 hover:text-orange-600">
                         {recipe.name}
                       </h4>
                       <p className="text-sm text-gray-600">
                         {recipe.category} • {recipe.difficulty || "Easy"}
                       </p>
                     </div>
-                    <div className="text-orange-600 font-bold">
+                    <div className="text-orange-600 font-bold transition-transform duration-300 hover:scale-125">
                       #{index + 1}
                     </div>
                   </div>
@@ -691,19 +694,19 @@ export default function Recipe_1st_page() {
 
               <Link
                 to="/recipes/trending"
-                className="w-full mt-6 block text-center px-6 py-3 bg-orange-500 text-white rounded-2xl font-bold hover:bg-orange-600 transition-all"
+                className="w-full mt-6 block text-center px-6 py-3 bg-orange-500 text-white rounded-2xl font-bold hover:bg-orange-600 transition-all duration-300 ease-out hover:scale-105 hover:shadow-lg active:scale-95"
               >
                 View All Trending
               </Link>
             </div>
 
             {/* Recent Recipes */}
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-green-100 p-8 hover:shadow-3xl transition-all duration-500">
+            <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-green-100 p-8 hover:shadow-3xl transition-all duration-500 ease-out hover:-translate-y-1">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-3xl font-black bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
                   🆕 Recently Added
                 </h3>
-                <div className="bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 px-4 py-2 rounded-full text-sm font-bold">
+                <div className="bg-gradient-to-r from-green-100 to-emerald-100 text-green-700 px-4 py-2 rounded-full text-sm font-bold animate-pulse">
                   Fresh
                 </div>
               </div>
@@ -712,32 +715,37 @@ export default function Recipe_1st_page() {
                 {recentRecipes.slice(0, 3).map((recipe, index) => (
                   <div
                     key={recipe._id || index}
-                    className="flex items-center gap-4 p-4 bg-green-50 rounded-2xl hover:bg-green-100 transition-all cursor-pointer"
+                    className="flex items-center gap-4 p-4 bg-green-50 rounded-2xl hover:bg-green-100 transition-all duration-300 ease-out cursor-pointer hover:scale-[1.02] hover:shadow-md"
+                    style={{
+                      animation: `slide-fade-in 0.5s ease-out ${index * 0.15}s both`,
+                    }}
                   >
                     <img
                       src={recipe.imageUrl}
                       alt={recipe.name}
-                      className="w-16 h-16 rounded-xl object-cover"
+                      className="w-16 h-16 rounded-xl object-cover transition-transform duration-300 hover:scale-110"
                       onError={(e) => {
                         e.currentTarget.src = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><rect width="64" height="64" fill="%2310b981"/><text x="32" y="32" text-anchor="middle" dy=".3em" fill="white" font-size="12">🍽️</text></svg>`;
                       }}
                     />
                     <div className="flex-1">
-                      <h4 className="font-bold text-gray-900 line-clamp-1">
+                      <h4 className="font-bold text-gray-900 line-clamp-1 transition-colors duration-200 hover:text-green-600">
                         {recipe.name}
                       </h4>
                       <p className="text-sm text-gray-600">
                         {recipe.category} • Just added
                       </p>
                     </div>
-                    <div className="text-green-600 font-bold text-sm">New</div>
+                    <div className="text-green-600 font-bold text-sm transition-transform duration-300 hover:scale-125">
+                      New
+                    </div>
                   </div>
                 ))}
               </div>
 
               <Link
                 to="/recipes/recent"
-                className="w-full mt-6 block text-center px-6 py-3 bg-green-500 text-white rounded-2xl font-bold hover:bg-green-600 transition-all"
+                className="w-full mt-6 block text-center px-6 py-3 bg-green-500 text-white rounded-2xl font-bold hover:bg-green-600 transition-all duration-300 ease-out hover:scale-105 hover:shadow-lg active:scale-95"
               >
                 View All Recent
               </Link>
@@ -771,10 +779,12 @@ export default function Recipe_1st_page() {
                     <div
                       key={`${category.name}-${i}`}
                       onClick={() => setCurrentCategoryIndex(idx)}
-                      className="absolute w-44 sm:w-64 h-64 sm:h-80 rounded-3xl shadow-2xl cursor-pointer overflow-hidden group transition-all duration-700 ease-in-out border-2 border-gray-200 bg-white hover:shadow-2xl hover:border-orange-300"
+                      className="absolute w-44 sm:w-64 h-64 sm:h-80 rounded-3xl shadow-2xl cursor-pointer overflow-hidden group border-2 border-gray-200 bg-white hover:border-orange-300"
                       style={{
                         transform: `translateX(${pos.x}px) translateY(${pos.y}px) scale(${pos.scale}) rotateY(${pos.rotateY}deg)`,
                         zIndex: pos.z,
+                        transition:
+                          "all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1)",
                       }}
                     >
                       <img
@@ -794,18 +804,18 @@ export default function Recipe_1st_page() {
                             colors[category.name.toLowerCase()] || "#f97316";
                           e.currentTarget.src = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="800" viewBox="0 0 600 800"><rect width="600" height="800" fill="${color}"/><text x="300" y="400" text-anchor="middle" dy=".3em" fill="white" font-size="48" font-weight="bold">${category.name}</text></svg>`;
                         }}
-                        className="w-full h-full object-cover group-hover:scale-110 transition duration-700"
+                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                       />
 
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent transition-opacity duration-500" />
 
-                      <div className="absolute inset-x-0 bottom-0 p-6">
-                        <h3 className="text-white text-xl sm:text-2xl font-black mb-3">
+                      <div className="absolute inset-x-0 bottom-0 p-6 transform transition-all duration-500 ease-out group-hover:translate-y-0 translate-y-2">
+                        <h3 className="text-white text-xl sm:text-2xl font-black mb-3 transform transition-all duration-500 group-hover:scale-105">
                           {category.name}
                         </h3>
                         <Link
                           to={`/category/${category.name.toLowerCase()}`}
-                          className="px-6 py-3 rounded-2xl bg-orange-500 text-white font-bold hover:bg-orange-600 hover:scale-105 transition-all text-sm"
+                          className="inline-block px-6 py-3 rounded-2xl bg-orange-500 text-white font-bold hover:bg-orange-600 transition-all duration-300 ease-out hover:scale-105 hover:shadow-lg text-sm transform opacity-90 group-hover:opacity-100"
                           onClick={(e) => e.stopPropagation()}
                         >
                           Explore Recipes →
@@ -823,7 +833,7 @@ export default function Recipe_1st_page() {
                       (prev - 1 + categoryCards.length) % categoryCards.length,
                   )
                 }
-                className="absolute top-1/2 -translate-y-1/2 left-[-10px] sm:left-2 md:left-5 w-12 h-12 rounded-full bg-white shadow-2xl border-2 border-orange-200 flex justify-center items-center text-orange-500 hover:bg-orange-500 hover:text-white hover:scale-110 transition-all z-50"
+                className="absolute top-1/2 -translate-y-1/2 left-[-10px] sm:left-2 md:left-5 w-12 h-12 rounded-full bg-white shadow-2xl border-2 border-orange-200 flex justify-center items-center text-orange-500 hover:bg-orange-500 hover:text-white hover:scale-110 hover:shadow-orange-200 transition-all duration-300 ease-out z-50 active:scale-95"
                 aria-label="Previous Category"
               >
                 <i className="fas fa-chevron-left"></i>
@@ -835,7 +845,7 @@ export default function Recipe_1st_page() {
                     (prev) => (prev + 1) % categoryCards.length,
                   )
                 }
-                className="absolute top-1/2 -translate-y-1/2 right-[-10px] sm:right-2 md:right-5 w-12 h-12 rounded-full bg-white shadow-2xl border-2 border-orange-200 flex justify-center items-center text-orange-500 hover:bg-orange-500 hover:text-white hover:scale-110 transition-all z-50"
+                className="absolute top-1/2 -translate-y-1/2 right-[-10px] sm:right-2 md:right-5 w-12 h-12 rounded-full bg-white shadow-2xl border-2 border-orange-200 flex justify-center items-center text-orange-500 hover:bg-orange-500 hover:text-white hover:scale-110 hover:shadow-orange-200 transition-all duration-300 ease-out z-50 active:scale-95"
                 aria-label="Next Category"
               >
                 <i className="fas fa-chevron-right"></i>
@@ -882,8 +892,11 @@ export default function Recipe_1st_page() {
                         key={rid || recipe?.name}
                         to={`/recipes/${rid}`}
                         className="block h-full"
+                        style={{
+                          animation: `slide-fade-in 0.6s ease-out ${index * 0.1}s both`,
+                        }}
                       >
-                        <article className="bg-white rounded-3xl overflow-hidden hover:shadow-2xl hover:scale-[1.02] transition-all duration-500 group border border-gray-100 hover:border-orange-300 cursor-pointer h-full flex flex-col relative">
+                        <article className="bg-white rounded-3xl overflow-hidden hover:shadow-2xl transition-all duration-500 ease-out group border border-gray-100 hover:border-orange-300 cursor-pointer h-full flex flex-col relative hover:-translate-y-2 hover:shadow-orange-100">
                           <div className="relative h-56 overflow-hidden">
                             <img
                               src={img}
@@ -891,7 +904,7 @@ export default function Recipe_1st_page() {
                               onError={(e) => {
                                 e.currentTarget.src = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%23f97316;stop-opacity:1" /><stop offset="100%" style="stop-color:%23ea580c;stop-opacity:1" /></linearGradient></defs><rect width="600" height="400" fill="url(%23grad)"/><text x="300" y="200" text-anchor="middle" dy=".3em" fill="white" font-size="32" font-weight="bold">${recipe.name || "Recipe"}</text></svg>`;
                               }}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 group-hover:rotate-1"
                             />
 
                             {/* Gradient Overlay */}

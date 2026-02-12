@@ -1,4 +1,3 @@
-
 {
   "positions": [
     { "x": 0, "y": -30, "scale": 1.1, "rotateY": 0, "z": 30 },
@@ -10,47 +9,52 @@
   "categories": [
     {
       "name": "Beef",
-      "image": "https://i.ibb.co/n8454Nkc/beef.jpg",
+      "image": "https://images.unsplash.com/photo-1588168333986-5078d3ae3976?w=600&h=800&fit=crop",
       "link": "/beef"
     },
     {
       "name": "Chicken",
-      "image": "https://i.ibb.co/nsvbM22b/chicken.jpg",
+      "image": "https://images.unsplash.com/photo-1598103442097-8b74394b95c6?w=600&h=800&fit=crop",
       "link": "/chicken"
     },
     {
-      "name": "Drinks",
-      "image": "https://i.ibb.co/QvjjySLY/drinks.jpg",
+      "name": "Drink",
+      "image": "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600&h=800&fit=crop",
       "link": "/drink"
     },
     {
       "name": "Soup",
-      "image": "https://i.ibb.co/5gsKdjJc/soup.jpg",
+      "image": "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600&h=800&fit=crop",
       "link": "/soup"
     },
     {
-      "name": "Desserts",
-      "image": "https://i.ibb.co/wZnqVZNB/dessert.jpg",
+      "name": "Dessert",
+      "image": "https://images.unsplash.com/photo-1551024506-0bccd828d307?w=600&h=800&fit=crop",
       "link": "/dessert"
+    },
+    {
+      "name": "Fish",
+      "image": "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=600&h=800&fit=crop",
+      "link": "/fish"
     }
   ],
   "featuredRecipes": [
     {
       "name": "Beef Curry",
       "category": "Beef",
-      "image": "https://i.ibb.co/Y4mhz3qB/Beef-curry.jpg",
+      "image": "https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=600&h=400&fit=crop",
       "link": "/beef_curry"
     },
     {
       "name": "Chicken Milanese",
       "category": "Chicken",
-      "image": "https://i.ibb.co/QjzghXTY/Chickenmilanese.png",
+      "image": "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=600&h=400&fit=crop",
       "link": "/chicken_milanese"
     },
     {
       "name": "Mocha",
-      "category": "Drinks",
-      "image": "https://i.ibb.co/nMDmD4nc/Mocha.png",
+      "category": "Drink",
+      "image": "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=600&h=400&fit=crop",
       "link": "/mocha"
     }
   ]
