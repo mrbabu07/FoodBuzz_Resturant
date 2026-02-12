@@ -759,6 +759,65 @@ lsof -ti:5000 | xargs kill -9
 
 ---
 
+## 🔐 Security Best Practices
+
+### Environment Variables
+
+**NEVER commit these files:**
+
+```
+.env
+.env.local
+.env.production
+.env.development
+```
+
+**Safe to commit:**
+
+```
+.env.example
+.env.production.example
+```
+
+### Security Checklist
+
+Before deploying to production:
+
+- [ ] All `.env` files are gitignored
+- [ ] Strong JWT secret (32+ characters)
+- [ ] Database password is strong (16+ characters)
+- [ ] IP whitelist enabled on MongoDB Atlas
+- [ ] CORS configured for specific origin only
+- [ ] HTTPS/SSL enabled
+- [ ] Rate limiting enabled
+- [ ] Input validation on all endpoints
+- [ ] Dependencies updated (`npm audit`)
+- [ ] Environment variables set in hosting platform
+
+### Generate Secure Secrets
+
+```bash
+# Generate JWT Secret
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
+# Generate Session Secret
+node -e "console.log(require('crypto').randomBytes(64).toString('base64'))"
+
+# Generate VAPID Keys
+npx web-push generate-vapid-keys
+
+# Run Security Check
+cd Server
+node check-security.js
+```
+
+### Security Resources
+
+- See `Server/SECURITY.md` for detailed security guide
+- See `Server/.env.production.example` for production configuration template
+
+---
+
 ## 📄 License
 
 This project is proprietary software developed for FoodBuzz Restaurant.

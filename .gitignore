@@ -1,0 +1,131 @@
+# ================================
+# SECURITY - NEVER COMMIT THESE!
+# ================================
+
+# Environment Variables (ALL ENVIRONMENTS)
+.env
+.env.*
+!.env.example
+!.env.production.example
+*.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env.staging
+
+# API Keys and Secrets
+*.key
+*.pem
+*.p12
+*.pfx
+serviceAccount*.json
+credentials.json
+secrets.json
+config.json
+
+# ================================
+# DEPENDENCIES
+# ================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ================================
+# BUILD & DIST
+# ================================
+dist/
+dist-ssr/
+build/
+out/
+.next/
+.nuxt/
+.cache/
+.parcel-cache/
+.vite/
+
+# ================================
+# LOGS
+# ================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# ================================
+# OS FILES
+# ================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ================================
+# IDE & EDITOR
+# ================================
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.project
+.classpath
+.settings/
+
+# ================================
+# TEMPORARY FILES
+# ================================
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+
+# ================================
+# TEST COVERAGE
+# ================================
+coverage/
+.nyc_output/
+*.lcov
+
+# ================================
+# UPLOADS & USER DATA
+# ================================
+uploads/
+public/uploads/
+user-uploads/
+
+# ================================
+# DATABASE
+# ================================
+*.sqlite
+*.sqlite3
+*.db
+
+# ================================
+# MISC
+# ================================
+.vercel
+.netlify
+.firebase/
+.serverless/
