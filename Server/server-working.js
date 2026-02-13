@@ -1,4 +1,3 @@
-// Working server with inline menu items handler
 require("dotenv").config();
 console.log("Mongo URI:", process.env.MONGO_URI);
 const express = require("express");
@@ -8,11 +7,36 @@ const { initializePushService } = require("./src/utils/pushService");
 
 const app = express();
 
-// CORS
+// CORS - Allow frontend access
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Methods", "*");
-  res.header("Access-Control-Allow-Headers", "*");
+  const allowedOrigins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    process.env.FRONTEND_URL,
+  ].filter(Boolean);
+
+  const origin = req.headers.origin;
+
+  // Allow all origins in development, specific origins in production
+  if (
+    process.env.NODE_ENV === "production" &&
+    allowedOrigins.includes(origin)
+  ) {
+    res.header("Access-Control-Allow-Origin", origin);
+  } else if (process.env.NODE_ENV !== "production") {
+    res.header("Access-Control-Allow-Origin", "*");
+  } else {
+    // Fallback: allow all (for initial deployment)
+    res.header("Access-Control-Allow-Origin", "*");
+  }
+
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+  );
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
+
   if (req.method === "OPTIONS") return res.sendStatus(200);
   next();
 });
@@ -138,10 +162,16 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: err.message });
 });
 
-const PORT = 5000;
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`🚀 FoodBuzz API on http://localhost:${PORT}`);
+// For local development
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`🚀 FoodBuzz API on http://localhost:${PORT}`);
 
-  // Initialize push notification service
-  initializePushService();
-});
+    // Initialize push notification service
+    initializePushService();
+  });
+}
+
+// Export for Vercel serverless
+module.exports = app;

@@ -737,99 +737,108 @@ lsof -ti:5000 | xargs kill -9
 
 ## 🚀 Production Deployment
 
-### Quick Production Build
+### Current Deployment Status
 
-```bash
-# Windows
-build-production.bat
+- **Backend**: ✅ Deployed to Vercel - http://localhost:5173
+- **Frontend**: ⚠️ Ready for Netlify deployment
+- **Database**: MongoDB Atlas (cloud)
 
-# Manual Build
-cd Client
-npm run build
+### Quick Deployment Guide
 
-cd ../Server
-npm install --production
+📖 **Complete Guide**: See `DEPLOYMENT_GUIDE.md` for step-by-step instructions
+
+📊 **Current Status**: See `DEPLOYMENT_STATUS.md` for progress tracking
+
+### Next Steps (In Order)
+
+1. **Add Backend Environment Variables** (5 min)
+   - Go to Vercel Dashboard
+   - Add 14 environment variables
+   - See `QUICK_FIX.md` for details
+
+2. **Test Frontend Build** (2 min)
+
+   ```bash
+   cd Client
+   npm run build
+   ```
+
+   Or run: `test-client-build.bat`
+
+3. **Deploy Frontend to Netlify** (5 min)
+   - Go to https://app.netlify.com/
+   - Import repository
+   - Base directory: `Client`
+   - Build command: `npm run build`
+   - Publish directory: `Client/dist`
+   - Add env var: `VITE_API_URL=http://localhost:5173`
+
+4. **Update Backend URLs** (3 min)
+   - Update `FRONTEND_URL` in Vercel with Netlify URL
+   - Redeploy backend
+
+### Deployment Architecture
+
+```
+Frontend (Netlify)          Backend (Vercel)         Database (MongoDB Atlas)
+https://foodbuzz.netlify.app → http://localhost:5173 → mongodb+srv://...
+React + Vite                Node.js + Express        Cloud Database
+Static CDN                  Serverless Functions     Auto-scaling
 ```
 
-### Production Files
+### Configuration Files
 
-- **Frontend Build**: `Client/dist/` - Deploy to Vercel, Netlify, or static hosting
-- **Backend**: `Server/` - Deploy to Railway, Render, Heroku, or VPS
-- **Environment**: Use `.env.production` files (see examples)
+- ✅ `Server/vercel.json` - Backend deployment config
+- ✅ `Client/netlify.toml` - Frontend deployment config
+- ✅ `Client/.env.production` - Frontend production env vars
+- ✅ `Server/.env.production.example` - Backend env template
 
-### Deployment Guides
+### Helper Scripts
 
-📖 **Comprehensive Guides:**
+- `test-client-build.bat` - Test frontend build
+- `deploy-to-netlify.bat` - Deploy to Netlify
+- `deploy-to-vercel.bat` - Deploy to Vercel
 
-- `PRODUCTION_DEPLOYMENT.md` - Complete deployment instructions
-- `PRODUCTION_CHECKLIST.md` - Pre-deployment checklist
-- `Server/SECURITY.md` - Security best practices
-- `Server/.env.production.example` - Production environment template
+### Build Fixes Applied
 
-### Quick Deploy Options
+✅ Fixed "Could not resolve entry module 'axios'" error
+✅ Fixed "terser not found" error
+✅ Changed minifier from terser to esbuild (faster)
+✅ Removed axios from build (project uses fetch API)
 
-**Option 1: Vercel (Frontend) + Railway (Backend)**
-
-```bash
-# Deploy Backend to Railway
-railway login
-railway init
-railway up
-
-# Deploy Frontend to Vercel
-vercel --prod
-```
-
-**Option 2: Netlify + Render**
-
-- Drag `Client/dist` to Netlify
-- Connect GitHub repo to Render
-
-**Option 3: VPS (Full Control)**
-
-- See `PRODUCTION_DEPLOYMENT.md` for complete VPS setup
-
-### Production Scripts
-
-```bash
-# Build for production
-npm run build:prod          # Client
-npm run start:prod          # Server
-
-# Test production build locally
-test-production.bat         # Windows
-npm run preview             # Client preview
-
-# Security check
-cd Server
-npm run security-check
-```
+See `BUILD_FIX.md` for details.
 
 ### Environment Variables
 
 **Client** (`.env.production`):
 
 ```env
-VITE_API_URL=https://your-api-domain.com
+VITE_API_URL=http://localhost:5173
 VITE_APP_NAME=FoodBuzz
+VITE_APP_VERSION=1.0.0
 ```
 
-**Server** (`.env.production`):
+**Server** (Vercel Dashboard):
 
 ```env
 NODE_ENV=production
-MONGO_URI=mongodb+srv://...
+MONGODB_URI=mongodb+srv://...
 JWT_SECRET=your_32_char_secret
-FRONTEND_URL=https://your-domain.com
+FRONTEND_URL=https://your-netlify-url.netlify.app
+# + 10 more variables (see QUICK_FIX.md)
 ```
 
-### Post-Deployment
+### Post-Deployment Checklist
 
-1. ✅ Change default admin password
-2. ✅ Test all features
-3. ✅ Monitor error logs
-4. ✅ Setup automated backups
-5. ✅ Configure monitoring/alerts
+- [ ] Backend environment variables added
+- [ ] Backend functional (test API endpoint)
+- [ ] Frontend build successful
+- [ ] Frontend deployed to Netlify
+- [ ] Backend updated with frontend URL
+- [ ] End-to-end testing complete
+- [ ] Change default admin password
+- [ ] Monitor error logs
+- [ ] Setup automated backups
 
 ---
 

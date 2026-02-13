@@ -16,7 +16,8 @@ function pick(obj, fields) {
 function makeRandomPassword(len = 10) {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789@#$";
   let p = "";
-  for (let i = 0; i < len; i++) p += chars[Math.floor(Math.random() * chars.length)];
+  for (let i = 0; i < len; i++)
+    p += chars[Math.floor(Math.random() * chars.length)];
   return p;
 }
 
@@ -33,11 +34,14 @@ exports.createStaff = async (req, res) => {
 
     if (!password) password = makeRandomPassword(10);
     if (String(password).length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters" });
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
     }
 
     const exists = await User.findOne({ email: emailNorm }).lean();
-    if (exists) return res.status(409).json({ message: "Email already exists" });
+    if (exists)
+      return res.status(409).json({ message: "Email already exists" });
 
     const hash = await bcrypt.hash(String(password), 10);
 
@@ -46,14 +50,13 @@ exports.createStaff = async (req, res) => {
       email: emailNorm,
       phone: phone ? String(phone).trim() : "",
       passwordHash: hash,
-      role: "staff",         // ✅ fixed
+      role: "staff", // ✅ fixed
       isActive: true,
     });
 
     // ✅ Send email (email + password)
     const subject = "Your Staff Account Credentials (ROMS)";
-    const text =
-`Hello ${staff.name},
+    const text = `Hello ${staff.name},
 
 Your staff account has been created.
 
@@ -109,7 +112,9 @@ exports.listStaff = async (req, res) => {
       filter.$or = [{ name: regex }, { email: regex }, { phone: regex }];
     }
 
-    const staff = await User.find(filter).select("-passwordHash").sort({ createdAt: -1 });
+    const staff = await User.find(filter)
+      .select("-passwordHash")
+      .sort({ createdAt: -1 });
     return res.json(staff);
   } catch (err) {
     console.error("listStaff error:", err);
@@ -121,9 +126,12 @@ exports.listStaff = async (req, res) => {
 exports.getStaffById = async (req, res) => {
   try {
     const { id } = req.params;
-    if (!mongoose.isValidObjectId(id)) return res.status(400).json({ message: "Invalid staff id" });
+    if (!mongoose.isValidObjectId(id))
+      return res.status(400).json({ message: "Invalid staff id" });
 
-    const staff = await User.findOne({ _id: id, role: "staff" }).select("-passwordHash");
+    const staff = await User.findOne({ _id: id, role: "staff" }).select(
+      "-passwordHash",
+    );
     if (!staff) return res.status(404).json({ message: "Staff not found" });
 
     return res.json(staff);
@@ -137,18 +145,21 @@ exports.getStaffById = async (req, res) => {
 exports.updateStaff = async (req, res) => {
   try {
     const { id } = req.params;
-    if (!mongoose.isValidObjectId(id)) return res.status(400).json({ message: "Invalid staff id" });
+    if (!mongoose.isValidObjectId(id))
+      return res.status(400).json({ message: "Invalid staff id" });
 
     const payload = pick(req.body, STAFF_ALLOWED_FIELDS);
 
     if (payload.name !== undefined) payload.name = String(payload.name).trim();
-    if (payload.phone !== undefined) payload.phone = String(payload.phone).trim();
-    if (payload.isActive !== undefined) payload.isActive = Boolean(payload.isActive);
+    if (payload.phone !== undefined)
+      payload.phone = String(payload.phone).trim();
+    if (payload.isActive !== undefined)
+      payload.isActive = Boolean(payload.isActive);
 
     const staff = await User.findOneAndUpdate(
       { _id: id, role: "staff" },
       payload,
-      { new: true }
+      { new: true },
     ).select("-passwordHash");
 
     if (!staff) return res.status(404).json({ message: "Staff not found" });
@@ -165,11 +176,14 @@ exports.resetStaffPassword = async (req, res) => {
     const { id } = req.params;
     let { password } = req.body;
 
-    if (!mongoose.isValidObjectId(id)) return res.status(400).json({ message: "Invalid staff id" });
+    if (!mongoose.isValidObjectId(id))
+      return res.status(400).json({ message: "Invalid staff id" });
 
     if (!password) password = makeRandomPassword(10);
     if (String(password).length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters" });
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
     }
 
     const hash = await bcrypt.hash(String(password), 10);
@@ -177,7 +191,7 @@ exports.resetStaffPassword = async (req, res) => {
     const staff = await User.findOneAndUpdate(
       { _id: id, role: "staff" },
       { passwordHash: hash },
-      { new: true }
+      { new: true },
     ).select("-passwordHash");
 
     if (!staff) return res.status(404).json({ message: "Staff not found" });
@@ -194,7 +208,7 @@ Your password has been reset by admin.
 Login Email: ${staff.email}
 New Password: ${password}
 
-Login: ${(process.env.FRONTEND_URL || "http://localhost:5173")}/login
+Login: ${process.env.FRONTEND_URL || "http://localhost:5173"}/login
 
 - ROMS`,
       });
@@ -213,7 +227,8 @@ Login: ${(process.env.FRONTEND_URL || "http://localhost:5173")}/login
 exports.deleteStaff = async (req, res) => {
   try {
     const { id } = req.params;
-    if (!mongoose.isValidObjectId(id)) return res.status(400).json({ message: "Invalid staff id" });
+    if (!mongoose.isValidObjectId(id))
+      return res.status(400).json({ message: "Invalid staff id" });
 
     const staff = await User.findOneAndDelete({ _id: id, role: "staff" });
     if (!staff) return res.status(404).json({ message: "Staff not found" });

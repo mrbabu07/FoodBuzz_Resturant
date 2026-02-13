@@ -554,7 +554,7 @@ async function seedMoreRecipes() {
     });
 
     console.log(
-      "\n✨ You can now view these recipes at: http://localhost:5173/recipe\n",
+      "\n✨ You can now view these recipes at: https://foodbuzz-api.vercel.app/api/recipes\n",
     );
 
     process.exit(0);

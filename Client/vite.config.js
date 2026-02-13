@@ -22,22 +22,27 @@ export default defineConfig({
   build: {
     outDir: "dist",
     sourcemap: false,
-    minify: "terser",
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-      },
-    },
+    minify: "esbuild", // Changed from terser to esbuild (built-in, faster)
     rollupOptions: {
       output: {
         manualChunks: {
+          // Core React libraries
           vendor: ["react", "react-dom", "react-router-dom"],
-          utils: ["axios"],
+          // UI libraries
+          ui: ["react-hot-toast", "framer-motion"],
+          // Chart libraries
+          charts: ["chart.js", "react-chartjs-2"],
+          // Icons
+          icons: ["react-icons", "lucide-react"],
+          // Utilities
+          utils: ["papaparse", "jspdf", "jspdf-autotable", "xlsx"],
         },
       },
     },
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 1500, // Increased limit
+  },
+  esbuild: {
+    drop: ["console", "debugger"], // Remove console.log and debugger in production
   },
   preview: {
     port: 5173,

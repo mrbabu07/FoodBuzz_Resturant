@@ -1,12 +1,17 @@
 {
   "name": "roms-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "FoodBuzz Restaurant Management System - Backend API",
   "main": "index.js",
+  "engines": {
+    "node": ">=18.x"
+  },
   "scripts": {
-    "dev": "nodemon server-working.js",
-    "start": "node server-working.js",
-    "start:prod": "NODE_ENV=production node server-working.js",
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "start:prod": "NODE_ENV=production node index.js",
+    "start:old": "node server-working.js",
+    "vercel-build": "echo 'Building for Vercel...'",
     "seed": "node seed-database.js",
     "seed:all": "node seed-all.js",
     "seed:complete": "node seed-complete-database.js",
@@ -19,7 +24,13 @@
     "security-check": "node check-security.js",
     "test": "echo \"No tests specified\" && exit 0"
   },
-  "keywords": [],
+  "keywords": [
+    "restaurant",
+    "food",
+    "api",
+    "express",
+    "mongodb"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -46,6 +57,7 @@
     "nodemailer": "^7.0.12",
     "pdfkit": "^0.17.2",
     "stripe": "^14.14.0",
+    "web-push": "^3.6.7",
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {
