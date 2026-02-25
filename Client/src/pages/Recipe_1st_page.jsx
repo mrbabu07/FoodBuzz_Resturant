@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { apiFetch } from "../utils/api";
+import { apiFetch, API_BASE } from "../utils/api";
 import { showSuccess, showError } from "../utils/toast";
 import data from "../data/Recipe_1st_Page.json";
 
@@ -160,12 +160,12 @@ export default function Recipe_1st_page() {
         setLoadingRecipes(true);
         setError("");
 
-        let endpoint = "/api/recipes";
+        let endpoint = `${API_BASE}/api/recipes`;
         let allRecipes = [];
 
         // Fetch based on page type
         if (pageType === "trending") {
-          endpoint = "/api/recipes/trending?limit=20";
+          endpoint = `${API_BASE}/api/recipes/trending?limit=20`;
           const recipesRes = await fetch(endpoint);
           if (!recipesRes.ok)
             throw new Error("Failed to fetch trending recipes");
@@ -174,7 +174,7 @@ export default function Recipe_1st_page() {
           setRecipes(allRecipes);
           setFeaturedRecipes(allRecipes);
         } else if (pageType === "recent") {
-          endpoint = "/api/recipes/recent?limit=20";
+          endpoint = `${API_BASE}/api/recipes/recent?limit=20`;
           const recipesRes = await fetch(endpoint);
           if (!recipesRes.ok) throw new Error("Failed to fetch recent recipes");
           const recipesData = await recipesRes.json();
@@ -183,7 +183,7 @@ export default function Recipe_1st_page() {
           setFeaturedRecipes(allRecipes);
         } else {
           // Fetch all recipes
-          const recipesRes = await fetch("/api/recipes");
+          const recipesRes = await fetch(`${API_BASE}/api/recipes`);
           if (!recipesRes.ok) throw new Error("Failed to fetch recipes");
           const recipesData = await recipesRes.json();
           allRecipes = Array.isArray(recipesData) ? recipesData : [];

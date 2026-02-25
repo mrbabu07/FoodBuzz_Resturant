@@ -72,9 +72,21 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 // ============================================================================
-// Database Connection
+// Database Connection Middleware (for Vercel serverless)
 // ============================================================================
-connectDB();
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error("Database connection error:", error);
+    res.status(503).json({
+      status: "error",
+      message: "Database connection failed",
+      error: error.message,
+    });
+  }
+});
 
 // ============================================================================
 // Health Check Routes

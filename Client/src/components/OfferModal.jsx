@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { API_BASE } from "../utils/api";
 
 export default function OfferModal({ isOpen, onClose }) {
   const [offers, setOffers] = useState([]);
@@ -15,7 +16,7 @@ export default function OfferModal({ isOpen, onClose }) {
   const fetchModalOffers = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/offers/modal");
+      const response = await fetch(`${API_BASE}/api/offers/modal`);
 
       if (response.ok) {
         const data = await response.json();

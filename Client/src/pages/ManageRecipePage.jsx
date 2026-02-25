@@ -1662,8 +1662,9 @@ import AdminFooter from "../components/AdminFooter";
 import AdminNavbar from "../components/AdminNavbar";
 import { getToken } from "../utils/authStorage";
 import BulkRecipeUpload from "../components/BulkRecipeUpload";
+import { API_BASE } from "../utils/api";
 
-const API_BASE = "";
+
 
 const CATEGORIES = [
   "All",

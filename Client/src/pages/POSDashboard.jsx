@@ -6,6 +6,7 @@ import {
   showLoading,
   dismissToast,
 } from "../utils/toast";
+import { API_BASE } from "../utils/api";
 
 export default function POSDashboard() {
   const navigate = useNavigate();
@@ -41,7 +42,7 @@ export default function POSDashboard() {
 
   const loadMenuItems = async () => {
     try {
-      const response = await fetch("/api/menu-items");
+      const response = await fetch(`${API_BASE}/api/menu-items`);
       if (!response.ok) throw new Error("Failed to load menu items");
       const data = await response.json();
       setMenuItems(data);
@@ -198,7 +199,7 @@ export default function POSDashboard() {
         status: "pending",
       };
 
-      const response = await fetch("/api/orders/pos", {
+      const response = await fetch(`${API_BASE}/api/orders/pos`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

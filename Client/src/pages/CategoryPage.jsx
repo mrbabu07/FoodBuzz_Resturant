@@ -3,8 +3,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import data from "../data/CategoryData.json";
 import "../styles/Category.css";
+import { API_BASE } from "../utils/api";
 
-const API_BASE = ""; // Use Vite proxy
 
 function normalize(str = "") {
   return String(str).toLowerCase().trim();

@@ -12,6 +12,7 @@ import {
   sendNotification,
   NotificationTemplates,
 } from "../utils/pushNotifications";
+import { API_BASE } from "../utils/api";
 
 export default function PlaceOrderPage() {
   const navigate = useNavigate();
@@ -140,7 +141,7 @@ export default function PlaceOrderPage() {
         console.log("Creating Stripe checkout session...");
 
         // First create the order with "Pending Payment" status
-        const orderResponse = await fetch("/api/orders", {
+        const orderResponse = await fetch(`${API_BASE}/api/orders`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -159,30 +160,33 @@ export default function PlaceOrderPage() {
         console.log("Order created:", orderId);
 
         // Now create Stripe checkout session
-        const checkoutResponse = await fetch("/api/payments/create-checkout", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            items: cartItems.map((item) => ({
-              name: item.name,
-              price: item.price,
-              quantity: item.quantity,
-              image: item.img,
-            })),
-            deliveryFee: shipping,
-            customerEmail: email,
-            orderId: orderId,
-            metadata: {
-              orderId: orderId,
-              deliveryAddress: `${address}, ${country}`,
-              phone: phone,
-              customerName: fullname,
+        const checkoutResponse = await fetch(
+          `${API_BASE}/api/payments/create-checkout`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
-          }),
-        });
+            body: JSON.stringify({
+              items: cartItems.map((item) => ({
+                name: item.name,
+                price: item.price,
+                quantity: item.quantity,
+                image: item.img,
+              })),
+              deliveryFee: shipping,
+              customerEmail: email,
+              orderId: orderId,
+              metadata: {
+                orderId: orderId,
+                deliveryAddress: `${address}, ${country}`,
+                phone: phone,
+                customerName: fullname,
+              },
+            }),
+          },
+        );
 
         console.log("Checkout response status:", checkoutResponse.status);
 
@@ -212,7 +216,7 @@ export default function PlaceOrderPage() {
       }
 
       // For COD, create order directly
-      const response = await fetch("/api/orders", {
+      const response = await fetch(`${API_BASE}/api/orders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

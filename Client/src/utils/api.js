@@ -1,7 +1,9 @@
 //path: backend_sara/project/src/utils/api.js
 
 // API Base URL - uses environment variable in production, proxy in development
-const API_BASE = import.meta.env.VITE_API_URL || ""; // Empty string for Vite proxy
+// In development: empty string uses Vite proxy
+// In production: uses VITE_API_URL from environment variables
+export const API_BASE = import.meta.env.VITE_API_URL || "";
 const TOKEN_KEY = "roms_token";
 
 export async function apiFetch(path, options = {}) {

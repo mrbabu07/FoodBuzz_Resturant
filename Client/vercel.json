@@ -1,0 +1,19 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "installCommand": "npm install",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "env": {
+    "VITE_API_URL": "https://foodbuzz-api.vercel.app",
+    "VITE_APP_NAME": "FoodBuzz",
+    "VITE_APP_VERSION": "1.0.0",
+    "VITE_ENABLE_ANALYTICS": "true",
+    "VITE_ENABLE_PWA": "true"
+  }
+}

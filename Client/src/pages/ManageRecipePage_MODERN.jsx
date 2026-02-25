@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import AdminLayout from "../layouts/AdminLayout";
 import { showSuccess, showError } from "../utils/toast";
 import { getToken } from "../utils/authStorage";
+import { API_BASE } from "../utils/api";
 
-const API_BASE = "http://localhost:5000";
+
 
 const CATEGORIES = [
   "All",

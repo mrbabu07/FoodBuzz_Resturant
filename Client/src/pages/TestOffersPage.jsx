@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import OfferModal from "../components/OfferModal";
+import { API_BASE } from "../utils/api";
 
 export default function TestOffersPage() {
   const [offers, setOffers] = useState([]);
@@ -16,14 +17,14 @@ export default function TestOffersPage() {
       setLoading(true);
 
       // Fetch active offers
-      const activeResponse = await fetch("/api/offers/active");
+      const activeResponse = await fetch(`${API_BASE}/api/offers/active`);
       if (activeResponse.ok) {
         const activeData = await activeResponse.json();
         setOffers(activeData);
       }
 
       // Fetch modal offers
-      const modalResponse = await fetch("/api/offers/modal");
+      const modalResponse = await fetch(`${API_BASE}/api/offers/modal`);
       if (modalResponse.ok) {
         const modalData = await modalResponse.json();
         setModalOffers(modalData);

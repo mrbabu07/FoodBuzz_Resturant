@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { apiFetch } from "../utils/api";
+import { apiFetch, API_BASE } from "../utils/api";
 
 export default function Home() {
   const [featuredMenuItems, setFeaturedMenuItems] = useState([]);
@@ -27,7 +27,7 @@ export default function Home() {
 
       // Fetch featured menu items (get random 6 items)
       try {
-        const menuResponse = await fetch("/api/menu-items");
+        const menuResponse = await apiFetch("/api/menu-items");
         if (menuResponse.ok) {
           const menuData = await menuResponse.json();
           // Shuffle and take 6 random items
@@ -47,7 +47,7 @@ export default function Home() {
 
       // Fetch popular recipes (get recent recipes)
       try {
-        const recipesResponse = await fetch("/api/recipes/recent");
+        const recipesResponse = await fetch(`${API_BASE}/api/recipes/recent`);
         if (recipesResponse.ok) {
           const recipesData = await recipesResponse.json();
           setPopularRecipes(recipesData.slice(0, 4));

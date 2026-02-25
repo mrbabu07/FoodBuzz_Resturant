@@ -7,8 +7,9 @@ import {
   getPlaceholderImage,
   handleImageError,
 } from "../utils/placeholderImage";
+import { API_BASE } from "../utils/api";
 
-const API_BASE = ""; // Use Vite proxy
+ // Use Vite proxy
 
 const slugify = (str = "") =>
   String(str)

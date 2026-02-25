@@ -3,6 +3,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { showSuccess, showError } from "../utils/toast";
+import { API_BASE } from "../utils/api";
 
 const CATEGORIES = [
   "All",
@@ -42,7 +43,7 @@ export default function Order_1st_Page() {
     try {
       setLoading(true);
       setError("");
-      const res = await fetch("/api/menu-items");
+      const res = await fetch(`${API_BASE}/api/menu-items`);
       if (!res.ok) throw new Error("Failed to load menu items");
       const data = await res.json();
       setMenuItems(Array.isArray(data) ? data : []);

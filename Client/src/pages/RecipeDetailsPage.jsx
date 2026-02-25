@@ -3,8 +3,9 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import SocialShare from "../components/SocialShare";
 import FavoriteButton from "../components/FavoriteButton";
+import { API_BASE } from "../utils/api";
 
-const API_BASE = ""; // Use Vite proxy
+// Use Vite proxy
 
 function safeNum(v, fallback = 0) {
   const n = Number(v);

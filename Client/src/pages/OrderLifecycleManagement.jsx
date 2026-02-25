@@ -6,6 +6,7 @@ import {
   showLoading,
   dismissToast,
 } from "../utils/toast";
+import { API_BASE } from "../utils/api";
 
 export default function OrderLifecycleManagement() {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ export default function OrderLifecycleManagement() {
     try {
       setLoading(true);
       const token = localStorage.getItem("roms_token");
-      const response = await fetch("/api/orders/my", {
+      const response = await fetch(`${API_BASE}/api/orders/my`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -61,14 +62,17 @@ export default function OrderLifecycleManagement() {
     const loadingToast = showLoading("Cancelling order...");
     try {
       const token = localStorage.getItem("roms_token");
-      const response = await fetch(`/api/orders/${selectedOrder._id}/cancel`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `${API_BASE}/api/orders/${selectedOrder._id}/cancel`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ reason: cancelReason }),
         },
-        body: JSON.stringify({ reason: cancelReason }),
-      });
+      );
 
       const data = await response.json();
       if (!response.ok)
@@ -98,14 +102,17 @@ export default function OrderLifecycleManagement() {
     const loadingToast = showLoading("Submitting return request...");
     try {
       const token = localStorage.getItem("roms_token");
-      const response = await fetch(`/api/orders/${selectedOrder._id}/return`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `${API_BASE}/api/orders/${selectedOrder._id}/return`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(returnData),
         },
-        body: JSON.stringify(returnData),
-      });
+      );
 
       const data = await response.json();
       if (!response.ok)
@@ -125,9 +132,12 @@ export default function OrderLifecycleManagement() {
   const loadTimeline = async (orderId) => {
     try {
       const token = localStorage.getItem("roms_token");
-      const response = await fetch(`/api/orders/${orderId}/timeline`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await fetch(
+        `${API_BASE}/api/orders/${orderId}/timeline`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
 
       if (!response.ok) throw new Error("Failed to load timeline");
       const data = await response.json();

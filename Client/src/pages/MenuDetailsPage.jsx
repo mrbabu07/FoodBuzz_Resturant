@@ -4,8 +4,9 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import SocialShare from "../components/SocialShare";
 import FavoriteButton from "../components/FavoriteButton";
+import { API_BASE } from "../utils/api";
 
-const API_BASE = ""; // Use Vite proxy
+ // Use Vite proxy
 
 const slugify = (str = "") =>
   String(str)

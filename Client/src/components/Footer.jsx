@@ -117,6 +117,7 @@ const Footer = () => {
                 <div>
                   <div className="font-semibold">Email</div>
                   <div className="text-sm">foodBuzz@gmail.com</div>
+                  <div className="text-sm">mrjabedpuc@gmail.com</div>
                 </div>
               </a>
 
@@ -124,7 +125,7 @@ const Footer = () => {
                 <span className="text-lg">📱</span>
                 <div>
                   <div className="font-semibold">Phone</div>
-                  <div className="text-sm">+880 123 456 789</div>
+                  <div className="text-sm">+880 1521-721946</div>
                 </div>
               </div>
 

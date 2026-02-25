@@ -2,8 +2,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useCart } from "../context/CartContext";
+import { API_BASE } from "../utils/api";
 
-const API_BASE = ""; // Use Vite proxy
+ // Use Vite proxy
 
 function useQuery() {
   const { search } = useLocation();
